@@ -223,12 +223,12 @@ Note: no git remote configured — commits stay local. User can add a remote lat
 - [x] Filename enforcement: must write `presentation-brief.md` to CWD.
 - [x] Delegate language to `SKILL.md`.
 
-### M4 — `draft/` knowledge files
+### M4 — `draft/` knowledge files ✅
 
-- [ ] `slide-patterns.md`: write the catalog of 13 patterns documented above. Each pattern has: name, when to use, md2 syntax block, anti-pattern note.
-- [ ] `copy-rules.md`: write the rule list documented above. Examples (good vs bad) for each rule.
-- [ ] `md2-cheatsheet.md`: distilled reference (frontmatter, palettes, charts, columns, headings, footnotes, inline HTML).
-- [ ] `print-constraints.md`: write the bug catalog with concrete numbers (≤ 50 words next to a chart, value ratios ≤ 10x, etc.).
+- [x] `slide-patterns.md`: write the catalog of 13 patterns documented above. Each pattern has: name, when to use, md2 syntax block, anti-pattern note.
+- [x] `copy-rules.md`: write the rule list documented above. Examples (good vs bad) for each rule.
+- [x] `md2-cheatsheet.md`: distilled reference (frontmatter, palettes, charts, columns, headings, footnotes, inline HTML).
+- [x] `print-constraints.md`: write the bug catalog with concrete numbers (≤ 50 words next to a chart, value ratios ≤ 10x, etc.).
 
 ### M5 — `draft/prompt.md` (writer)
 
