@@ -143,6 +143,22 @@ assert_grep 'presentation\.(html|pdf)' "mentions presentation.html or .pdf artif
 # CWD reference
 assert_grep '[Cc]urrent working directory|CWD|cwd' "references CWD for artifacts"
 
+# Optional: agentskills.io spec validation via skills-ref (if installed).
+# Skipped cleanly if not on $PATH.
+echo ""
+if command -v skills-ref >/dev/null 2>&1; then
+    echo "--- agentskills.io validation (skills-ref) ---"
+    if skills-ref validate "$REPO_ROOT/skill" >/dev/null 2>&1; then
+        echo "  PASS: skills-ref validate skill/"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: skills-ref reported errors. Run \`skills-ref validate skill/\` for details."
+        FAIL=$((FAIL + 1))
+    fi
+else
+    echo "--- agentskills.io validation: skipped (skills-ref not installed) ---"
+fi
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]

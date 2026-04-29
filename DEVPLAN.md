@@ -262,16 +262,18 @@ Note: on the dev machine the user's Firefox is installed via snap and has missin
 - [x] Print post-install summary with the three `/deck <cmd>` invocations and the pipeline order.
 - [x] `README.md`: concrete install commands for `md2` and the browser; cross-references the SKILL.md `compatibility` field.
 
-### M8 — Tests
+### M8 — Tests ✅
 
-- [ ] `tests/test_structure.sh`: filesystem checks (every required file exists and is non-empty).
-- [ ] `tests/test_skill.sh`: SKILL.md frontmatter (`name: deck`, non-empty description, `compatibility:` present and ≤500 char per agentskills.io spec), routing references all 3 subcommands, mentions all 3 artifact filenames, references CWD, body has `## Prerequisites` section.
-- [ ] `tests/test_skill.sh`: optionally, if `skills-ref` is on `$PATH`, run `skills-ref validate skill/` and assert green. Skip cleanly if not installed (per [agentskills.io](https://agentskills.io/specification#validation)).
-- [ ] `tests/test_brief.sh`: brief/prompt.md mentions audience, objective, format, length, brand, language; declares output filename `presentation-brief.md`.
-- [ ] `tests/test_draft.sh`: draft/prompt.md references slide-patterns.md, copy-rules.md, md2-cheatsheet.md, print-constraints.md; each knowledge file contains its core invariants (e.g. slide-patterns.md mentions cover/hero/compare/chart; copy-rules.md mentions headline; print-constraints.md mentions ratio + spill).
-- [ ] `tests/test_render.sh`: render.sh has `set -euo pipefail`, handles missing `md2`, handles missing browser, accepts a `.md` argument and writes `.html` + `.pdf` paths.
-- [ ] `tests/test_install.sh`: install.sh handles `--force`, `--help`, copies `skill/` to `~/.claude/skills/deck/`; dependency check prints the right install hints when probes fail.
-- [ ] `tests/test_all.sh`: runs all the above and aggregates pass/fail counts.
+Note: in TDD mode, each test file was written BEFORE the corresponding implementation milestone (M2-M7). M8 ships only the aggregator and the optional `skills-ref` validation hook.
+
+- [x] `tests/test_structure.sh`: filesystem checks (every required file exists and is non-empty). Written in M2.
+- [x] `tests/test_skill.sh`: SKILL.md frontmatter (`name: deck`, non-empty description, `compatibility:` present and ≤500 char per agentskills.io spec), routing references all 3 subcommands, mentions all 3 artifact filenames, references CWD, body has `## Prerequisites` section. Written in M2.
+- [x] `tests/test_skill.sh`: optionally, if `skills-ref` is on `$PATH`, run `skills-ref validate skill/` and assert green. Skip cleanly if not installed.
+- [x] `tests/test_brief.sh`: brief/prompt.md mentions audience, objective, format, length, brand, language; declares output filename `presentation-brief.md`. Written in M3.
+- [x] `tests/test_draft.sh`: draft/prompt.md references slide-patterns.md, copy-rules.md, md2-cheatsheet.md, print-constraints.md; each knowledge file contains its core invariants. Written in M4-M5.
+- [x] `tests/test_render.sh`: render.sh has `set -euo pipefail`, handles missing `md2`, handles missing browser, accepts a `.md` argument, supports `--no-pdf`. Written in M6.
+- [x] `tests/test_install.sh`: install.sh handles `--force`, `--help`, copies `skill/` to `~/.claude/skills/deck/`; dependency probes work. Written in M7.
+- [x] `tests/test_all.sh`: runs all the above and aggregates pass/fail counts.
 
 ### M9 — Smoke test
 
