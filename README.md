@@ -20,7 +20,7 @@ Use `--force` to overwrite an existing installation without a prompt.
 ### Remote (no clone)
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/OWNER/deck/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Ymx1ZQ/deck/main/install.sh)
 ```
 
 Both modes land at `~/.claude/skills/deck/`. Restart Claude Code to pick up the skill.

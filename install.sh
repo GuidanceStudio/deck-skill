@@ -5,9 +5,9 @@ set -euo pipefail
 # Copies the skill files into the target tool's skill directory.
 #
 # Local mode:  ./install.sh [OPTIONS]
-# Remote mode: bash <(curl -fsSL https://raw.githubusercontent.com/OWNER/deck/main/install.sh)
+# Remote mode: bash <(curl -fsSL https://raw.githubusercontent.com/Ymx1ZQ/deck/main/install.sh)
 
-REPO_URL="${DECK_REPO_URL:-https://github.com/OWNER/deck.git}"
+REPO_URL="${DECK_REPO_URL:-https://github.com/Ymx1ZQ/deck.git}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -33,11 +33,11 @@ OPTIONS:
   --help    Show this help message
 
 REMOTE INSTALL (no clone needed):
-  bash <(curl -fsSL https://raw.githubusercontent.com/OWNER/deck/main/install.sh)
+  bash <(curl -fsSL https://raw.githubusercontent.com/Ymx1ZQ/deck/main/install.sh)
 
 ENVIRONMENT:
   DECK_REPO_URL   Override the repo URL used in remote mode
-                  (default: https://github.com/OWNER/deck.git)
+                  (default: https://github.com/Ymx1ZQ/deck.git)
 
 PREREQUISITES (checked at install time as a UX courtesy):
   - md2                                  (markdown → HTML)
