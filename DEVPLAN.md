@@ -198,16 +198,16 @@ echo "Generated: $PDF"
 
 Note: no git remote configured — commits stay local. User can add a remote later.
 
-### M2 — `SKILL.md` (routing + language rules + prerequisites)
+### M2 — `SKILL.md` (routing + language rules + prerequisites) ✅
 
-- [ ] Frontmatter: `name: deck`, `description: <trigger covering brief/draft/render pipeline + business deck context>`.
-- [ ] Frontmatter: `compatibility: Requires md2 (markdown→HTML presentation converter) and a Chromium-family browser (chromium, google-chrome, chrome) on $PATH` — per [agentskills.io spec](https://agentskills.io/specification#compatibility-field) (max 500 char).
-- [ ] Body: `## Prerequisites` section with concrete install hints for both `md2` and a Chromium-family browser, and a pointer to README.md → Requirements for the long form.
-- [ ] Language rules block.
-- [ ] Routing table with 3 branches + menu fallback.
-- [ ] Note on artifact pipeline (input filename expected in CWD per step).
-- [ ] Subcommand isolation rule (draft knowledge files load lazily inside the draft branch).
-- [ ] Keep short — heavy content lives in subcommand prompts.
+- [x] Frontmatter: `name: deck`, `description: <trigger covering brief/draft/render pipeline + business deck context>`.
+- [x] Frontmatter: `compatibility: Requires md2 (markdown→HTML presentation converter) and a Chromium-family browser (chromium, google-chrome, chrome) on $PATH` — per [agentskills.io spec](https://agentskills.io/specification#compatibility-field) (max 500 char).
+- [x] Body: `## Prerequisites` section with concrete install hints for both `md2` and a Chromium-family browser, and a pointer to README.md → Requirements for the long form.
+- [x] Language rules block.
+- [x] Routing table with 3 branches + menu fallback.
+- [x] Note on artifact pipeline (input filename expected in CWD per step).
+- [x] Subcommand isolation rule (draft knowledge files load lazily inside the draft branch).
+- [x] Keep short — heavy content lives in subcommand prompts.
 
 ### M3 — `brief/prompt.md`
 
