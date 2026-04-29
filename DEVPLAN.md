@@ -209,9 +209,9 @@ Note: no git remote configured — commits stay local. User can add a remote lat
 - [x] Subcommand isolation rule (draft knowledge files load lazily inside the draft branch).
 - [x] Keep short — heavy content lives in subcommand prompts.
 
-### M3 — `brief/prompt.md`
+### M3 — `brief/prompt.md` ✅
 
-- [ ] Interview script with these required sections:
+- [x] Interview script with these required sections:
   - **Audience**: who's in the room? what do they already know? what do they care about?
   - **Objective**: decision to take, action to ask for, awareness to build, learning to share.
   - **Format**: live deck (presented), leave-behind (read alone), or hybrid? affects density per slide.
@@ -219,9 +219,9 @@ Note: no git remote configured — commits stay local. User can add a remote lat
   - **Brand**: palette (built-in or custom), logo if any, language for artifact.
   - **Hard content**: data, claims, quotes the user wants in. Sources for credibility.
   - **Tone**: formal/casual/punchy?
-- [ ] Output template: `presentation-brief.md` with structured sections matching the interview.
-- [ ] Filename enforcement: must write `presentation-brief.md` to CWD.
-- [ ] Delegate language to `SKILL.md`.
+- [x] Output template: `presentation-brief.md` with structured sections matching the interview.
+- [x] Filename enforcement: must write `presentation-brief.md` to CWD.
+- [x] Delegate language to `SKILL.md`.
 
 ### M4 — `draft/` knowledge files
 
