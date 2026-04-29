@@ -275,12 +275,13 @@ Note: in TDD mode, each test file was written BEFORE the corresponding implement
 - [x] `tests/test_install.sh`: install.sh handles `--force`, `--help`, copies `skill/` to `~/.claude/skills/deck/`; dependency probes work. Written in M7.
 - [x] `tests/test_all.sh`: runs all the above and aggregates pass/fail counts.
 
-### M9 — Smoke test
+### M9 — Smoke test ✅ (automated portion)
 
-- [ ] `bash install.sh --force` → `~/.claude/skills/deck/` populated with SKILL.md + all subcommand files.
-- [ ] `bash tests/test_all.sh` → all suites green.
-- [ ] **Manual smoke (user-side)**: in a fresh test CWD, run `/deck brief`, then `/deck draft`, then `/deck render`. Open the resulting PDF. Verify: no empty slides, no spilled charts, no truncated labels.
-- [ ] **Regression smoke**: re-render the existing `<project-dir>/target-research.md` through the skill's render pipeline; confirm same output as the manual `md2` + Chrome run we did today.
+- [x] `bash install.sh --force` → `~/.claude/skills/deck/` populated with SKILL.md + all subcommand files (verified: SKILL.md, brief/prompt.md, draft/{prompt,slide-patterns,copy-rules,md2-cheatsheet,print-constraints}.md, render/{prompt.md,render.sh}). render.sh remains executable post-copy.
+- [x] `bash tests/test_all.sh` → 6 suites green, all assertions pass.
+- [x] Skill registered: appears in the Claude Code available-skills list under name `deck` after install.
+- [ ] **Manual smoke (user-side)**: in a fresh test CWD, run `/deck brief`, then `/deck draft`, then `/deck render`. Open the resulting PDF. Verify: no empty slides, no spilled charts, no truncated labels. Cannot run automatically — requires interactive Claude Code session.
+- [ ] **Regression smoke**: re-render `<project-dir>/target-research.md` through `~/.claude/skills/deck/render/render.sh`. HTML generation works; PDF generation requires installing chromium (`apt install chromium-browser`) since the dev machine's snap-Firefox has missing shared-object dependencies.
 
 ## Out of scope for v0.1 (parked for later)
 
