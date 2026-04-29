@@ -37,6 +37,7 @@ assert_nonempty "slide-patterns.md"
 assert_nonempty "copy-rules.md"
 assert_nonempty "md2-cheatsheet.md"
 assert_nonempty "print-constraints.md"
+assert_nonempty "prompt.md"
 
 # --- slide-patterns.md ---
 echo ""
@@ -98,6 +99,22 @@ assert_grep "print-constraints.md" 'word|line|character|character.limit' "word/l
 assert_grep "print-constraints.md" 'table.*takeaway|blockquote.*table|takeaway' "tables + takeaway"
 assert_grep "print-constraints.md" 'empty|sparse|short slide' "avoid empty slides"
 assert_grep "print-constraints.md" 'H2|## ' "always H2 per slide"
+
+# --- prompt.md (M5: orchestrator) ---
+echo ""
+echo "--- prompt.md (orchestrator) ---"
+assert_grep "prompt.md" 'presentation-brief\.md' "reads presentation-brief.md"
+assert_grep "prompt.md" 'presentation\.md' "writes presentation.md"
+assert_grep "prompt.md" 'current working directory|CWD|cwd' "references CWD"
+assert_grep "prompt.md" 'slide-patterns\.md' "references slide-patterns.md"
+assert_grep "prompt.md" 'copy-rules\.md' "references copy-rules.md"
+assert_grep "prompt.md" 'md2-cheatsheet\.md' "references md2-cheatsheet.md"
+assert_grep "prompt.md" 'print-constraints\.md' "references print-constraints.md"
+assert_grep "prompt.md" 'pyramid|SCQA|3-act|narrative arc|narrative' "proposes narrative arc / framework"
+assert_grep "prompt.md" 'gap|missing|content gather|fill' "fills content gaps from brief"
+assert_grep "prompt.md" 'lazy|on demand|when needed' "lazy-load knowledge files"
+assert_grep "prompt.md" 'SKILL\.md|router' "delegates language to SKILL.md"
+assert_grep "prompt.md" 'frontmatter|\+\+\+' "writes md2 frontmatter"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
