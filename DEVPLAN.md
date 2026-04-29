@@ -230,19 +230,19 @@ Note: no git remote configured — commits stay local. User can add a remote lat
 - [x] `md2-cheatsheet.md`: distilled reference (frontmatter, palettes, charts, columns, headings, footnotes, inline HTML).
 - [x] `print-constraints.md`: write the bug catalog with concrete numbers (≤ 50 words next to a chart, value ratios ≤ 10x, etc.).
 
-### M5 — `draft/prompt.md` (writer)
+### M5 — `draft/prompt.md` (writer) ✅
 
-- [ ] Reads `presentation-brief.md` from CWD; if missing, offers to run `/deck brief` or accept inline content.
-- [ ] Walks user through content gathering only for the gaps the brief left open.
-- [ ] Proposes a narrative arc — chooses among Pyramid / SCQA / 3-act based on the brief's objective; presents the arc as a 1-line outline before writing.
-- [ ] Maps each beat to a slide pattern from `slide-patterns.md`.
-- [ ] Writes md2 markdown to `presentation.md` in CWD, applying:
+- [x] Reads `presentation-brief.md` from CWD; if missing, offers to run `/deck brief` or accept inline content.
+- [x] Walks user through content gathering only for the gaps the brief left open.
+- [x] Proposes a narrative arc — chooses among Pyramid / SCQA / 3-act based on the brief's objective; presents the arc as a 1-line outline before writing.
+- [x] Maps each beat to a slide pattern from `slide-patterns.md`.
+- [x] Writes md2 markdown to `presentation.md` in CWD, applying:
   - The pattern syntax from `slide-patterns.md`.
   - Copy rules from `copy-rules.md`.
   - Print constraints from `print-constraints.md`.
   - Frontmatter palette from the brief.
-- [ ] Lazy-load knowledge files (read each one only when it becomes relevant in the conversation).
-- [ ] Delegate language to `SKILL.md`.
+- [x] Lazy-load knowledge files (read each one only when it becomes relevant in the conversation).
+- [x] Delegate language to `SKILL.md`.
 
 ### M6 — `render/` (script + prompt)
 
