@@ -27,10 +27,33 @@ Both modes land at `~/.claude/skills/deck/`. Restart Claude Code to pick up the 
 
 ## Requirements
 
-- [`md2`](https://github.com/...) — Markdown → HTML presentation converter (already on `$PATH`).
-- A Chromium-family browser (`chromium`, `google-chrome`, or `chrome`) for headless PDF rendering.
+The skill orchestrates two external tools. The installer checks both and warns if missing.
 
-The installer checks both and warns if missing.
+### md2 — markdown → HTML presentation converter
+
+```bash
+# Clone and run the bundled installer
+git clone https://github.com/<OWNER>/md2.git
+cd md2 && bash install.sh
+```
+
+This puts `md2` in `~/.local/bin/`. Make sure that's on your `$PATH`:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+### Browser for HTML → PDF
+
+The render script auto-detects, in this order: `chromium`, `google-chrome`, `chromium-browser`, `chrome`, `firefox` (102+).
+
+Chromium-family is preferred (higher CSS fidelity in print). Firefox is a working fallback.
+
+- **Linux**: `sudo apt install chromium-browser` — or distro equivalent.
+- **macOS**: install Google Chrome from [chrome.google.com](https://chrome.google.com).
+- **Already have Chrome installed?** No action needed.
+
+If neither browser is available, you can still use `/deck render --no-pdf` to generate the HTML only.
 
 ## Usage
 
