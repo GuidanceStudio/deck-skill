@@ -1,3 +1,149 @@
 #!/usr/bin/env bash
-# Placeholder — M6
-exit 1
+# render.sh — convert a md2 markdown deck to HTML and PDF.
+#
+# Usage:   render.sh <input.md> [--no-pdf]
+# Output:  <input>.html and <input>.pdf next to the input file.
+#
+# Dependencies (must be on $PATH):
+#   - md2                  (markdown → HTML)
+#   - chromium / google-chrome / chromium-browser / chrome / firefox
+#                          (HTML → PDF via headless print-to-pdf;
+#                           Chromium-family is preferred for higher fidelity,
+#                           Firefox is supported as a fallback)
+#
+# Flags:
+#   --no-pdf   Generate the HTML only, skip the PDF step.
+
+set -euo pipefail
+
+# --- Argument parsing -------------------------------------------------------
+
+INPUT=""
+NO_PDF=false
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $(basename "$0") <input.md> [--no-pdf]" >&2
+    exit 1
+fi
+
+for arg in "$@"; do
+    case "$arg" in
+        --no-pdf|--html-only)
+            NO_PDF=true
+            ;;
+        --help|-h)
+            sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
+            exit 0
+            ;;
+        *)
+            if [ -z "$INPUT" ]; then
+                INPUT="$arg"
+            else
+                echo "Error: unexpected argument '$arg'" >&2
+                exit 1
+            fi
+            ;;
+    esac
+done
+
+if [ -z "$INPUT" ]; then
+    echo "Error: missing input file. Usage: $(basename "$0") <input.md> [--no-pdf]" >&2
+    exit 1
+fi
+
+if [ ! -f "$INPUT" ]; then
+    echo "Error: input file not found: $INPUT" >&2
+    exit 1
+fi
+
+# --- Resolve absolute paths -------------------------------------------------
+
+INPUT_ABS="$(cd "$(dirname "$INPUT")" && pwd)/$(basename "$INPUT")"
+HTML="${INPUT_ABS%.md}.html"
+PDF="${INPUT_ABS%.md}.pdf"
+
+# --- Step 1: md → HTML ------------------------------------------------------
+
+if ! command -v md2 >/dev/null 2>&1; then
+    cat >&2 <<'EOF'
+Error: md2 is not on $PATH.
+
+Install it from the md2 repository, then make sure ~/.local/bin is on $PATH:
+  export PATH="$HOME/.local/bin:$PATH"
+EOF
+    exit 2
+fi
+
+md2 "$INPUT_ABS"
+
+if [ ! -f "$HTML" ]; then
+    echo "Error: md2 ran but did not produce $HTML" >&2
+    exit 2
+fi
+
+echo "Generated: $HTML"
+
+# --- Step 2: HTML → PDF (optional) ------------------------------------------
+
+if $NO_PDF; then
+    exit 0
+fi
+
+BROWSER=""
+BROWSER_FAMILY=""
+for cmd in chromium google-chrome chromium-browser chrome; do
+    if command -v "$cmd" >/dev/null 2>&1; then
+        BROWSER="$cmd"
+        BROWSER_FAMILY="chromium"
+        break
+    fi
+done
+
+if [ -z "$BROWSER" ] && command -v firefox >/dev/null 2>&1; then
+    BROWSER="firefox"
+    BROWSER_FAMILY="firefox"
+fi
+
+if [ -z "$BROWSER" ]; then
+    cat >&2 <<'EOF'
+Error: no supported browser found on $PATH.
+
+Install one of:
+  - chromium / chromium-browser / google-chrome / chrome (preferred, higher fidelity)
+  - firefox 102+ (fallback)
+
+On Linux:   apt install chromium-browser   (or distro equivalent)
+On macOS:   install Google Chrome from chrome.google.com
+
+Or re-run with --no-pdf to skip the PDF step.
+EOF
+    exit 3
+fi
+
+# Headless print-to-pdf. Flags differ per browser family.
+if [ "$BROWSER_FAMILY" = "chromium" ]; then
+    # --no-sandbox is required on some Linux setups (Docker, restricted users);
+    # on others it's a no-op.
+    "$BROWSER" \
+        --headless \
+        --disable-gpu \
+        --no-sandbox \
+        --no-pdf-header-footer \
+        --print-to-pdf="$PDF" \
+        "file://$HTML" \
+        >/dev/null 2>&1
+else
+    # Firefox 102+ headless print-to-pdf
+    "$BROWSER" \
+        --headless \
+        --print-to-pdf="$PDF" \
+        "file://$HTML" \
+        >/dev/null 2>&1
+fi
+
+if [ ! -f "$PDF" ]; then
+    echo "Error: $BROWSER ran but did not produce $PDF" >&2
+    exit 3
+fi
+
+echo "Generated: $PDF"

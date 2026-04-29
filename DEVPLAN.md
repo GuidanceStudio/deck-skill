@@ -244,12 +244,15 @@ Note: no git remote configured — commits stay local. User can add a remote lat
 - [x] Lazy-load knowledge files (read each one only when it becomes relevant in the conversation).
 - [x] Delegate language to `SKILL.md`.
 
-### M6 — `render/` (script + prompt)
+### M6 — `render/` (script + prompt) ✅
 
-- [ ] `render.sh`: write the pipeline script documented above. Make executable.
-- [ ] `render.sh`: handle missing `md2`, missing browser, missing input file with clear errors.
-- [ ] `render.sh`: support `--no-pdf` flag to skip PDF generation if user only wants HTML.
-- [ ] `prompt.md`: instructs Claude to invoke `~/.claude/skills/deck/render/render.sh <presentation.md>`; on error, surface the message; on success, report both file paths to the user.
+- [x] `render.sh`: write the pipeline script documented above. Make executable.
+- [x] `render.sh`: handle missing `md2`, missing browser, missing input file with clear errors.
+- [x] `render.sh`: support `--no-pdf` flag to skip PDF generation if user only wants HTML.
+- [x] `prompt.md`: instructs Claude to invoke `~/.claude/skills/deck/render/render.sh <presentation.md>`; on error, surface the message; on success, report both file paths to the user.
+- [x] **Bonus**: `render.sh` falls back to `firefox` if no Chromium-family browser is available (Firefox 102+ supports `--headless --print-to-pdf`). Chromium-family is preferred for higher CSS fidelity.
+
+Note: on the dev machine the user's Firefox is installed via snap and has missing shared-object dependencies, so the live PDF generation hangs. The script is spec-correct; installing chromium (`apt install chromium-browser`) is the recommended fix and is documented in README → Requirements.
 
 ### M7 — `install.sh` + `README.md` polish
 
