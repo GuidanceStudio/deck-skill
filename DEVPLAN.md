@@ -254,13 +254,13 @@ Note: no git remote configured — commits stay local. User can add a remote lat
 
 Note: on the dev machine the user's Firefox is installed via snap and has missing shared-object dependencies, so the live PDF generation hangs. The script is spec-correct; installing chromium (`apt install chromium-browser`) is the recommended fix and is documented in README → Requirements.
 
-### M7 — `install.sh` + `README.md` polish
+### M7 — `install.sh` + `README.md` polish ✅
 
-- [ ] Adapt `landing/install.sh` to a single-target install: source `skill/` → dest `~/.claude/skills/deck/`.
-- [ ] Keep local/remote detection, `--force`, `--help`.
-- [ ] Add **dependency check** (UX layer, not part of the agentskills.io standard): probe `md2` on `$PATH`; probe `chromium` / `google-chrome` / `chromium-browser` / `chrome`. If anything is missing, print the install hints and ask `Continue installing the skill anyway? [y/N]` (soft-fail so CI / build environments aren't blocked).
-- [ ] Print post-install summary with the three `/deck <cmd>` invocations and the pipeline order.
-- [ ] `README.md`: refine after implementation lands. Ensure the **Requirements** section gives concrete install commands for `md2` and the browser; cross-reference the SKILL.md `compatibility` field as the source of truth.
+- [x] Adapt `landing/install.sh` to a single-target install: source `skill/` → dest `~/.claude/skills/deck/`.
+- [x] Keep local/remote detection, `--force`, `--help`.
+- [x] Add **dependency check** (UX layer, not part of the agentskills.io standard): probe `md2` on `$PATH`; probe `chromium` / `google-chrome` / `chromium-browser` / `chrome` / `firefox`. If anything is missing, print the install hints and ask `Continue installing? [y/N]` (soft-fail so CI / build environments aren't blocked).
+- [x] Print post-install summary with the three `/deck <cmd>` invocations and the pipeline order.
+- [x] `README.md`: concrete install commands for `md2` and the browser; cross-references the SKILL.md `compatibility` field.
 
 ### M8 — Tests
 
