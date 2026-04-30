@@ -47,6 +47,8 @@ Run the interview in this order. Ask one or two questions at a time, not the who
   - Presented live → fewer words per slide, headlines do the talking, the speaker fills the gaps.
   - Leave-behind → more body text per slide, slide must stand alone with no narrator.
   - Hybrid → middle ground; favor leave-behind density, with strong headlines.
+- **Orientation**: `landscape` (default — 16:9 slide convention; almost always the right call for presented decks) or `portrait` (good for leave-behinds intended to be printed and read like a report).
+- **Paper size**: `A4` (default — works in EU and most of the world) or `letter` (US standard).
 
 ### 4. Length budget
 
@@ -101,6 +103,8 @@ Write the artifact in this structure. Use markdown headings exactly. Keep entrie
 ## Format
 - Format: <presented|leave-behind|hybrid>
 - Density implication: ...
+- Orientation: <landscape|portrait>
+- Paper size: <A4|letter>
 
 ## Length
 - Slide count target: ...

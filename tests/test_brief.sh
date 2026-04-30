@@ -41,6 +41,12 @@ assert_grep '\bcontent\b|\bdata\b|\bclaim\b|\bsource\b' "interview gathers hard 
 assert_grep '\btone\b' "interview covers tone"
 assert_grep '\blanguage\b' "interview covers language"
 
+# v0.2 — M10: orientation + paper size
+assert_grep '\borientation\b' "interview covers orientation"
+assert_grep '\blandscape\b' "interview mentions landscape"
+assert_grep '\bportrait\b' "interview mentions portrait"
+assert_grep 'paper|A4|letter' "interview covers paper size"
+
 # Output contract
 assert_grep 'presentation-brief\.md' "declares output filename presentation-brief.md"
 assert_grep 'current working directory|CWD|cwd' "references CWD"

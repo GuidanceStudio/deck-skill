@@ -116,6 +116,10 @@ assert_grep "prompt.md" 'lazy|on demand|when needed' "lazy-load knowledge files"
 assert_grep "prompt.md" 'SKILL\.md|router' "delegates language to SKILL.md"
 assert_grep "prompt.md" 'frontmatter|\+\+\+' "writes md2 frontmatter"
 
+# v0.2 — M10: emits deck-orientation / deck-paper HTML comments
+assert_grep "prompt.md" 'deck-orientation' "emits deck-orientation HTML comment"
+assert_grep "prompt.md" 'deck-paper' "emits deck-paper HTML comment"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]

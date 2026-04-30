@@ -52,6 +52,14 @@ assert_grep "$RENDER_SH" '\.html\b' "produces HTML"
 assert_grep "$RENDER_SH" '\.pdf\b' "produces PDF"
 assert_grep "$RENDER_SH" '--no-pdf|--html-only|skip.pdf' "supports flag to skip PDF"
 
+# v0.2 — M10: orientation + paper flags
+assert_grep "$RENDER_SH" '\-\-landscape' "supports --landscape flag"
+assert_grep "$RENDER_SH" '\-\-portrait' "supports --portrait flag"
+assert_grep "$RENDER_SH" '\-\-paper' "supports --paper flag"
+assert_grep "$RENDER_SH" 'deck-orientation' "parses deck-orientation HTML comment"
+assert_grep "$RENDER_SH" 'deck-paper' "parses deck-paper HTML comment"
+assert_grep "$RENDER_SH" '@page' "injects @page CSS rule"
+
 # Executable
 if [ -x "$RENDER_SH" ]; then
     echo "  PASS: render.sh is executable"
@@ -84,6 +92,127 @@ if "$RENDER_SH" 2>/dev/null; then
 else
     echo "  PASS: render.sh fails when called with no argument"
     PASS=$((PASS + 1))
+fi
+
+# v0.2 — Behavioral: @page CSS injection from HTML comments
+if command -v md2 >/dev/null 2>&1; then
+    DECK_LANDSCAPE="$TMPDIR_T/deck-landscape.md"
+    cat > "$DECK_LANDSCAPE" <<'DECK'
+<!-- deck-orientation: landscape -->
+<!-- deck-paper: A4 -->
++++
+title = "Landscape Test"
++++
+
+# Landscape Test
+
+---
+
+## A slide
+
+Body.
+DECK
+    if "$RENDER_SH" "$DECK_LANDSCAPE" --no-pdf >/dev/null 2>&1; then
+        if grep -qE '@page[[:space:]]*\{[^}]*A4[[:space:]]+landscape' "$TMPDIR_T/deck-landscape.html"; then
+            echo "  PASS: HTML contains @page rule with 'A4 landscape' from comment"
+            PASS=$((PASS + 1))
+        else
+            echo "  FAIL: HTML missing @page rule with A4 landscape"
+            FAIL=$((FAIL + 1))
+        fi
+    else
+        echo "  FAIL: render.sh --no-pdf failed on landscape deck"
+        FAIL=$((FAIL + 1))
+    fi
+
+    DECK_PORTRAIT="$TMPDIR_T/deck-portrait.md"
+    cat > "$DECK_PORTRAIT" <<'DECK'
+<!-- deck-orientation: portrait -->
+<!-- deck-paper: letter -->
++++
+title = "Portrait Test"
++++
+
+# Portrait Test
+
+---
+
+## A slide
+
+Body.
+DECK
+    if "$RENDER_SH" "$DECK_PORTRAIT" --no-pdf >/dev/null 2>&1; then
+        if grep -qE '@page[[:space:]]*\{[^}]*letter[[:space:]]+portrait' "$TMPDIR_T/deck-portrait.html"; then
+            echo "  PASS: HTML contains @page rule with 'letter portrait' from comment"
+            PASS=$((PASS + 1))
+        else
+            echo "  FAIL: HTML missing @page rule with letter portrait"
+            FAIL=$((FAIL + 1))
+        fi
+    else
+        echo "  FAIL: render.sh --no-pdf failed on portrait deck"
+        FAIL=$((FAIL + 1))
+    fi
+
+    # CLI override beats comment
+    DECK_OVERRIDE="$TMPDIR_T/deck-override.md"
+    cat > "$DECK_OVERRIDE" <<'DECK'
+<!-- deck-orientation: portrait -->
+<!-- deck-paper: A4 -->
++++
+title = "Override Test"
++++
+
+# Override Test
+
+---
+
+## A slide
+
+Body.
+DECK
+    if "$RENDER_SH" "$DECK_OVERRIDE" --landscape --paper letter --no-pdf >/dev/null 2>&1; then
+        if grep -qE '@page[[:space:]]*\{[^}]*letter[[:space:]]+landscape' "$TMPDIR_T/deck-override.html"; then
+            echo "  PASS: CLI flags override the HTML comment values"
+            PASS=$((PASS + 1))
+        else
+            echo "  FAIL: CLI override should produce 'letter landscape' but didn't"
+            FAIL=$((FAIL + 1))
+        fi
+    else
+        echo "  FAIL: render.sh failed when CLI flags applied"
+        FAIL=$((FAIL + 1))
+    fi
+
+    # Default when no comments + no flags: landscape A4
+    DECK_DEFAULT="$TMPDIR_T/deck-default.md"
+    cat > "$DECK_DEFAULT" <<'DECK'
++++
+title = "Default Test"
++++
+
+# Default Test
+
+---
+
+## A slide
+
+Body.
+DECK
+    if "$RENDER_SH" "$DECK_DEFAULT" --no-pdf >/dev/null 2>&1; then
+        if grep -qE '@page[[:space:]]*\{[^}]*A4[[:space:]]+landscape' "$TMPDIR_T/deck-default.html"; then
+            echo "  PASS: default orientation/paper is 'A4 landscape'"
+            PASS=$((PASS + 1))
+        else
+            echo "  FAIL: default should be 'A4 landscape' but isn't"
+            FAIL=$((FAIL + 1))
+        fi
+    else
+        echo "  FAIL: render.sh failed on default deck"
+        FAIL=$((FAIL + 1))
+    fi
+else
+    echo "  SKIP: behavioral @page tests skipped — md2 not installed"
 fi
 
 # Test: missing md2 (simulate via PATH stripping) → non-zero exit + clear message

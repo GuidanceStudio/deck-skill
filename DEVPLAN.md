@@ -283,11 +283,103 @@ Note: in TDD mode, each test file was written BEFORE the corresponding implement
 - [ ] **Manual smoke (user-side)**: in a fresh test CWD, run `/deck brief`, then `/deck draft`, then `/deck render`. Open the resulting PDF. Verify: no empty slides, no spilled charts, no truncated labels. Cannot run automatically — requires interactive Claude Code session.
 - [ ] **Regression smoke**: re-render `<project-dir>/target-research.md` through `~/.claude/skills/deck/render/render.sh`. HTML generation works; PDF generation requires installing chromium (`apt install chromium-browser`) since the dev machine's snap-Firefox has missing shared-object dependencies.
 
-## Out of scope for v0.1 (parked for later)
+## Backlog (no version assigned yet)
 
-- **M10 — Visual self-review loop**: after `/deck render`, optionally let Claude read the PDF, detect empty slides / clipped chart labels / overflows, propose targeted edits to `presentation.md`.
-- **M11 — Brand ingestion**: extract palette from a logo file or a URL screenshot.
-- **M12 — Custom palette wizard**: `/deck palette` to create `~/.md2/palettes/<brand>.toml` interactively.
-- **M13 — Multi-deck**: same brief, different audiences (sales vs board vs investor) → multiple decks in one run.
-- **M14 — Online one-liner install** (requires hosted repo).
-- **M15 — Versioning / update detection** in installer.
+- **Visual self-review loop**: after `/deck render`, optionally let Claude read the PDF, detect empty slides / clipped chart labels / overflows, propose targeted edits to `presentation.md`.
+- **Brand ingestion**: extract palette from a logo file or a URL screenshot.
+- **Custom palette wizard**: `/deck palette` to create `~/.md2/palettes/<brand>.toml` interactively.
+- **Multi-deck**: same brief, different audiences (sales vs board vs investor) → multiple decks in one run.
+- **Versioning / update detection** in installer.
+
+---
+
+# v0.2 milestones
+
+User feedback after v0.1 ship surfaced two issues:
+1. **No orientation control.** The first deck rendered portrait by default; the user wanted landscape (16:9 standard for slides). md2 has no orientation flag, so we have to control it via `@page` CSS at render time.
+2. **Agent improvises the render step.** When `/deck render` ran, the agent occasionally bypassed the bundled `render.sh` and tried alternative tools (e.g. playwright) or assembled its own md2 + browser invocation chain, sometimes hitting errors. The render prompt needs to be strictly prescriptive.
+
+v0.2 also folds in a Gotchas section to prevent the most common md2 syntax mistakes (frontmatter delimiter confusion, chart formatting) and a self-validation step that catches them before the file is handed off.
+
+## v0.2 file changes
+
+```
+skill/
+├── brief/prompt.md            # +Orientation, +Paper size questions; output template extends Format
+├── draft/
+│   ├── prompt.md              # +Gotchas section; +self-validation step (run md2, fix on error, retry once)
+│   ├── md2-cheatsheet.md      # +note on `+++` (TOML) vs `---` (YAML) confusion
+│   └── slide-patterns.md      # (no change)
+└── render/
+    ├── prompt.md              # Hard rules: invoke ONLY render.sh; no playwright/weasyprint/pandoc/etc.
+    └── render.sh              # +--landscape/--portrait flags, +--paper A4|letter, +CSS injection for @page
+```
+
+`presentation.md` produced by `/deck draft` carries the orientation as an HTML comment so re-renders are deterministic:
+
+```markdown
+<!-- deck-orientation: landscape -->
+<!-- deck-paper: A4 -->
++++
+title = "..."
++++
+
+# ...
+```
+
+`render.sh` parses these comments before invoking the browser; CLI flags override.
+
+## Milestones
+
+### M10 — Orientation + paper size support ✅
+
+- [x] **brief/prompt.md**: add to the interview, in `Format` section: orientation (landscape default), paper size (A4 default).
+- [x] **brief/prompt.md**: extend the output template under `## Format` with `Orientation:` and `Paper size:` fields.
+- [x] **draft/prompt.md**: emit `<!-- deck-orientation: ... -->` and `<!-- deck-paper: ... -->` HTML comments at the very top of `presentation.md` (before the `+++` frontmatter).
+- [x] **render/render.sh**: CLI flags `--landscape` / `--portrait` / `--paper A4|letter`; `--help` updated.
+- [x] **render/render.sh**: parses HTML comments from input md when no CLI flag set; defaults landscape A4.
+- [x] **render/render.sh**: after `md2`, injects `<style>@page { size: <paper> <orientation>; margin: 12mm; }</style>` before `</head>` via `sed`.
+- [x] **tests/test_brief.sh**: covers orientation/landscape/portrait/paper/A4 patterns.
+- [x] **tests/test_draft.sh**: covers `deck-orientation` / `deck-paper` emission.
+- [x] **tests/test_render.sh**: covers CLI flags + behavioral check that generated HTML contains `@page A4 landscape`, `@page letter portrait`, CLI override, default-when-no-comments. 4 behavioral cases all green.
+
+### M11 — Tighter `render/prompt.md` to prevent agent improvisation
+
+- [ ] **render/prompt.md** — add a "Hard rules" section near the top with explicit do/don't:
+  - **Do**: call exactly `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md"` (plus optional `--no-pdf` / `--landscape` / `--portrait` / `--paper`).
+  - **Do**: surface the script's stdout / stderr verbatim. Never paraphrase. Never silently swallow.
+  - **Don't**: invoke `md2` directly. The script does it.
+  - **Don't**: invoke `chrome` / `chromium` / `firefox` directly. The script does it.
+  - **Don't**: install or use playwright, puppeteer, weasyprint, pandoc, wkhtmltopdf, or any other PDF tool. The skill is bundled with its own pipeline.
+  - **Don't**: open the resulting HTML in the Read tool to "verify" — the script's exit code is the source of truth.
+- [ ] **render/prompt.md** — keep the existing exit-code table; cross-link it from the Hard rules.
+- [ ] **render/prompt.md** — add a one-line directive at the very top: *"This subcommand has exactly one job: invoke the bundled render.sh and report. Do not improvise."*
+- [ ] **tests/test_render.sh** — assert prompt contains the literal phrase "do not" or "don't" near a list of forbidden tools (playwright, weasyprint, pandoc); assert prompt contains the explicit invocation pattern `~/.claude/skills/deck/render/render.sh`.
+
+### M12 — Gotchas + self-validation in `draft/prompt.md`
+
+- [ ] **draft/prompt.md** — add a `## Gotchas (md2 syntax pitfalls)` section listing concrete mistakes:
+  - md2 frontmatter uses `+++` (TOML), NOT `---` (YAML — that's the Claude SKILL.md convention; do not mix them).
+  - Slide separator `---` MUST have a blank line above and below. Without them md2 keeps appending to the current slide silently.
+  - `:::chart` / `:::columns` blocks need a blank line above and below; the closing `:::` is on its own line.
+  - Tables inside `:::chart` must have a header row, a separator row (`|---|---|`), and at least 2 data rows — single-row charts render badly.
+  - Pie chart values must be positive integers; zero or negative slices crash the renderer.
+  - All table rows must have the same number of `|` columns as the header — mismatched columns produce silent fallback to plain text.
+  - Don't nest `:::chart` inside `:::columns` — the parser doesn't handle nested directives reliably.
+- [ ] **draft/prompt.md** — add a `## Self-validation (before declaring done)` step at the end:
+  1. After writing `presentation.md`, run `md2 presentation.md` once via Bash.
+  2. If md2 errors out, read the error, fix the offending block, and re-run. Maximum 2 retries.
+  3. If md2 still fails after 2 retries, surface the error to the user verbatim and ask which block to drop.
+  4. On success, the slide count in the generated HTML must match the slide count intended in the outline. If it doesn't, a `---` separator is missing or has no blank line.
+- [ ] **md2-cheatsheet.md** — add a small callout at the top: *"md2 frontmatter is `+++` (TOML), NOT `---` (YAML). The `---` is the slide separator."*
+- [ ] **tests/test_draft.sh** — assert prompt mentions "Gotchas" with the `+++` vs `---` warning; assert prompt mentions running md2 as self-validation.
+
+### M13 — v0.2 smoke + ship
+
+- [ ] `bash install.sh --force` — re-install on top of v0.1.
+- [ ] `bash tests/test_all.sh` — all suites green.
+- [ ] **Manual regression**: re-render `<project-dir>/target-research.md` (or a fresh deck) with default settings → confirm landscape orientation in the PDF.
+- [ ] **Manual regression**: render the same deck with `--portrait` → confirm orientation flips.
+- [ ] **Manual regression**: introduce a deliberate md2 syntax error in a draft → confirm draft/prompt.md catches it via self-validation and fixes it.
+- [ ] Update README.md mentioning the new flags and the orientation behaviour.
+- [ ] Tag and push.
