@@ -350,23 +350,12 @@ title = "..."
 - [x] **render/prompt.md** — top-of-file directive: *"This subcommand has exactly one job: invoke the bundled render.sh and report. Do not improvise. Do not invent an alternative pipeline."*
 - [x] **tests/test_render.sh** — asserts the forbidden-tool list, the exact invocation pattern, and the no-improvise directive. 6 new assertions, all green.
 
-### M12 — Gotchas + self-validation in `draft/prompt.md`
+### M12 — Gotchas + self-validation in `draft/prompt.md` ✅
 
-- [ ] **draft/prompt.md** — add a `## Gotchas (md2 syntax pitfalls)` section listing concrete mistakes:
-  - md2 frontmatter uses `+++` (TOML), NOT `---` (YAML — that's the Claude SKILL.md convention; do not mix them).
-  - Slide separator `---` MUST have a blank line above and below. Without them md2 keeps appending to the current slide silently.
-  - `:::chart` / `:::columns` blocks need a blank line above and below; the closing `:::` is on its own line.
-  - Tables inside `:::chart` must have a header row, a separator row (`|---|---|`), and at least 2 data rows — single-row charts render badly.
-  - Pie chart values must be positive integers; zero or negative slices crash the renderer.
-  - All table rows must have the same number of `|` columns as the header — mismatched columns produce silent fallback to plain text.
-  - Don't nest `:::chart` inside `:::columns` — the parser doesn't handle nested directives reliably.
-- [ ] **draft/prompt.md** — add a `## Self-validation (before declaring done)` step at the end:
-  1. After writing `presentation.md`, run `md2 presentation.md` once via Bash.
-  2. If md2 errors out, read the error, fix the offending block, and re-run. Maximum 2 retries.
-  3. If md2 still fails after 2 retries, surface the error to the user verbatim and ask which block to drop.
-  4. On success, the slide count in the generated HTML must match the slide count intended in the outline. If it doesn't, a `---` separator is missing or has no blank line.
-- [ ] **md2-cheatsheet.md** — add a small callout at the top: *"md2 frontmatter is `+++` (TOML), NOT `---` (YAML). The `---` is the slide separator."*
-- [ ] **tests/test_draft.sh** — assert prompt mentions "Gotchas" with the `+++` vs `---` warning; assert prompt mentions running md2 as self-validation.
+- [x] **draft/prompt.md** — `## Gotchas (md2 syntax pitfalls)` section with all 9 documented pitfalls (frontmatter delimiter, blank lines around `---` and `:::`, table column counts, pie-positive values, no nested directives, ratio reminder, comment placement).
+- [x] **draft/prompt.md** — `Step 7 — Self-validation` step before hand-off: runs `md2 presentation.md`, fixes & retries (max 2), surfaces error verbatim if still failing, post-check on slide count.
+- [x] **md2-cheatsheet.md** — top-of-file callout about `+++` (TOML) vs `---` (YAML) and the slide separator distinction.
+- [x] **tests/test_draft.sh** — 6 new assertions: Gotchas section, frontmatter warning, blank-line warning, self-validation step, retry behavior, cheatsheet callout. All green.
 
 ### M13 — v0.2 smoke + ship
 

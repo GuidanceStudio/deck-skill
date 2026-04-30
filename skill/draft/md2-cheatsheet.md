@@ -2,6 +2,8 @@
 
 Compact reference for the [md2](https://github.com/) markdown-to-presentation syntax. Everything the draft stage needs without fetching md2's full README.
 
+> **Heads-up — frontmatter delimiter.** md2 frontmatter uses `+++` (TOML), NOT `---` (YAML — that's the Claude SKILL.md convention). The `---` in md2 is the **slide separator**. Don't mix them: if you wrap the frontmatter in `---`, md2 treats it as a slide and the rendering breaks silently.
+
 ---
 
 ## File structure

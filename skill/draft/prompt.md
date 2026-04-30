@@ -126,9 +126,41 @@ Before reporting completion, run through this checklist:
 
 If any check fails, fix it before reporting completion.
 
-### Step 7 — Hand off
+### Step 7 — Self-validation
+
+Before declaring the deck done, run `md2` once to confirm the file parses cleanly. The agent (you) runs this via Bash:
+
+```bash
+md2 presentation.md
+```
+
+What to do based on the outcome:
+
+1. **md2 succeeds** → continue to Step 8.
+2. **md2 errors out** → read the error message carefully. Most failures fall into the Gotchas list below. Fix the offending block and re-run. **Maximum 2 retries.** Don't keep guessing.
+3. **md2 still fails after 2 retries** → stop and surface the error verbatim to the user. Ask which block to drop or whether to switch approach. Do not guess silently.
+
+Sanity check after success: count the `## H2` slide titles in `presentation.md` and compare to the slide count in your outline (Step 3). If they don't match, a slide separator (`---`) is missing or doesn't have blank lines above and below — go back and fix it.
+
+### Step 8 — Hand off
 
 Report to the user:
 - File written: `<absolute path>/presentation.md`.
 - Slide count.
 - Suggested next step: `/deck render` to produce HTML and PDF.
+
+---
+
+## Gotchas (md2 syntax pitfalls)
+
+The most frequent failure modes when md2 rejects a file. Skim before writing; consult when md2 errors.
+
+- **Frontmatter delimiter**: md2 uses `+++` (TOML), NOT `---` (YAML). The `---` in md2 is the **slide separator**, not the frontmatter fence. Mixing them silently corrupts both: md2 thinks the YAML body is the first slide, and the real first slide goes missing.
+- **Slide separators (`---`) need a blank line above and below.** Without them, md2 keeps appending to the current slide and your separator becomes literal text. This is the single most common source of "I wrote 12 slides but only 7 rendered" bugs.
+- **`:::chart` and `:::columns` blocks need a blank line above and below.** The closing `:::` goes on its own line, also with a blank line after.
+- **Tables inside `:::chart` must have a header row, a separator row (`|---|---|`), and at least 2 data rows.** Single-row charts render as empty boxes.
+- **Pie chart values must be positive integers.** Zero or negative slices crash the renderer or produce invisible slices.
+- **All table rows must have the same number of `|` columns as the header.** A mismatched row silently turns the whole block into plain text.
+- **Don't nest `:::chart` inside `:::columns`.** The directive parser does not handle nesting reliably; the output is unpredictable. If you need a chart and other content side-by-side, put the chart on its own slide instead (per `print-constraints.md`).
+- **Bar / column chart value ratios > 10x clip the smallest labels.** Already in `print-constraints.md` rule 4 — applies here at write time, not just at render time.
+- **HTML comments before `+++` are fine** (we use them for `deck-orientation` / `deck-paper`). HTML comments inside the body are rendered as-is by md2; harmless but visible if not careful.
