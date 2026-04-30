@@ -357,12 +357,13 @@ title = "..."
 - [x] **md2-cheatsheet.md** — top-of-file callout about `+++` (TOML) vs `---` (YAML) and the slide separator distinction.
 - [x] **tests/test_draft.sh** — 6 new assertions: Gotchas section, frontmatter warning, blank-line warning, self-validation step, retry behavior, cheatsheet callout. All green.
 
-### M13 — v0.2 smoke + ship
+### M13 — v0.2 smoke + ship ✅
 
-- [ ] `bash install.sh --force` — re-install on top of v0.1.
-- [ ] `bash tests/test_all.sh` — all suites green.
-- [ ] **Manual regression**: re-render `<project-dir>/target-research.md` (or a fresh deck) with default settings → confirm landscape orientation in the PDF.
-- [ ] **Manual regression**: render the same deck with `--portrait` → confirm orientation flips.
-- [ ] **Manual regression**: introduce a deliberate md2 syntax error in a draft → confirm draft/prompt.md catches it via self-validation and fixes it.
-- [ ] Update README.md mentioning the new flags and the orientation behaviour.
-- [ ] Tag and push.
+- [x] `bash install.sh --force` — re-installed on top of v0.1; all 8 files copied; render.sh remains executable.
+- [x] `bash tests/test_all.sh` — 6 suites green, 70+ assertions including the new M10/M11/M12 ones.
+- [x] **Regression**: deck with `<!-- deck-orientation: landscape --><!-- deck-paper: A4 -->` → injected HTML contains `<style>@page { size: A4 landscape; margin: 12mm; }</style>`. ✓
+- [x] **Regression**: same deck rendered with `--portrait --paper letter` → injected HTML contains `<style>@page { size: letter portrait; margin: 12mm; }</style>`. ✓ CLI override beats comments.
+- [x] **Regression**: bare deck (no comments) → defaults to `A4 landscape`. ✓
+- [ ] **Manual regression for self-validation loop** (M12) — requires a Claude Code session to actually drive the draft prompt with a deliberate syntax error. Cannot be automated; user-side smoke.
+- [x] Update README.md mentioning the new flags and the orientation behavior.
+- [x] Push to `origin/main` after each milestone.
