@@ -12,7 +12,15 @@
 #                           Firefox is supported as a fallback)
 #
 # Flags:
-#   --no-pdf   Generate the HTML only, skip the PDF step.
+#   --no-pdf            Generate the HTML only, skip the PDF step.
+#   --landscape         Force landscape orientation (overrides deck-orientation comment).
+#   --portrait          Force portrait orientation (overrides deck-orientation comment).
+#   --paper A4|letter   Force paper size (overrides deck-paper comment).
+#
+# Orientation/paper precedence (highest first):
+#   1. CLI flag
+#   2. <!-- deck-orientation: ... --> / <!-- deck-paper: ... --> at the top of input.md
+#   3. defaults: landscape, A4
 
 set -euo pipefail
 
@@ -20,28 +28,59 @@ set -euo pipefail
 
 INPUT=""
 NO_PDF=false
+ORIENTATION_OVERRIDE=""
+PAPER_OVERRIDE=""
 
 if [ $# -eq 0 ]; then
-    echo "Usage: $(basename "$0") <input.md> [--no-pdf]" >&2
+    echo "Usage: $(basename "$0") <input.md> [--no-pdf] [--landscape|--portrait] [--paper A4|letter]" >&2
     exit 1
 fi
 
-for arg in "$@"; do
-    case "$arg" in
+while [ $# -gt 0 ]; do
+    case "$1" in
         --no-pdf|--html-only)
             NO_PDF=true
+            shift
+            ;;
+        --landscape)
+            ORIENTATION_OVERRIDE="landscape"
+            shift
+            ;;
+        --portrait)
+            ORIENTATION_OVERRIDE="portrait"
+            shift
+            ;;
+        --paper)
+            shift
+            if [ $# -eq 0 ]; then
+                echo "Error: --paper requires a value (A4 or letter)" >&2
+                exit 1
+            fi
+            case "$1" in
+                A4|a4|letter|Letter|LETTER)
+                    PAPER_OVERRIDE="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
+                    [ "$PAPER_OVERRIDE" = "a4" ] && PAPER_OVERRIDE="A4"
+                    [ "$PAPER_OVERRIDE" = "letter" ] && PAPER_OVERRIDE="letter"
+                    ;;
+                *)
+                    echo "Error: --paper must be A4 or letter (got '$1')" >&2
+                    exit 1
+                    ;;
+            esac
+            shift
             ;;
         --help|-h)
-            sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
+            sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
         *)
             if [ -z "$INPUT" ]; then
-                INPUT="$arg"
+                INPUT="$1"
             else
-                echo "Error: unexpected argument '$arg'" >&2
+                echo "Error: unexpected argument '$1'" >&2
                 exit 1
             fi
+            shift
             ;;
     esac
 done
@@ -81,7 +120,37 @@ if [ ! -f "$HTML" ]; then
     exit 2
 fi
 
+# --- Step 1.5: inject @page CSS for orientation/paper -----------------------
+
+# Resolve orientation: CLI override → comment in source md → default landscape
+ORIENTATION="$ORIENTATION_OVERRIDE"
+if [ -z "$ORIENTATION" ]; then
+    ORIENTATION="$(grep -m1 -oE 'deck-orientation:[[:space:]]*(landscape|portrait)' "$INPUT_ABS" 2>/dev/null \
+        | sed -E 's/.*:[[:space:]]*//' || true)"
+fi
+[ -z "$ORIENTATION" ] && ORIENTATION="landscape"
+
+# Resolve paper size: CLI override → comment in source md → default A4
+PAPER="$PAPER_OVERRIDE"
+if [ -z "$PAPER" ]; then
+    PAPER="$(grep -m1 -oE 'deck-paper:[[:space:]]*(A4|a4|letter|Letter|LETTER)' "$INPUT_ABS" 2>/dev/null \
+        | sed -E 's/.*:[[:space:]]*//' || true)"
+    # Normalize case
+    case "$PAPER" in
+        A4|a4) PAPER="A4" ;;
+        letter|Letter|LETTER) PAPER="letter" ;;
+    esac
+fi
+[ -z "$PAPER" ] && PAPER="A4"
+
+# Inject @page rule before </head>. Single substitution; idempotent if rerun
+# because md2 regenerates the HTML from scratch each time.
+PAGE_CSS="<style>@page { size: ${PAPER} ${ORIENTATION}; margin: 12mm; }</style>"
+# Use a non-/ delimiter to avoid escaping the / in </head>
+sed -i "s|</head>|${PAGE_CSS}</head>|" "$HTML"
+
 echo "Generated: $HTML"
+echo "  Orientation: $ORIENTATION · Paper: $PAPER"
 
 # --- Step 2: HTML → PDF (optional) ------------------------------------------
 

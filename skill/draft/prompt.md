@@ -88,7 +88,16 @@ If two adjacent beats both want the same pattern, consider whether they should m
 
 Apply the rules from the knowledge files as you write:
 
-- **Frontmatter**: write the `+++` TOML block at the top with `title`, `palette` (from brief), `lang` (from brief), and optional `dark`. See `md2-cheatsheet.md` for fields.
+- **Orientation comments**: at the very top of the file (BEFORE the `+++` frontmatter), emit two HTML comments preserving the brief's choice:
+
+  ```markdown
+  <!-- deck-orientation: landscape -->
+  <!-- deck-paper: A4 -->
+  ```
+
+  These are read by `render.sh` to inject the right `@page` CSS at PDF time. md2 ignores HTML comments, so they don't affect the slides themselves. Use the values from the brief's `## Format → Orientation` and `## Format → Paper size` fields. If the brief is silent, default to `landscape` and `A4`.
+
+- **Frontmatter**: write the `+++` TOML block AFTER the orientation comments, with `title`, `palette` (from brief), `lang` (from brief), and optional `dark`. See `md2-cheatsheet.md` for fields.
 - **Cover**: pattern 1, with the title as a punchline (apply `copy-rules.md` rule 10).
 - **Slide titles**: every `## H2` is a takeaway (`copy-rules.md` rule 1). Test each: could it appear unchanged on a different deck? If yes, rewrite.
 - **Bullet density**: max 6 bullets, max ~6 words/bullet for presented decks; up to 10-12 words for leave-behind (`copy-rules.md` rule 6).
