@@ -120,6 +120,16 @@ assert_grep "prompt.md" 'frontmatter|\+\+\+' "writes md2 frontmatter"
 assert_grep "prompt.md" 'deck-orientation' "emits deck-orientation HTML comment"
 assert_grep "prompt.md" 'deck-paper' "emits deck-paper HTML comment"
 
+# v0.2 — M12: Gotchas + self-validation
+assert_grep "prompt.md" '[Gg]otchas' "has a Gotchas section"
+assert_grep "prompt.md" '\+\+\+.*---|TOML.*YAML|frontmatter.*\+\+\+' "warns about +++ (TOML) vs --- (YAML)"
+assert_grep "prompt.md" 'blank line' "warns about blank lines around separators/directives"
+assert_grep "prompt.md" '[Ss]elf-validation|run md2|md2 .*verify' "self-validation step (run md2)"
+assert_grep "prompt.md" 'retr(y|ies)|fix.*re-run|max.*retries' "retry on md2 error"
+
+# md2-cheatsheet.md callout about +++ vs ---
+assert_grep "md2-cheatsheet.md" '\+\+\+.*---|TOML.*YAML|NOT.*---' "callout: +++ (TOML) NOT --- (YAML)"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]
