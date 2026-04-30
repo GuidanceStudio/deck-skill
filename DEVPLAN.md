@@ -343,18 +343,12 @@ title = "..."
 - [x] **tests/test_draft.sh**: covers `deck-orientation` / `deck-paper` emission.
 - [x] **tests/test_render.sh**: covers CLI flags + behavioral check that generated HTML contains `@page A4 landscape`, `@page letter portrait`, CLI override, default-when-no-comments. 4 behavioral cases all green.
 
-### M11 — Tighter `render/prompt.md` to prevent agent improvisation
+### M11 — Tighter `render/prompt.md` to prevent agent improvisation ✅
 
-- [ ] **render/prompt.md** — add a "Hard rules" section near the top with explicit do/don't:
-  - **Do**: call exactly `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md"` (plus optional `--no-pdf` / `--landscape` / `--portrait` / `--paper`).
-  - **Do**: surface the script's stdout / stderr verbatim. Never paraphrase. Never silently swallow.
-  - **Don't**: invoke `md2` directly. The script does it.
-  - **Don't**: invoke `chrome` / `chromium` / `firefox` directly. The script does it.
-  - **Don't**: install or use playwright, puppeteer, weasyprint, pandoc, wkhtmltopdf, or any other PDF tool. The skill is bundled with its own pipeline.
-  - **Don't**: open the resulting HTML in the Read tool to "verify" — the script's exit code is the source of truth.
-- [ ] **render/prompt.md** — keep the existing exit-code table; cross-link it from the Hard rules.
-- [ ] **render/prompt.md** — add a one-line directive at the very top: *"This subcommand has exactly one job: invoke the bundled render.sh and report. Do not improvise."*
-- [ ] **tests/test_render.sh** — assert prompt contains the literal phrase "do not" or "don't" near a list of forbidden tools (playwright, weasyprint, pandoc); assert prompt contains the explicit invocation pattern `~/.claude/skills/deck/render/render.sh`.
+- [x] **render/prompt.md** — added "Hard rules" section with explicit Do / Do not lists; forbids playwright, puppeteer, weasyprint, pandoc, wkhtmltopdf, custom Python/Node wrappers, direct invocation of md2/chromium/firefox, and reading HTML during render.
+- [x] **render/prompt.md** — exit-code table preserved; cross-linked.
+- [x] **render/prompt.md** — top-of-file directive: *"This subcommand has exactly one job: invoke the bundled render.sh and report. Do not improvise. Do not invent an alternative pipeline."*
+- [x] **tests/test_render.sh** — asserts the forbidden-tool list, the exact invocation pattern, and the no-improvise directive. 6 new assertions, all green.
 
 ### M12 — Gotchas + self-validation in `draft/prompt.md`
 
