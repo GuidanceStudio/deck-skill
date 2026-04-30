@@ -244,6 +244,14 @@ else
     assert_grep_i "$PROMPT" 'current working directory|CWD|cwd' "references CWD"
     assert_grep_i "$PROMPT" 'error|fail|missing|surface' "surfaces errors to user"
     assert_grep_i "$PROMPT" 'SKILL\.md|router' "delegates language to SKILL.md"
+
+    # v0.2 — M11: explicit guardrails to prevent agent improvisation
+    assert_grep_i "$PROMPT" 'do not|don.t' "uses 'do not' / 'don't' for forbidden actions"
+    assert_grep_i "$PROMPT" 'playwright' "explicitly forbids playwright"
+    assert_grep_i "$PROMPT" 'weasyprint' "explicitly forbids weasyprint"
+    assert_grep_i "$PROMPT" 'pandoc|wkhtmltopdf|puppeteer' "explicitly forbids other PDF tools"
+    assert_grep "$PROMPT" '~/\.claude/skills/deck/render/render\.sh' "shows exact render.sh invocation path"
+    assert_grep_i "$PROMPT" 'one job|do not improvise|exactly one' "directive against improvisation"
 fi
 
 echo ""
