@@ -1,7 +1,7 @@
 ---
 name: deck
 description: Generate a business presentation in three staged artifacts — brief, md2-compliant markdown, and rendered HTML/PDF. Use `/deck brief` to capture audience, objective, format, brand, and content; `/deck draft` to turn the brief into a deck following slide patterns, copywriting rules, and print constraints; `/deck render` to produce the HTML and PDF via md2 and headless Chrome. Each stage reads the previous artifact from the current working directory.
-compatibility: Requires md2 (markdown-to-HTML presentation converter) and a Chromium-family browser (chromium, google-chrome, chromium-browser, or chrome) on $PATH. Designed for Claude Code or compatible agents.
+compatibility: Requires md2 (markdown-to-HTML presentation converter) and a Chromium-family browser (chromium, google-chrome, chromium-browser, chrome, brave-browser, or brave) on $PATH; firefox 102+ works as a last-resort fallback. Designed for Claude Code or compatible agents.
 ---
 
 # Deck — Router
@@ -13,7 +13,7 @@ This skill builds a business presentation in three stages. Each stage produces a
 This skill orchestrates two external tools. If either is missing, `/deck render` will fail with a clear message.
 
 - **md2** — markdown-to-HTML presentation converter. Install: clone the md2 repo and run its installer (e.g. `bash install.sh`). It typically lands `md2` in `~/.local/bin/`. Make sure that directory is on `$PATH`.
-- **Chromium-family browser** — for HTML-to-PDF rendering. The skill auto-detects `chromium`, `google-chrome`, `chromium-browser`, or `chrome`. On Linux: `apt install chromium-browser` (or distro equivalent). On macOS: install Google Chrome.
+- **Chromium-family browser** — for HTML-to-PDF rendering. The skill auto-detects, in this order: `chromium`, `google-chrome`, `chromium-browser`, `chrome`, `brave-browser`, `brave`. Firefox 102+ is supported as a last-resort fallback (slower; may hang on Linux snap installs). On Linux: `apt install chromium-browser` (or distro equivalent). On macOS: install Google Chrome or Brave.
 
 The README in this skill's repository has the long-form install instructions.
 

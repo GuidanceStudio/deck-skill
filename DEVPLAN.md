@@ -367,3 +367,22 @@ title = "..."
 - [ ] **Manual regression for self-validation loop** (M12) — requires a Claude Code session to actually drive the draft prompt with a deliberate syntax error. Cannot be automated; user-side smoke.
 - [x] Update README.md mentioning the new flags and the orientation behavior.
 - [x] Push to `origin/main` after each milestone.
+
+### M14 — Brave browser support in render pipeline
+
+Motivation: on systems where only Brave (Chromium-based) is installed, `render.sh` falls back to Firefox; Firefox snap headless `--print-to-pdf` hangs for several minutes on Ubuntu 25.10, leaving the PDF unproduced. Detecting `brave-browser` directly in the chromium-family loop avoids the slow fallback. Order honors the user's preference: `chromium → google-chrome → chromium-browser → chrome → brave-browser → brave`, with Firefox kept as last-resort fallback.
+
+- [x] **render/render.sh** — extend the chromium-family detection loop to: `chromium google-chrome chromium-browser chrome brave-browser brave`. Brave inherits the existing chromium flag set (`--headless --disable-gpu --no-sandbox --no-pdf-header-footer --print-to-pdf=...`), which it accepts natively as a chromium derivative.
+- [x] **render/render.sh** — header dependency comment block: list brave alongside chromium/chrome variants.
+- [x] **render/render.sh** — print which browser was selected before invoking it: `echo "  Using: $BROWSER ($BROWSER_FAMILY)"`. Aids debugging silent hangs (today's firefox-snap incident).
+- [x] **render/render.sh** — when falling back to firefox, emit a `>&2` warning: `Warning: no chromium-family browser found, falling back to firefox (may hang on Linux snap installs).` so the user knows why a render is slow.
+- [x] **render/prompt.md** — extend the "Do not invoke ... directly" list (line ~30) to include `brave-browser` / `brave`.
+- [x] **render/prompt.md** — exit-code 3 row in the error-handling table: widen the user-facing hint to mention brave as a valid install option.
+- [x] **skill/SKILL.md** — Prerequisites section: include brave in the chromium-family bullet.
+- [x] **skill/SKILL.md** — frontmatter `compatibility:` field: append brave to the listed binaries.
+- [x] **README.md** — Requirements → Browser section: document the new detection order and mention brave.
+- [x] **install.sh** — extend the prerequisite-probe browser loop to match render.sh detection order; update the help-text dependency list.
+- [x] **tests/test_render.sh** — extend the `assert_grep` regex on line 49 to include `brave-browser`/`brave`; assert "Using: $BROWSER" diagnostic and the firefox fallback warning.
+- [x] `bash install.sh --force` to redeploy.
+- [x] `bash tests/test_all.sh` — confirm all suites green after the changes (6 suites, 0 failed).
+- [x] Manual smoke: `render.sh` on `cfoaas/crediti-2026-05/presentation.md` with only chromium-derivative `brave-browser` available — selected `brave-browser (chromium)`, PDF generated in seconds (no firefox fallback hang).
