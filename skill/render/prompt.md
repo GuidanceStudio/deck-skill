@@ -27,7 +27,7 @@ These rules exist because past runs occasionally drifted — the agent reached f
 **Do not:**
 
 - Do not invoke `md2` directly. The script does it.
-- Do not invoke `chromium`, `google-chrome`, `chrome`, `chromium-browser`, or `firefox` directly. The script does it.
+- Do not invoke `chromium`, `google-chrome`, `chrome`, `chromium-browser`, `brave-browser`, `brave`, or `firefox` directly. The script does it.
 - Do not install or use `playwright`, `puppeteer`, `weasyprint`, `pandoc`, `wkhtmltopdf`, or any other markdown/HTML-to-PDF tool. None of them are part of this skill.
 - Do not write a custom Python or Node script that wraps the pipeline. The bash script is the pipeline.
 - Do not Read the generated HTML to "double-check" before render.sh has finished — the script's exit code is the source of truth.
@@ -81,7 +81,7 @@ The script exits with distinct codes per failure mode. Surface the error message
 |-----------|------------------------------------------|---------------------------------------------------------------------|
 | 1         | Missing or unreadable input file         | Confirm the filename; suggest running `/deck draft`.                  |
 | 2         | `md2` not on `$PATH`                     | Point them to the README → Requirements → md2 install instructions.   |
-| 3         | No Chromium-family browser found         | Point them to install Chrome/Chromium, or re-run with `--no-pdf`.    |
+| 3         | No supported browser found               | Point them to install chromium / chrome / brave (preferred) or firefox 102+, or re-run with `--no-pdf`. |
 
 If the script exits 0, both the HTML and (if requested) the PDF were generated successfully.
 

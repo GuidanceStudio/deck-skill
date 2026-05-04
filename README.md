@@ -45,15 +45,17 @@ export PATH="$HOME/.local/bin:$PATH"
 
 ### Browser for HTML → PDF
 
-The render script auto-detects, in this order: `chromium`, `google-chrome`, `chromium-browser`, `chrome`, `firefox` (102+).
+The render script auto-detects, in this order: `chromium`, `google-chrome`, `chromium-browser`, `chrome`, `brave-browser`, `brave`, `firefox` (102+).
 
-Chromium-family is preferred (higher CSS fidelity in print). Firefox is a working fallback.
+Chromium-family is preferred (higher CSS fidelity in print). Brave is a chromium derivative and produces identical output. Firefox is a last-resort fallback — it works, but on Linux snap installs `firefox --headless --print-to-pdf` can hang for several minutes; install any chromium-family browser to avoid that path.
 
 - **Linux**: `sudo apt install chromium-browser` — or distro equivalent.
-- **macOS**: install Google Chrome from [chrome.google.com](https://chrome.google.com).
-- **Already have Chrome installed?** No action needed.
+- **macOS**: install Google Chrome from [chrome.google.com](https://chrome.google.com), or [Brave](https://brave.com).
+- **Already have Chrome or Brave installed?** No action needed.
 
-If neither browser is available, you can still use `/deck render --no-pdf` to generate the HTML only.
+If no supported browser is available, you can still use `/deck render --no-pdf` to generate the HTML only.
+
+The script prints which browser it picked (e.g. `Using: brave-browser (chromium)`) so you can tell at a glance which path it took, and warns explicitly when it falls back to firefox.
 
 ## Usage
 

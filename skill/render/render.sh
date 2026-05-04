@@ -6,10 +6,15 @@
 #
 # Dependencies (must be on $PATH):
 #   - md2                  (markdown → HTML)
-#   - chromium / google-chrome / chromium-browser / chrome / firefox
+#   - chromium / google-chrome / chromium-browser / chrome /
+#     brave-browser / brave / firefox
 #                          (HTML → PDF via headless print-to-pdf;
-#                           Chromium-family is preferred for higher fidelity,
-#                           Firefox is supported as a fallback)
+#                           Chromium-family is preferred for higher fidelity
+#                           — chromium and chrome detected first, brave as a
+#                           chromium-derivative fallback. Firefox is the
+#                           last-resort fallback and may hang on Linux snap
+#                           installs; install a chromium-family browser to
+#                           avoid that path.)
 #
 # Flags:
 #   --no-pdf            Generate the HTML only, skip the PDF step.
@@ -160,7 +165,7 @@ fi
 
 BROWSER=""
 BROWSER_FAMILY=""
-for cmd in chromium google-chrome chromium-browser chrome; do
+for cmd in chromium google-chrome chromium-browser chrome brave-browser brave; do
     if command -v "$cmd" >/dev/null 2>&1; then
         BROWSER="$cmd"
         BROWSER_FAMILY="chromium"
@@ -171,6 +176,7 @@ done
 if [ -z "$BROWSER" ] && command -v firefox >/dev/null 2>&1; then
     BROWSER="firefox"
     BROWSER_FAMILY="firefox"
+    echo "Warning: no chromium-family browser found, falling back to firefox (may hang on Linux snap installs; install chromium/chrome/brave to avoid)." >&2
 fi
 
 if [ -z "$BROWSER" ]; then
@@ -179,7 +185,8 @@ Error: no supported browser found on $PATH.
 
 Install one of:
   - chromium / chromium-browser / google-chrome / chrome (preferred, higher fidelity)
-  - firefox 102+ (fallback)
+  - brave-browser / brave (chromium-derivative, also supported)
+  - firefox 102+ (last-resort fallback; may hang on Linux snap installs)
 
 On Linux:   apt install chromium-browser   (or distro equivalent)
 On macOS:   install Google Chrome from chrome.google.com
@@ -188,6 +195,8 @@ Or re-run with --no-pdf to skip the PDF step.
 EOF
     exit 3
 fi
+
+echo "  Using: $BROWSER ($BROWSER_FAMILY)"
 
 # Headless print-to-pdf. Flags differ per browser family.
 if [ "$BROWSER_FAMILY" = "chromium" ]; then

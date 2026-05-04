@@ -41,7 +41,8 @@ ENVIRONMENT:
 
 PREREQUISITES (checked at install time as a UX courtesy):
   - md2                                  (markdown → HTML)
-  - chromium / google-chrome / firefox    (HTML → PDF)
+  - chromium / google-chrome / chromium-browser / chrome /
+    brave-browser / brave / firefox        (HTML → PDF)
 EOF
 }
 
@@ -87,13 +88,13 @@ MISSING=()
 command -v md2 >/dev/null 2>&1 || MISSING+=("md2")
 
 BROWSER_FOUND=""
-for b in chromium google-chrome chromium-browser chrome firefox; do
+for b in chromium google-chrome chromium-browser chrome brave-browser brave firefox; do
     if command -v "$b" >/dev/null 2>&1; then
         BROWSER_FOUND="$b"
         break
     fi
 done
-[ -z "$BROWSER_FOUND" ] && MISSING+=("browser (chromium/chrome/firefox)")
+[ -z "$BROWSER_FOUND" ] && MISSING+=("browser (chromium/chrome/brave/firefox)")
 
 if [ ${#MISSING[@]} -gt 0 ]; then
     echo ""
