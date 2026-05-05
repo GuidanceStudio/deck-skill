@@ -415,4 +415,4 @@ Secondary issue surfaced in the same deck: column slides with H2 + intro paragra
 - [x] **skill/draft/prompt.md** — gotchas section: add an entry about the columns-collapse failure mode and the content-density risk on column slides, pointing readers to the new `print-constraints.md` rule.
 - [x] `bash install.sh --force` — redeploy.
 - [x] Smoke test: re-render `<project-dir>/presentation.md` and verify (a) slide 4 columns are side-by-side, (b) PDF page count equals 12.
-- [ ] Push to `origin/main`.
+- [x] Push to `origin/main`.
