@@ -395,4 +395,4 @@ Bug observed in the wild on the Magis Energia deck. md2 only parses `+++` as TOM
 - [x] **skill/draft/prompt.md** — gotchas section: replace the misleading "HTML comments before `+++` are fine" with an explicit warning describing the `Presentation`-fallback failure mode.
 - [x] **skill/draft/md2-cheatsheet.md** — second "Heads-up" callout under the existing frontmatter-delimiter one: frontmatter must start on line 1.
 - [x] `bash install.sh --force` — redeployed.
-- [ ] Push to `origin/main`.
+- [x] Push to `origin/main`.
