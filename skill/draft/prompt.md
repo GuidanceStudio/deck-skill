@@ -142,6 +142,14 @@ What to do based on the outcome:
 
 Sanity check after success: count the `## H2` slide titles in `presentation.md` and compare to the slide count in your outline (Step 3). If they don't match, a slide separator (`---`) is missing or doesn't have blank lines above and below — go back and fix it.
 
+After `/deck render` produces a PDF (Step 8 onward), run a second sanity check on page count:
+
+```bash
+pdfinfo presentation.pdf | grep Pages
+```
+
+Expected page count is `N H2 slides + 1 cover`. If the PDF has more pages than that, at least one slide overflowed onto a second page — almost always a column slide that combined `:::columns` with too much surrounding content (intro paragraph + closing blockquote). See `print-constraints.md` rule 8: lighten the offending slide (compress intro to one line, drop closing blockquote, cut bullet count to ≤ 4 per column) and re-render.
+
 ### Step 8 — Hand off
 
 Report to the user:
@@ -164,3 +172,4 @@ The most frequent failure modes when md2 rejects a file. Skim before writing; co
 - **Don't nest `:::chart` inside `:::columns`.** The directive parser does not handle nesting reliably; the output is unpredictable. If you need a chart and other content side-by-side, put the chart on its own slide instead (per `print-constraints.md`).
 - **Bar / column chart value ratios > 10x clip the smallest labels.** Already in `print-constraints.md` rule 4 — applies here at write time, not just at render time.
 - **HTML comments before `+++` break frontmatter parsing.** md2 only parses the TOML frontmatter when `+++` is on line 1. Anything above it — including the `<!-- deck-orientation -->` comments — causes md2 to silently fall back to default `<title>Presentation</title>` and to render the `+++` block as visible body text on the cover. Always put `+++` first; put the orientation/paper comments at the **end** of the file. HTML comments inside the body are passed through and may end up inside meta tags or as visible text near the cover paragraph; keep them at the bottom of the file.
+- **Column slide overflow on A4 landscape.** A slide that combines `:::columns` with an H2 + multi-line intro + closing blockquote can exceed the printable area. Because md2's print CSS sets `break-inside: avoid` on `.md2-columns`, the columns block gets pushed to the next page entirely, leaving the H2 + intro orphan on the previous page. Symptom: the rendered PDF has more pages than slides. Fix during writing: keep column slides light — short intro (one line), no closing blockquote, ≤ 4 short bullets per column. See `print-constraints.md` rule 8. The page-count check at Step 7 catches this after rendering.

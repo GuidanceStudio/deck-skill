@@ -85,7 +85,21 @@ When in doubt, follow them. They prefer page-correctness over information densit
 
 ---
 
-## 8. Render → review → adjust loop
+## 8. Column slides: keep content light
+
+**Rule**: a slide with `:::columns` should have at most one short intro sentence above the columns, no closing blockquote below, and no more than ~4 short bullets per column. The two columns should be roughly balanced in height.
+
+**Why**: md2's print CSS sets `break-inside: avoid` on `.md2-columns`. When the slide's total height (H2 + intro + columns + blockquote) exceeds the printable area of A4 landscape, the columns block — being unsplittable — gets pushed to the next page entirely, leaving the H2 + intro orphan on the previous page. The deck ends up with more PDF pages than slides, half of them mostly blank. The same density that fits comfortably on screen overflows in print.
+
+**Fixes when violated**:
+- Compress the intro to one line; drop the closing blockquote.
+- Cut bullet text or count down to ≤ 4 per column.
+- If both columns are heavy, split into two slides (one per column) and use a section divider above.
+- Verify after rendering: PDF page count must equal slide count (cover + N H2 slides). Mismatch ⇒ at least one slide overflowed.
+
+---
+
+## 9. Render → review → adjust loop
 
 After generating `presentation.md`, the `/deck render` step produces both an HTML and a PDF. Open the PDF (not the HTML) and check for:
 

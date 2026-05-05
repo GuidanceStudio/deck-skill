@@ -148,9 +148,17 @@ if [ -z "$PAPER" ]; then
 fi
 [ -z "$PAPER" ] && PAPER="A4"
 
-# Inject @page rule before </head>. Single substitution; idempotent if rerun
-# because md2 regenerates the HTML from scratch each time.
-PAGE_CSS="<style>@page { size: ${PAPER} ${ORIENTATION}; margin: 12mm; }</style>"
+# Inject @page rule plus print-only overrides before </head>. Single
+# substitution; idempotent if rerun because md2 regenerates the HTML from
+# scratch each time.
+#
+# The .md2-columns override forces row layout in print to defeat md2's
+# stylesheet cascade: the @media print rule does not restate flex-direction,
+# while a later @media (max-width: 768px) rule sets flex-direction: column.
+# Headless Chromium's default layout viewport can fall at or below 768px,
+# matching the mobile rule; without !important here, the two rules collide
+# and columns stack vertically in the PDF.
+PAGE_CSS="<style>@page { size: ${PAPER} ${ORIENTATION}; margin: 12mm; } @media print { .md2-columns { flex-direction: row !important; gap: 20px; } }</style>"
 # Use a non-/ delimiter to avoid escaping the / in </head>
 sed -i "s|</head>|${PAGE_CSS}</head>|" "$HTML"
 
