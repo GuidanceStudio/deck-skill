@@ -386,3 +386,13 @@ Motivation: on systems where only Brave (Chromium-based) is installed, `render.s
 - [x] `bash install.sh --force` to redeploy.
 - [x] `bash tests/test_all.sh` — confirm all suites green after the changes (6 suites, 0 failed).
 - [x] Manual smoke: `render.sh` on `cfoaas/crediti-2026-05/presentation.md` with only chromium-derivative `brave-browser` available — selected `brave-browser (chromium)`, PDF generated in seconds (no firefox fallback hang).
+
+### M15 — Fix: leading HTML comments break frontmatter parsing ✅
+
+Bug observed in the wild on the Magis Energia deck. md2 only parses `+++` as TOML frontmatter when it appears on line 1; placing the `<!-- deck-orientation -->` and `<!-- deck-paper -->` comments above the frontmatter (as M10's instructions told writers to do) silently fell back to `<title>Presentation</title>` and rendered the entire `+++ … +++` block as visible body text on the cover slide. Empirically verified: comments **after** frontmatter (or at end of file) preserve correct parsing; `render.sh` greps the markers from the source `.md` regardless of position, so the @page CSS injection still works.
+
+- [x] **skill/draft/prompt.md** — invert the instruction in the writing rules: `+++` must be on line 1 (no comments, no blank lines above); orientation/paper comments go at the **end of the file**, after the last slide.
+- [x] **skill/draft/prompt.md** — gotchas section: replace the misleading "HTML comments before `+++` are fine" with an explicit warning describing the `Presentation`-fallback failure mode.
+- [x] **skill/draft/md2-cheatsheet.md** — second "Heads-up" callout under the existing frontmatter-delimiter one: frontmatter must start on line 1.
+- [x] `bash install.sh --force` — redeployed.
+- [ ] Push to `origin/main`.

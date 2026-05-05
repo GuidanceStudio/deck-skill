@@ -88,16 +88,16 @@ If two adjacent beats both want the same pattern, consider whether they should m
 
 Apply the rules from the knowledge files as you write:
 
-- **Orientation comments**: at the very top of the file (BEFORE the `+++` frontmatter), emit two HTML comments preserving the brief's choice:
+- **Frontmatter**: the `+++` TOML block must be the very first thing in the file (no HTML comments, no blank lines before it — md2 only parses frontmatter when it starts on line 1). Include `title`, `palette` (from brief), `lang` (from brief), and optional `dark`. See `md2-cheatsheet.md` for fields.
+
+- **Orientation comments**: at the **end of the file**, after the last slide, emit two HTML comments preserving the brief's choice:
 
   ```markdown
   <!-- deck-orientation: landscape -->
   <!-- deck-paper: A4 -->
   ```
 
-  These are read by `render.sh` to inject the right `@page` CSS at PDF time. md2 ignores HTML comments, so they don't affect the slides themselves. Use the values from the brief's `## Format → Orientation` and `## Format → Paper size` fields. If the brief is silent, default to `landscape` and `A4`.
-
-- **Frontmatter**: write the `+++` TOML block AFTER the orientation comments, with `title`, `palette` (from brief), `lang` (from brief), and optional `dark`. See `md2-cheatsheet.md` for fields.
+  These are read by `render.sh` (which greps the source `.md` regardless of position) to inject the right `@page` CSS at PDF time. Placing them at the bottom keeps them out of the cover slide's paragraph (which md2 picks up for the meta description) and out of md2's frontmatter parser. Use the values from the brief's `## Format → Orientation` and `## Format → Paper size` fields. If the brief is silent, default to `landscape` and `A4`.
 - **Cover**: pattern 1, with the title as a punchline (apply `copy-rules.md` rule 10).
 - **Slide titles**: every `## H2` is a takeaway (`copy-rules.md` rule 1). Test each: could it appear unchanged on a different deck? If yes, rewrite.
 - **Bullet density**: max 6 bullets, max ~6 words/bullet for presented decks; up to 10-12 words for leave-behind (`copy-rules.md` rule 6).
@@ -163,4 +163,4 @@ The most frequent failure modes when md2 rejects a file. Skim before writing; co
 - **All table rows must have the same number of `|` columns as the header.** A mismatched row silently turns the whole block into plain text.
 - **Don't nest `:::chart` inside `:::columns`.** The directive parser does not handle nesting reliably; the output is unpredictable. If you need a chart and other content side-by-side, put the chart on its own slide instead (per `print-constraints.md`).
 - **Bar / column chart value ratios > 10x clip the smallest labels.** Already in `print-constraints.md` rule 4 — applies here at write time, not just at render time.
-- **HTML comments before `+++` are fine** (we use them for `deck-orientation` / `deck-paper`). HTML comments inside the body are rendered as-is by md2; harmless but visible if not careful.
+- **HTML comments before `+++` break frontmatter parsing.** md2 only parses the TOML frontmatter when `+++` is on line 1. Anything above it — including the `<!-- deck-orientation -->` comments — causes md2 to silently fall back to default `<title>Presentation</title>` and to render the `+++` block as visible body text on the cover. Always put `+++` first; put the orientation/paper comments at the **end** of the file. HTML comments inside the body are passed through and may end up inside meta tags or as visible text near the cover paragraph; keep them at the bottom of the file.
