@@ -396,3 +396,23 @@ Bug observed in the wild on the Magis Energia deck. md2 only parses `+++` as TOM
 - [x] **skill/draft/md2-cheatsheet.md** — second "Heads-up" callout under the existing frontmatter-delimiter one: frontmatter must start on line 1.
 - [x] `bash install.sh --force` — redeployed.
 - [x] Push to `origin/main`.
+
+### M16 — Fix: `:::columns` collapse to vertical stacking in print PDF ✅
+
+Bug observed on the Storie di Transizione deck. Slides using `:::columns` rendered in print PDF with the two `:::col` blocks stacked vertically instead of side-by-side, even when content was light enough to fit on one A4 landscape page. Root cause is a CSS cascade collision in md2's stylesheet:
+
+- The base rule sets `.md2-columns { display: flex; ... }` (default `flex-direction: row`).
+- The `@media print` rule re-declares `.md2-columns { display: flex; gap: 20px; }` but does **not** restate `flex-direction`.
+- The later `@media (max-width: 768px)` rule sets `.md2-columns { flex-direction: column; }`.
+
+When headless Chromium prints to PDF without an explicit `--window-size`, the layout viewport can fall at or below 768px (Chromium's headless default has shifted across versions); both the print and the mobile media queries match. Because the mobile rule comes after the print rule in the stylesheet and explicitly sets `flex-direction: column`, it wins — columns stack.
+
+Secondary issue surfaced in the same deck: column slides with H2 + intro paragraph + two columns + closing blockquote can exceed the printable area of A4 landscape; `break-inside: avoid` on `.md2-columns` then pushes the columns to a second page, leaving the H2 + intro orphan on the first. This is content-density, not CSS, but it is the same failure mode from the user's point of view (slide rendered "wrong"), so address both in this milestone.
+
+- [x] **skill/render/render.sh** — extend the `PAGE_CSS` injection to add a print-only override that forces row layout on `.md2-columns`. The current single-line `<style>@page {...}</style>` becomes a multi-rule block that also contains `@media print { .md2-columns { flex-direction: row !important; gap: 20px; } }`. The `!important` is necessary to win over the later `@media (max-width: 768px)` rule when both match.
+- [x] **skill/draft/print-constraints.md** — add a new rule "Column slide density on A4 landscape" warning that combining `:::columns` with H2 + multi-line intro + closing blockquote can overflow the page; recommend max one short intro sentence, max four short bullets per column, drop the closing blockquote on column slides, or split into two slides.
+- [x] **skill/draft/prompt.md** — extend Step 7 (md2 self-validation) to also run `pdfinfo "$PDF" | grep Pages` after `/deck render` and verify page count equals slide count. Mismatch means a slide overflowed; surface to the user with a recommendation to lighten the offending slide.
+- [x] **skill/draft/prompt.md** — gotchas section: add an entry about the columns-collapse failure mode and the content-density risk on column slides, pointing readers to the new `print-constraints.md` rule.
+- [x] `bash install.sh --force` — redeploy.
+- [x] Smoke test: re-render `<project-dir>/presentation.md` and verify (a) slide 4 columns are side-by-side, (b) PDF page count equals 12.
+- [ ] Push to `origin/main`.
