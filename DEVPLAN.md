@@ -416,3 +416,43 @@ Secondary issue surfaced in the same deck: column slides with H2 + intro paragra
 - [x] `bash install.sh --force` — redeploy.
 - [x] Smoke test: re-render `<project-dir>/presentation.md` and verify (a) slide 4 columns are side-by-side, (b) PDF page count equals 12.
 - [x] Push to `origin/main`.
+
+### M17 — Fix: HTML table scrollbars and truncated columns in print PDF ✅
+
+Bug observed on the the telco client deck (`<project-dir>/`). Slides containing markdown tables rendered in the print PDF with a visible grey scrollbar below the table and the rightmost column truncated — verified visually on slide 6 (portfolio the telco client) and slide 8 (timeline 30 giorni). Same root cause family as M16: a mobile-only CSS rule in md2's stylesheet leaks into print because its media query lacks the `screen` qualifier.
+
+The offending rule is `~/.local/share/uv/tools/md2-presenter/lib/python3.12/site-packages/md2/templates/default/style.css:646-649`:
+
+```css
+@media (max-width: 768px) {
+    .slide table {
+        display: block; overflow-x: auto; white-space: nowrap;
+        margin: 30px 0; width: 100%;
+    }
+    /* ... */
+}
+```
+
+Headless Chromium's print layout viewport falls at or below 768px → mobile rule matches in print → tables become `display: block` with `overflow-x: auto` and `white-space: nowrap` → wide tables overflow horizontally, Chrome renders a visible scrollbar at the bottom of the table in the PDF, and the content past the viewport's right edge is clipped/truncated. Exactly the same failure shape that bit `.md2-columns` in M16; M16 patched only the columns side.
+
+The proper upstream fix is to scope the entire `@media (max-width: 768px)` block to `screen` only (tracked separately in `md2/DEVPLAN.md` as M70). That fix is the right one but propagates only after md2 is reinstalled in the user's environment, so this milestone also lands a defensive override in `render.sh` mirroring the M16 columns workaround, so all deck renders are robust regardless of which md2 build is installed locally.
+
+- [x] **skill/render/render.sh** — extended the `PAGE_CSS` injection's `@media print { ... }` block with a print-only table override on the same pattern as the existing `.md2-columns` override:
+
+  ```css
+  .slide table {
+    display: table !important;
+    overflow-x: visible !important;
+    white-space: normal !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 30px auto !important;
+  }
+  ```
+
+  The `!important` is necessary to win over the later `@media (max-width: 768px)` rule when both match. The override restores the default screen-mode table behaviour (`display: table`, content wraps, sized to fit) instead of mobile's block-with-horizontal-scroll layout.
+- [x] **skill/draft/print-constraints.md** — extended rule 5 ("Tables can carry more than charts") with a "Width caveat" paragraph explaining that wide tables on A4 landscape should still fit within the printable area; if the message is "long table that needs scrolling", a table slide is the wrong pattern — split into two slides, drop a column, or convert to a vertical list. Horizontal scroll is a screen-only affordance that does not survive print.
+- [x] **skill/tests/test_render.sh** — added two new assertions: one for the existing M16 `.md2-columns` override (was missing), one for the new M17 `.slide table` override. `bash tests/test_render.sh` → 40 passed, 0 failed.
+- [x] `bash install.sh --force` — redeployed.
+- [x] Smoke test: re-rendered `<project-dir>/presentation.md`; verified with `pdftoppm` that slide 6 ("Il portfolio climate the telco client…") and slide 9 ("I prossimi 30 giorni") show full tables, no scrollbar, content wraps naturally inside cells, rightmost column fully visible. PDF page count 10 = slide count 10.
+- [ ] Push to `origin/main`.

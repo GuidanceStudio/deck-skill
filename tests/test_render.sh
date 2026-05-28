@@ -62,6 +62,8 @@ assert_grep "$RENDER_SH" '\-\-paper' "supports --paper flag"
 assert_grep "$RENDER_SH" 'deck-orientation' "parses deck-orientation HTML comment"
 assert_grep "$RENDER_SH" 'deck-paper' "parses deck-paper HTML comment"
 assert_grep "$RENDER_SH" '@page' "injects @page CSS rule"
+assert_grep "$RENDER_SH" '\.md2-columns.*flex-direction: row !important' "M16: injects print-only .md2-columns row override"
+assert_grep "$RENDER_SH" '\.slide table.*display: table !important' "M17: injects print-only .slide table override against mobile scrollbar leak"
 
 # Executable
 if [ -x "$RENDER_SH" ]; then

@@ -58,6 +58,8 @@ When in doubt, follow them. They prefer page-correctness over information densit
 
 **Fix when violated**: tables rarely violate. If a table is so long it spans 2 pages, consider whether you really need every row or if a summary row + appendix would be better.
 
+**Width caveat**: a markdown table that needs horizontal scrolling on screen will print as a clipped table with the rightmost column truncated. If a table is too wide to fit the printable area of A4 landscape at default font size, the answer is never "let the user scroll" — it's split into two slides, drop a column, or convert to a vertical list. Treat horizontal table scroll as a screen-only affordance that does not survive print.
+
 ---
 
 ## 6. Avoid empty / sparse slides
