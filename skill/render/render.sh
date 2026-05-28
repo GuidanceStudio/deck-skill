@@ -152,13 +152,25 @@ fi
 # substitution; idempotent if rerun because md2 regenerates the HTML from
 # scratch each time.
 #
-# The .md2-columns override forces row layout in print to defeat md2's
-# stylesheet cascade: the @media print rule does not restate flex-direction,
-# while a later @media (max-width: 768px) rule sets flex-direction: column.
-# Headless Chromium's default layout viewport can fall at or below 768px,
-# matching the mobile rule; without !important here, the two rules collide
-# and columns stack vertically in the PDF.
-PAGE_CSS="<style>@page { size: ${PAPER} ${ORIENTATION}; margin: 12mm; } @media print { .md2-columns { flex-direction: row !important; gap: 20px; } }</style>"
+# Two defensive overrides land here, both compensating for md2 mobile rules
+# that lacked a `screen and` qualifier and therefore leaked into print:
+#
+#   1. .md2-columns — without flex-direction: row !important the headless
+#      Chromium print viewport (≤768px on some Chromium versions) matches
+#      md2's mobile rule that sets flex-direction: column, and columns
+#      stack vertically in the PDF (M16).
+#
+#   2. .slide table — without these overrides md2's mobile rule sets
+#      display: block, overflow-x: auto, white-space: nowrap on tables,
+#      so wide tables render in print with a visible horizontal scrollbar
+#      and the rightmost content clipped (M17). The override restores the
+#      default screen-mode table behaviour (display: table, content wraps,
+#      sized to fit) in print.
+#
+# md2 ≥ 0.2.0 fixes both upstream by scoping the mobile media queries to
+# `screen and`; these overrides are kept as a defensive layer for users
+# on older md2 builds.
+PAGE_CSS="<style>@page { size: ${PAPER} ${ORIENTATION}; margin: 12mm; } @media print { .md2-columns { flex-direction: row !important; gap: 20px; } .slide table { display: table !important; overflow-x: visible !important; white-space: normal !important; width: auto !important; max-width: 100% !important; margin: 30px auto !important; } }</style>"
 # Use a non-/ delimiter to avoid escaping the / in </head>
 sed -i "s|</head>|${PAGE_CSS}</head>|" "$HTML"
 
