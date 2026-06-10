@@ -11,21 +11,36 @@ The skill bakes in:
 
 ## Install
 
-### Local (from this repo)
+The installer is multi-assistant. Run it with no target for an
+interactive menu, or pass `--target`:
 
 ```bash
-bash install.sh
+git clone https://github.com/Ymx1ZQ/deck.git && cd deck
+./install.sh                      # interactive menu
+./install.sh --target claude      # ~/.claude/skills/deck/
+./install.sh --target codex        # ~/.codex/skills/deck/
+./install.sh --target opencode     # ~/.config/opencode/skills/deck/
+./install.sh --target gemini        # ~/.gemini/commands/deck.toml (+ payload)
+./install.sh --target agents        # AGENTS.md pointer for Cursor/Windsurf/Copilot/Aider/Continue
+./install.sh --target all           # claude + codex + opencode
+./install.sh --target manual        # print the folder path; copy it yourself
 ```
 
-Use `--force` to overwrite an existing installation without a prompt.
-
-### Remote (no clone)
+Remote one-liner (no clone; needs `git` + `curl`):
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Ymx1ZQ/deck/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Ymx1ZQ/deck/main/install.sh) --target claude
 ```
 
-Both modes land at `~/.claude/skills/deck/`. Restart Claude Code to pick up the skill.
+`claude`, `codex`, and `opencode` get the `deck/` folder copied verbatim
+— it's the shared [agentskills.io](https://agentskills.io) `SKILL.md`
+standard, so one payload serves all three. `gemini` gets a generated
+TOML command; `agents` writes an [`AGENTS.md`](https://agents.md)
+pointer for the broad tier. Flags: `--force` (overwrite + skip the
+dependency prompt), `--check` (report `OK`/`DRIFT` vs source, per
+`--target`), `--agents-dir DIR`. The installer probes for md2 + a
+browser and warns if missing. Or skip it — `deck/` is self-contained,
+copy it anywhere your tool reads skills.
 
 ## Requirements
 
