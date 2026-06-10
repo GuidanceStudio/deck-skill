@@ -500,7 +500,7 @@ assistant invokes skills); keep the frontmatter (shared standard).
 **Done when:** payload is a self-describing top-level `deck/`, the suite
 is green, and the wording no longer implies Claude-only.
 
-## M19 — Multi-assistant installer
+## M19 — Multi-assistant installer ✅
 
 **Why:** Match code-audit/devplan — install for whichever assistant the
 user runs, plus manual copy, with drift detection.
@@ -518,12 +518,12 @@ remote-clone mode + `DECK_REPO_URL`. `render.sh` stays executable after
 copy.
 
 **Tasks:**
-- [ ] Rewrite `install.sh` with multi-target dispatch + menu + `--check` + SHA stamp
-- [ ] Gemini TOML emitter + AGENTS.md pointer (idempotent) + manual print
-- [ ] Preserve md2/browser dependency probes; keep render.sh +x after copy
-- [ ] Rewrite/extend `tests/test_install.sh` for the multi-target model (per-target install + drift, gemini toml, agents idempotency, manual no-write, render.sh executable, dep-probe present)
-- [ ] README install section rewritten for the `--target` flow
-- [ ] `bash tests/test_all.sh` green
+- [x] Rewrite `install.sh` with multi-target dispatch + menu + `--check` + SHA stamp
+- [x] Gemini TOML emitter + AGENTS.md pointer (idempotent) + manual print
+- [x] Preserve md2/browser dependency probes; keep render.sh +x after copy
+- [x] Rewrite/extend `tests/test_install.sh` for the multi-target model (per-target install + drift, gemini toml, agents idempotency, manual no-write, render.sh executable, dep-probe present)
+- [x] README install section rewritten for the `--target` flow
+- [x] `bash tests/test_all.sh` green
 
 **Done when:** `install.sh --target <x>` installs correctly for
 claude/codex/opencode/gemini/agents/manual, `--check` detects drift per
