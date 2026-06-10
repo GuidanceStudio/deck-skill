@@ -1,7 +1,7 @@
 ---
 name: deck
 description: Generate a business presentation in three staged artifacts — brief, md2-compliant markdown, and rendered HTML/PDF. Use `/deck brief` to capture audience, objective, format, brand, and content; `/deck draft` to turn the brief into a deck following slide patterns, copywriting rules, and print constraints; `/deck render` to produce the HTML and PDF via md2 and headless Chrome. Each stage reads the previous artifact from the current working directory.
-compatibility: Requires md2 (markdown-to-HTML presentation converter) and a Chromium-family browser (chromium, google-chrome, chromium-browser, chrome, brave-browser, or brave) on $PATH; firefox 102+ works as a last-resort fallback. Designed for Claude Code or compatible agents.
+compatibility: Requires md2 (markdown-to-HTML presentation converter) and a Chromium-family browser (chromium, google-chrome, chromium-browser, chrome, brave-browser, or brave) on $PATH; firefox 102+ works as a last-resort fallback. Assistant-neutral — works with any coding assistant that loads skills.
 ---
 
 # Deck — Router

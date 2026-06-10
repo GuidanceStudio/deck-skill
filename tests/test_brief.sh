@@ -5,7 +5,7 @@ set -euo pipefail
 # Run: bash tests/test_brief.sh
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PROMPT="$REPO_ROOT/skill/brief/prompt.md"
+PROMPT="$REPO_ROOT/deck/brief/prompt.md"
 PASS=0
 FAIL=0
 

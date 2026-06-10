@@ -5,7 +5,7 @@ set -euo pipefail
 # Run: bash tests/test_draft.sh
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DRAFT="$REPO_ROOT/skill/draft"
+DRAFT="$REPO_ROOT/deck/draft"
 PASS=0
 FAIL=0
 

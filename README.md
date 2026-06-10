@@ -1,6 +1,8 @@
-# `deck` — Claude Code skill
+# `deck` — presentation skill
 
 Generate a business presentation in three staged artifacts: **brief → draft (md2 markdown) → rendered HTML/PDF**. Each stage reads the previous one, so you can iterate on positioning and narrative before touching the visual output.
+
+Assistant-neutral — the `deck/` folder is the whole skill; install it into Claude Code, Codex, opencode, Gemini CLI, or any tool that reads skills (see [Install](#install)).
 
 The skill bakes in:
 - A **library of slide patterns** (cover, hero stat, two-column compare, quote, process, chart, table, …) with ready-to-paste md2 syntax.
@@ -83,7 +85,7 @@ Run the three subcommands in order, from your project directory:
 ## Repo layout
 
 ```
-skill/                          # copied to ~/.claude/skills/deck/ by install.sh
+deck/                           # the flat skill payload (copied verbatim by install.sh)
 ├── SKILL.md                    # router + language rules
 ├── brief/
 │   └── prompt.md               # interview script

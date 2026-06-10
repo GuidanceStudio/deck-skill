@@ -62,7 +62,7 @@ done
 
 # --- Detect local vs remote mode ---
 
-if [ -d "$SCRIPT_DIR/skill" ]; then
+if [ -d "$SCRIPT_DIR/deck" ]; then
     SRC_ROOT="$SCRIPT_DIR"
 else
     if ! command -v git >/dev/null 2>&1; then
@@ -73,13 +73,13 @@ else
     echo "Cloning deck into temporary directory..."
     git clone --depth 1 --quiet "$REPO_URL" "$CLEANUP_DIR/repo"
     SRC_ROOT="$CLEANUP_DIR/repo"
-    if [ ! -d "$SRC_ROOT/skill" ]; then
-        echo "Error: skill/ directory not found in the cloned repo." >&2
+    if [ ! -d "$SRC_ROOT/deck" ]; then
+        echo "Error: deck/ directory not found in the cloned repo." >&2
         exit 1
     fi
 fi
 
-SRC="$SRC_ROOT/skill"
+SRC="$SRC_ROOT/deck"
 DEST="$HOME/.claude/skills/deck"
 
 # --- Dependency probes (UX layer; not part of the agentskills.io spec) ---
