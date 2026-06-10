@@ -15,6 +15,7 @@ SUITES=(
     "test_brief.sh"
     "test_draft.sh"
     "test_render.sh"
+    "test_render_smoke.sh"
     "test_install.sh"
 )
 

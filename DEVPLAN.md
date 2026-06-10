@@ -529,7 +529,7 @@ copy.
 claude/codex/opencode/gemini/agents/manual, `--check` detects drift per
 target, render.sh stays executable, and the suite is green.
 
-## M20 — Real render smoke (gated on deps)
+## M20 — Real render smoke (gated on deps) ✅
 
 **Why:** Every test is a static grep; the M14–M17 fixes were render-time
 bugs (columns collapsing, table scrollbars, frontmatter-with-comment
@@ -547,10 +547,10 @@ the HTML (`flex-direction: row`, the `.slide table` display override),
 `tests/test_all.sh`.
 
 **Tasks:**
-- [ ] `tests/fixtures/smoke.md` covering the M15/M16/M17 shapes
-- [ ] `tests/test_render_smoke.sh` — gated skip when deps absent; real render + asserts when present
-- [ ] Wire into `tests/test_all.sh`
-- [ ] Runs green locally (with deps) and SKIPs cleanly without
+- [x] `tests/fixtures/smoke.md` covering the M15/M16/M17 shapes
+- [x] `tests/test_render_smoke.sh` — gated skip when deps absent; real render + asserts when present
+- [x] Wire into `tests/test_all.sh`
+- [x] Runs green locally (with deps) and SKIPs cleanly without
 
 **Done when:** with md2 + a browser present, the smoke renders the
 fixture and asserts the print fixes hold; without them it SKIPs with a
