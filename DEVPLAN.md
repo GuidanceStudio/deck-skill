@@ -556,7 +556,7 @@ the HTML (`flex-direction: row`, the `.slide table` display override),
 fixture and asserts the print fixes hold; without them it SKIPs with a
 0 exit.
 
-## M21 — Fix md2 docs-integrity
+## M21 — Fix md2 docs-integrity ✅
 
 **Why:** The md2 install instructions are unfollowable: README clones
 `github.com/<OWNER>/md2.git` (literal placeholder) and
@@ -569,10 +569,10 @@ checkout's `origin`). Note md2 installs via its own `bash install.sh`
 (uv tool install) landing binaries in `~/.local/bin`.
 
 **Tasks:**
-- [ ] README md2 clone URL → `https://github.com/guidance-studio/md2.git`
-- [ ] `deck/draft/md2-cheatsheet.md` link → the real md2 repo URL
-- [ ] Verify no other `<OWNER>`/placeholder URLs remain
-- [ ] Suite green
+- [x] README md2 clone URL → `https://github.com/guidance-studio/md2.git`
+- [x] `deck/draft/md2-cheatsheet.md` link → the real md2 repo URL
+- [x] Verify no other `<OWNER>`/placeholder URLs remain
+- [x] Suite green
 
 **Done when:** a fresh reader can clone and install md2 from the
 documented URL; no placeholder URLs remain.

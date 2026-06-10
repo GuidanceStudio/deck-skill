@@ -50,7 +50,7 @@ The skill orchestrates two external tools. The installer checks both and warns i
 
 ```bash
 # Clone and run the bundled installer
-git clone https://github.com/<OWNER>/md2.git
+git clone https://github.com/guidance-studio/md2.git
 cd md2 && bash install.sh
 ```
 
