@@ -1,0 +1,30 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Best-effort deps for the render smoke. Both are guarded with `|| true`:
+      # if they fail (private repo, network, runner quirk), test_render_smoke.sh
+      # self-gates and SKIPs — the structural/install suites still run.
+      - name: Install chromium (best-effort)
+        run: sudo apt-get update && sudo apt-get install -y chromium-browser || true
+
+      - name: Install md2 (best-effort)
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh || true
+          export PATH="$HOME/.local/bin:$PATH"
+          git clone --depth 1 https://github.com/guidance-studio/md2.git /tmp/md2 || true
+          [ -f /tmp/md2/install.sh ] && (cd /tmp/md2 && bash install.sh) || true
+
+      - name: Run test suite
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          bash tests/test_all.sh

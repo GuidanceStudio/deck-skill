@@ -577,6 +577,32 @@ checkout's `origin`). Note md2 installs via its own `bash install.sh`
 **Done when:** a fresh reader can clone and install md2 from the
 documented URL; no placeholder URLs remain.
 
+## M22 — CI: run the test suite on push ✅
+
+**Why:** code-audit got GitHub Actions in its v0.3; deck's suite only
+runs locally. The 6 structural/install suites need no external deps and
+should guard every push; the render smoke self-gates, so it runs for
+real when md2 + a browser install on the runner and SKIPs cleanly
+otherwise — no false reds.
+
+**Approach:** `.github/workflows/tests.yml` on push-to-main + PR,
+ubuntu-latest. Best-effort install of chromium (apt) and md2 (uv +
+clone guidance-studio/md2 + its installer), each guarded with `|| true`
+so a private-repo / network failure can't red the build — the render
+smoke skips in that case. Then `bash tests/test_all.sh`. README gains a
+one-line CI note.
+
+**Tasks:**
+- [x] `.github/workflows/tests.yml` — checkout, best-effort chromium + md2, run test_all.sh
+- [x] Guard dep installs with `|| true`; export `~/.local/bin` on PATH for md2
+- [x] README: note CI runs the suite on push (render smoke gated on deps)
+- [x] Local `bash tests/test_all.sh` still green; workflow YAML is valid
+
+**Done when:** the workflow runs `tests/test_all.sh` on push; the
+structural/install suites are guarded on every push, and the render
+smoke runs when deps are available, skips otherwise — the build never
+reds on missing md2/browser.
+
 ## Out of scope for v0.3
 
 - Per-assistant behavior divergence (one flat payload).
