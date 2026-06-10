@@ -50,7 +50,7 @@ assert_grep "$INSTALL_SH" '\-\-help' "supports --help flag"
 assert_grep "$INSTALL_SH" '\.claude/skills/deck' "installs to ~/.claude/skills/deck/"
 assert_grep "$INSTALL_SH" 'cp -r' "copies skill files (cp -r)"
 assert_grep "$INSTALL_SH" 'git clone' "supports remote install via git clone"
-assert_grep "$INSTALL_SH" '\bskill\b' "references skill/ source directory"
+assert_grep "$INSTALL_SH" '\bdeck\b' "references deck/ source directory"
 
 # Dependency probes (soft check — UX layer)
 assert_grep_i "$INSTALL_SH" 'md2' "probes md2 dependency"

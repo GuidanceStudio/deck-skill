@@ -456,3 +456,129 @@ The proper upstream fix is to scope the entire `@media (max-width: 768px)` block
 - [x] `bash install.sh --force` — redeployed.
 - [x] Smoke test: re-rendered `<project-dir>/presentation.md`; verified with `pdftoppm` that slide 6 ("Il portfolio climate the telco client…") and slide 9 ("I prossimi 30 giorni") show full tables, no scrollbar, content wraps naturally inside cells, rightmost column fully visible. PDF page count 10 = slide count 10.
 - [ ] Push to `origin/main`.
+
+---
+
+# v0.3 milestones — packaging parity + real render smoke
+
+Apply the same treatment given to the `code-audit` and `devplan` skills
+in this session: flatten-for-manual-copy consistency, de-Claudize, a
+broad multi-assistant installer with `--check`, and close the two real
+gaps the audit lens surfaced — no test actually renders (the M14–M17
+bugs were render-time and grep tests can't see them), and md2's install
+URL is a literal `<OWNER>` placeholder.
+
+Research basis (verified this session): `SKILL.md` is the cross-assistant
+agentskills.io standard — Claude Code, Codex, opencode read the same
+folder verbatim; Gemini uses TOML commands; AGENTS.md covers the
+Cursor/Windsurf/Copilot/Aider/Continue tier.
+
+Order: M18 → M19 → M20 → M21.
+
+## M18 — Flatten consistency + de-Claudize ✅
+
+**Why:** The payload dir is `skill/` — generic, so a manual
+`cp -r skill ~/somewhere` is ambiguous. The other two skills use
+`<skill-name>/` as the payload dir (self-describing). README is titled
+"Claude Code skill" and SKILL.md frames invocation as Claude-only.
+
+**Approach:** `git mv skill deck` so the payload folder names itself.
+Update `install.sh` (`$SCRIPT_DIR/skill` → `deck`; remote-clone
+`$SRC_ROOT/skill` → `deck`), every test's `REPO_ROOT/skill/...` path,
+and the README repo-layout block. De-Claudize wording: README title →
+neutral; SKILL.md `compatibility` and invocation phrased
+assistant-agnostically (slash command / @-mention / however your
+assistant invokes skills); keep the frontmatter (shared standard).
+
+**Tasks:**
+- [x] `git mv skill deck`; chmod-preserve `deck/render/render.sh`
+- [x] Update `install.sh` source paths (local + remote) to `deck/`
+- [x] Update all `tests/*.sh` paths `skill/` → `deck/`
+- [x] De-Claudize README title + SKILL.md invocation wording
+- [x] `bash tests/test_all.sh` green
+
+**Done when:** payload is a self-describing top-level `deck/`, the suite
+is green, and the wording no longer implies Claude-only.
+
+## M19 — Multi-assistant installer
+
+**Why:** Match code-audit/devplan — install for whichever assistant the
+user runs, plus manual copy, with drift detection.
+
+**Approach:** Rewrite `install.sh` on the same design: `--target
+claude|codex|opencode|gemini|agents|manual|all` (interactive menu when
+no target on a TTY; default claude otherwise; keep bare-word
+back-compat). claude/codex/opencode → verbatim copy of `deck/`;
+gemini → `~/.gemini/commands/deck.toml` + payload in `~/.config/deck`;
+agents → idempotent AGENTS.md pointer + payload in `~/.config/deck`;
+manual → print the flat path. Preserve the md2/browser dependency-probe
+UX (run it for the copy/gemini/agents targets, not manual). Add
+`--check` per target and the `.installed-from` SHA stamp. Keep
+remote-clone mode + `DECK_REPO_URL`. `render.sh` stays executable after
+copy.
+
+**Tasks:**
+- [ ] Rewrite `install.sh` with multi-target dispatch + menu + `--check` + SHA stamp
+- [ ] Gemini TOML emitter + AGENTS.md pointer (idempotent) + manual print
+- [ ] Preserve md2/browser dependency probes; keep render.sh +x after copy
+- [ ] Rewrite/extend `tests/test_install.sh` for the multi-target model (per-target install + drift, gemini toml, agents idempotency, manual no-write, render.sh executable, dep-probe present)
+- [ ] README install section rewritten for the `--target` flow
+- [ ] `bash tests/test_all.sh` green
+
+**Done when:** `install.sh --target <x>` installs correctly for
+claude/codex/opencode/gemini/agents/manual, `--check` detects drift per
+target, render.sh stays executable, and the suite is green.
+
+## M20 — Real render smoke (gated on deps)
+
+**Why:** Every test is a static grep; the M14–M17 fixes were render-time
+bugs (columns collapsing, table scrollbars, frontmatter-with-comment
+parsing) a grep cannot catch. A real render of a crafted fixture pins
+them.
+
+**Approach:** Add `tests/fixtures/smoke.md` exercising the regression
+shapes: a leading HTML comment before frontmatter (M15), a `:::columns`
+block (M16), and a wide table (M17). Add `tests/test_render_smoke.sh`:
+if `md2` and a browser are absent → print SKIP and exit 0 (never a false
+red on a bare CI); else run `deck/render/render.sh` on the fixture and
+assert (a) HTML produced, (b) the injected print overrides present in
+the HTML (`flex-direction: row`, the `.slide table` display override),
+(c) PDF produced when a browser is present. Wire it into
+`tests/test_all.sh`.
+
+**Tasks:**
+- [ ] `tests/fixtures/smoke.md` covering the M15/M16/M17 shapes
+- [ ] `tests/test_render_smoke.sh` — gated skip when deps absent; real render + asserts when present
+- [ ] Wire into `tests/test_all.sh`
+- [ ] Runs green locally (with deps) and SKIPs cleanly without
+
+**Done when:** with md2 + a browser present, the smoke renders the
+fixture and asserts the print fixes hold; without them it SKIPs with a
+0 exit.
+
+## M21 — Fix md2 docs-integrity
+
+**Why:** The md2 install instructions are unfollowable: README clones
+`github.com/<OWNER>/md2.git` (literal placeholder) and
+`md2-cheatsheet.md` links a bare `https://github.com/`. md2 is a hard
+dependency of render.
+
+**Approach:** Replace both with the real URL
+`https://github.com/guidance-studio/md2` (verified from the local md2
+checkout's `origin`). Note md2 installs via its own `bash install.sh`
+(uv tool install) landing binaries in `~/.local/bin`.
+
+**Tasks:**
+- [ ] README md2 clone URL → `https://github.com/guidance-studio/md2.git`
+- [ ] `deck/draft/md2-cheatsheet.md` link → the real md2 repo URL
+- [ ] Verify no other `<OWNER>`/placeholder URLs remain
+- [ ] Suite green
+
+**Done when:** a fresh reader can clone and install md2 from the
+documented URL; no placeholder URLs remain.
+
+## Out of scope for v0.3
+
+- Per-assistant behavior divergence (one flat payload).
+- Native non-SKILL.md integrations beyond Gemini TOML + AGENTS.md.
+- Bundling/vendoring md2 or the browser; uninstall; telemetry.

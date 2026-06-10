@@ -5,8 +5,8 @@ set -euo pipefail
 # Run: bash tests/test_render.sh
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RENDER_SH="$REPO_ROOT/skill/render/render.sh"
-PROMPT="$REPO_ROOT/skill/render/prompt.md"
+RENDER_SH="$REPO_ROOT/deck/render/render.sh"
+PROMPT="$REPO_ROOT/deck/render/prompt.md"
 PASS=0
 FAIL=0
 

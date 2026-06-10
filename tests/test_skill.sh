@@ -5,7 +5,7 @@ set -euo pipefail
 # Run: bash tests/test_skill.sh
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SKILL_MD="$REPO_ROOT/skill/SKILL.md"
+SKILL_MD="$REPO_ROOT/deck/SKILL.md"
 PASS=0
 FAIL=0
 
@@ -148,7 +148,7 @@ assert_grep '[Cc]urrent working directory|CWD|cwd' "references CWD for artifacts
 echo ""
 if command -v skills-ref >/dev/null 2>&1; then
     echo "--- agentskills.io validation (skills-ref) ---"
-    if skills-ref validate "$REPO_ROOT/skill" >/dev/null 2>&1; then
+    if skills-ref validate "$REPO_ROOT/deck" >/dev/null 2>&1; then
         echo "  PASS: skills-ref validate skill/"
         PASS=$((PASS + 1))
     else
