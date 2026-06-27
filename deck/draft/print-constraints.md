@@ -73,7 +73,7 @@ When in doubt, follow them. They prefer page-correctness over information densit
 - Promote the content to a hero stat or quote pattern (which intentionally use whitespace for emphasis).
 - Cut the slide entirely if the content is fluff.
 
-**Exception**: section dividers (pattern 2) are intentionally sparse — they're a visual pause, not a content slide. Limit to 2-3 dividers per deck.
+**No title-only slides**: every slide — transitions included — must carry content. Even a section divider (pattern 2) needs at least one line of framing under its title to set up what's coming; a slide with nothing but an H2 is not allowed. Keep dividers to 2-3 per deck.
 
 ---
 

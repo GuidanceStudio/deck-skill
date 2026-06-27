@@ -18,7 +18,7 @@ These rules exist because past runs occasionally drifted — the agent reached f
   bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md"
   ```
 
-  Optional flags: `--no-pdf`, `--landscape`, `--portrait`, `--paper A4`, `--paper letter`. They are documented in `render.sh --help`.
+  Optional flags: `--no-pdf`, `--landscape`, `--portrait`, `--paper A4`, `--paper letter`, `--template NAME`. They are documented in `render.sh --help`.
 
 - Surface the script's `stdout` and `stderr` to the user **verbatim**. Do not paraphrase. Do not silently swallow output. The script is the source of truth — its messages and exit code drive the user-facing report.
 
@@ -70,8 +70,11 @@ With optional flags:
 | Force landscape (override deck comment) | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --landscape`      |
 | Force portrait                          | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --portrait`       |
 | Force paper size                        | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --paper letter`   |
+| Use a custom md2 template               | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --template guidance` |
 
 Orientation and paper size are usually picked up automatically from the `<!-- deck-orientation: ... -->` and `<!-- deck-paper: ... -->` comments at the top of `presentation.md` (written by `/deck draft`). The CLI flags are an override, used only when the user explicitly asks for a different orientation than what the deck declared.
+
+The md2 **template** follows the same precedence: a CLI `--template NAME` flag wins; otherwise `render.sh` reads a `<!-- deck-template: NAME -->` comment from `presentation.md` (emitted by `/deck draft` only when a custom template is wanted); if neither is present, md2 uses its default template. `--template` is supported **by render.sh** — passing it is not improvising. You still call only `render.sh`; never invoke `md2 --template` yourself.
 
 ## Error handling
 

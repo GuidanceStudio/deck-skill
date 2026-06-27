@@ -21,11 +21,13 @@
 #   --landscape         Force landscape orientation (overrides deck-orientation comment).
 #   --portrait          Force portrait orientation (overrides deck-orientation comment).
 #   --paper A4|letter   Force paper size (overrides deck-paper comment).
+#   --template NAME     Use a custom md2 template (overrides deck-template comment).
 #
-# Orientation/paper precedence (highest first):
+# Orientation/paper/template precedence (highest first):
 #   1. CLI flag
-#   2. <!-- deck-orientation: ... --> / <!-- deck-paper: ... --> at the top of input.md
-#   3. defaults: landscape, A4
+#   2. <!-- deck-orientation: ... --> / <!-- deck-paper: ... --> /
+#      <!-- deck-template: ... --> comment in input.md
+#   3. defaults: landscape, A4, (no template — md2's default)
 
 set -euo pipefail
 
@@ -35,9 +37,10 @@ INPUT=""
 NO_PDF=false
 ORIENTATION_OVERRIDE=""
 PAPER_OVERRIDE=""
+TEMPLATE_OVERRIDE=""
 
 if [ $# -eq 0 ]; then
-    echo "Usage: $(basename "$0") <input.md> [--no-pdf] [--landscape|--portrait] [--paper A4|letter]" >&2
+    echo "Usage: $(basename "$0") <input.md> [--no-pdf] [--landscape|--portrait] [--paper A4|letter] [--template NAME]" >&2
     exit 1
 fi
 
@@ -74,8 +77,17 @@ while [ $# -gt 0 ]; do
             esac
             shift
             ;;
+        --template)
+            shift
+            if [ $# -eq 0 ]; then
+                echo "Error: --template requires a value (md2 template name)" >&2
+                exit 1
+            fi
+            TEMPLATE_OVERRIDE="$1"
+            shift
+            ;;
         --help|-h)
-            sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'
+            sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
         *)
@@ -118,7 +130,21 @@ EOF
     exit 2
 fi
 
-md2 "$INPUT_ABS"
+# Resolve template: CLI override → <!-- deck-template: NAME --> comment in
+# source md → none (md2's default template). Must be resolved before md2 runs
+# because it is passed to the md2 invocation itself (unlike orientation/paper,
+# which only affect the post-md2 @page CSS injection below).
+TEMPLATE="$TEMPLATE_OVERRIDE"
+if [ -z "$TEMPLATE" ]; then
+    TEMPLATE="$(grep -m1 -oE 'deck-template:[[:space:]]*[A-Za-z0-9._-]+' "$INPUT_ABS" 2>/dev/null \
+        | sed -E 's/.*:[[:space:]]*//' || true)"
+fi
+
+if [ -n "$TEMPLATE" ]; then
+    md2 --template "$TEMPLATE" "$INPUT_ABS"
+else
+    md2 "$INPUT_ABS"
+fi
 
 if [ ! -f "$HTML" ]; then
     echo "Error: md2 ran but did not produce $HTML" >&2
