@@ -34,12 +34,14 @@ Quarterly progress, milestones missed and hit, plan for Q1.
 
 **When to use**: marking a major transition between parts of the deck (e.g. *"Now: the numbers"* → *"Next: the ask"*). One per major section, max 2-3 per deck.
 
-**Anti-pattern**: don't use a divider every 2-3 slides; it kills momentum.
+**Anti-pattern**: don't use a divider every 2-3 slides; it kills momentum. And never ship a divider as a bare title — a slide with only the H2 and no body is not allowed (see `print-constraints.md` rule 6). Every divider must carry at least one line of subtitle/context under the H2 to frame what's coming.
 
-**md2 syntax** (slide with only an H2, no body):
+**md2 syntax** (H2 + one framing line — never the H2 alone):
 
 ```markdown
 ## The numbers
+
+Where we stand after three quarters, and how big the gap to plan really is.
 ```
 
 ---

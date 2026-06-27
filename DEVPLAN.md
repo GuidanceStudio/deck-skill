@@ -608,3 +608,23 @@ reds on missing md2/browser.
 - Per-assistant behavior divergence (one flat payload).
 - Native non-SKILL.md integrations beyond Gemini TOML + AGENTS.md.
 - Bundling/vendoring md2 or the browser; uninstall; telemetry.
+
+---
+
+# 2026-06-27 — Authoring rules + render template support
+
+Three changes landed together this session:
+
+1. **No title-only slides.** A slide carrying only its `## H2` (a bare section divider / pure transition) is no longer allowed. Every slide — transitions included — must carry at least one line of framing/body under the title.
+   - `deck/draft/slide-patterns.md` — pattern 2 (Section divider) rewritten: example now shows H2 + one framing line; bare-H2 is called out as not allowed.
+   - `deck/draft/print-constraints.md` — rule 6 exception that exempted section dividers removed; replaced with a "no title-only slides" rule (dividers still capped at 2-3 per deck).
+   - `deck/draft/prompt.md` — Step 4 sanity check, Step 5 writing rule, and Step 6 self-check all updated to forbid title-only slides.
+
+2. **Landscape is the explicit default.** Portrait is chosen only when necessary (e.g. a printed report-style leave-behind) or when the user explicitly asks.
+   - `deck/brief/prompt.md` — Step 3 Orientation reworded to make landscape the default-for-almost-everything and portrait the exception.
+   - `deck/draft/prompt.md` — Step 5 orientation comment guidance reinforced accordingly.
+
+3. **`render.sh` supports custom md2 templates.** Resolution precedence: CLI `--template NAME` → `<!-- deck-template: NAME -->` comment in the source md → none (md2's default template). The no-template path is byte-for-byte the previous `md2 "$INPUT_ABS"` call, so existing renders/tests are unaffected.
+   - `deck/render/render.sh` — `--template NAME` flag parsing (value-required, like `--paper`), template resolution before the md2 call, conditional `md2 --template`/`md2` invocation, usage/help comment block + `--help` range updated.
+   - `deck/render/prompt.md` — documents `--template NAME` and the `<!-- deck-template: NAME -->` comment with the CLI → comment → none precedence; keeps the "only render.sh, don't improvise" stance.
+   - `deck/draft/prompt.md` — Step 5 notes that an optional `<!-- deck-template: NAME -->` comment can be emitted at the end of the file alongside the orientation/paper comments.

@@ -79,7 +79,7 @@ For each beat in the outline, choose a slide pattern from `slide-patterns.md`. U
 Sanity checks:
 - Cover (pattern 1) is always slide 1.
 - Closing/CTA (pattern 13) is always the last slide.
-- Section dividers (pattern 2) appear at most 2-3 times, only between major narrative blocks.
+- Section dividers (pattern 2) appear at most 2-3 times, only between major narrative blocks — each must carry at least one line of context under the H2 (never a title-only slide).
 - Hero stats (pattern 3) appear at most 1-2 times, on the strongest numbers.
 
 If two adjacent beats both want the same pattern, consider whether they should merge.
@@ -97,14 +97,23 @@ Apply the rules from the knowledge files as you write:
   <!-- deck-paper: A4 -->
   ```
 
-  These are read by `render.sh` (which greps the source `.md` regardless of position) to inject the right `@page` CSS at PDF time. Placing them at the bottom keeps them out of the cover slide's paragraph (which md2 picks up for the meta description) and out of md2's frontmatter parser. Use the values from the brief's `## Format → Orientation` and `## Format → Paper size` fields. If the brief is silent, default to `landscape` and `A4`.
+  These are read by `render.sh` (which greps the source `.md` regardless of position) to inject the right `@page` CSS at PDF time. Placing them at the bottom keeps them out of the cover slide's paragraph (which md2 picks up for the meta description) and out of md2's frontmatter parser. Use the values from the brief's `## Format → Orientation` and `## Format → Paper size` fields. **Landscape is the default and the right choice for almost every deck**; use `portrait` only when the brief calls for it (necessary — e.g. a printed report-style leave-behind) or the user explicitly asked. If the brief is silent on orientation, default to `landscape`; if silent on paper, default to `A4`.
+
+  Optionally, if the deck needs a custom md2 template, emit a third comment in the same place (at the end of the file):
+
+  ```markdown
+  <!-- deck-template: NAME -->
+  ```
+
+  `render.sh` reads it with the same precedence as orientation/paper (CLI `--template` flag wins, then this comment, then md2's default template). Only emit it when a non-default template is actually wanted; otherwise leave it out.
 - **Cover**: pattern 1, with the title as a punchline (apply `copy-rules.md` rule 10).
 - **Slide titles**: every `## H2` is a takeaway (`copy-rules.md` rule 1). Test each: could it appear unchanged on a different deck? If yes, rewrite.
 - **Bullet density**: max 6 bullets, max ~6 words/bullet for presented decks; up to 10-12 words for leave-behind (`copy-rules.md` rule 6).
 - **Numbers and sources**: every load-bearing number cites its source inline (`copy-rules.md` rule 8).
 - **Chart slides**: at most 1-2 short lines of description alongside the chart. No second chart, no table on the same slide. Pie charts standalone (`print-constraints.md` rules 1-3).
 - **Bar/column ratios**: keep largest:smallest ≤ 10x or split the chart (`print-constraints.md` rule 4).
-- **No empty slides**: ≥ 1/3 of the page filled. Section dividers exempt (`print-constraints.md` rule 6).
+- **No empty slides**: ≥ 1/3 of the page filled (`print-constraints.md` rule 6).
+- **No title-only slides**: every slide must have at least one line of body beyond the H2 — section dividers included. Never a title-only slide (`print-constraints.md` rule 6).
 - **Always H2**: never let a slide fall back to "Slide N" in the sidebar (`print-constraints.md` rule 7).
 
 Do not pre-load all knowledge files; load each one when you reach the corresponding writing task.
@@ -115,6 +124,7 @@ Before reporting completion, run through this checklist:
 
 - [ ] Cover has a punchline title and a 1-line subtitle.
 - [ ] Every slide has a `## H2` that states a takeaway.
+- [ ] No slide is title-only — every slide has body content beyond the H2.
 - [ ] No slide has more than 6 bullets.
 - [ ] Every chart slide has at most 2 short lines of description alongside.
 - [ ] No bar/column chart has a value ratio > 10x.
