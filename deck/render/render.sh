@@ -191,12 +191,17 @@ fi
 #      so wide tables render in print with a visible horizontal scrollbar
 #      and the rightmost content clipped (M17). The override restores the
 #      default screen-mode table behaviour (display: table, content wraps,
-#      sized to fit) in print.
+#      sized to fit) in print. Scoped to :not(.charts-css) — md2 chart
+#      blocks (:::chart bar/column/...) also render as a <table> inside
+#      .slide, and this override's width: auto/max-width: 100% !important
+#      clobbers the sizing Charts.css needs to compute bar/column --size
+#      percentages, collapsing every bar to a sliver regardless of its
+#      value (found 2026-07-05 on a real deck with a :::chart bar block).
 #
 # md2 ≥ 0.2.0 fixes both upstream by scoping the mobile media queries to
 # `screen and`; these overrides are kept as a defensive layer for users
 # on older md2 builds.
-PAGE_CSS="<style>@page { size: ${PAPER} ${ORIENTATION}; margin: 12mm; } @media print { .md2-columns { flex-direction: row !important; gap: 20px; } .slide table { display: table !important; overflow-x: visible !important; white-space: normal !important; width: auto !important; max-width: 100% !important; margin: 30px auto !important; } }</style>"
+PAGE_CSS="<style>@page { size: ${PAPER} ${ORIENTATION}; margin: 12mm; } @media print { .md2-columns { flex-direction: row !important; gap: 20px; } .slide table:not(.charts-css) { display: table !important; overflow-x: visible !important; white-space: normal !important; width: auto !important; max-width: 100% !important; margin: 30px auto !important; } }</style>"
 # Use a non-/ delimiter to avoid escaping the / in </head>
 sed -i "s|</head>|${PAGE_CSS}</head>|" "$HTML"
 

@@ -64,6 +64,7 @@ assert_grep "$RENDER_SH" 'deck-paper' "parses deck-paper HTML comment"
 assert_grep "$RENDER_SH" '@page' "injects @page CSS rule"
 assert_grep "$RENDER_SH" '\.md2-columns.*flex-direction: row !important' "M16: injects print-only .md2-columns row override"
 assert_grep "$RENDER_SH" '\.slide table.*display: table !important' "M17: injects print-only .slide table override against mobile scrollbar leak"
+assert_grep "$RENDER_SH" '\.slide table:not\(\.charts-css\)' "2026-07-05 fix: .slide table override excludes chart tables"
 
 # Executable
 if [ -x "$RENDER_SH" ]; then
@@ -214,6 +215,42 @@ DECK
         fi
     else
         echo "  FAIL: render.sh failed on default deck"
+        FAIL=$((FAIL + 1))
+    fi
+
+    # 2026-07-05: a deck with a :::chart block must not have its chart
+    # table caught by the print .slide table override (which would
+    # clobber Charts.css sizing and collapse bars to slivers).
+    DECK_CHART="$TMPDIR_T/deck-chart.md"
+    cat > "$DECK_CHART" <<'DECK'
++++
+title = "Chart Test"
++++
+
+# Chart Test
+
+---
+
+## A chart slide
+
+:::chart bar
+| Item | Value |
+|------|-------|
+| A    | 10    |
+| B    | 5     |
+:::
+DECK
+    if "$RENDER_SH" "$DECK_CHART" --no-pdf >/dev/null 2>&1; then
+        if grep -qE '<table class="charts-css' "$TMPDIR_T/deck-chart.html" \
+            && grep -qE '\.slide table:not\(\.charts-css\)' "$TMPDIR_T/deck-chart.html"; then
+            echo "  PASS: chart deck renders a charts-css table and the print override excludes it"
+            PASS=$((PASS + 1))
+        else
+            echo "  FAIL: chart deck missing charts-css table or override doesn't exclude it"
+            FAIL=$((FAIL + 1))
+        fi
+    else
+        echo "  FAIL: render.sh failed on chart deck"
         FAIL=$((FAIL + 1))
     fi
 else
