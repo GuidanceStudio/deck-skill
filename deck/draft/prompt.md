@@ -61,7 +61,7 @@ Ask **targeted** follow-up questions only for the gaps. Don't re-run the full in
 
 ### Step 3 — Propose a narrative arc
 
-Choose a framework based on the objective. Present the arc to the user as a **1-line outline** (one bullet per slide, headline-as-punchline) before writing any markdown. Wait for the user's go-ahead or revisions.
+Choose a framework based on the objective. Present the arc to the user as a **1-line outline** (one bullet per slide, each headline written as the sentence that summarises what matters — see `copy-rules.md` rules 1 and 7b) before writing any markdown. Wait for the user's go-ahead or revisions.
 
 | Objective class    | First-choice framework                                          |
 |--------------------|----------------------------------------------------------------|
@@ -107,8 +107,9 @@ Apply the rules from the knowledge files as you write:
   ```
 
   `render.sh` reads it with the same precedence as orientation/paper (CLI `--template` flag wins, then this comment, then md2's default template). Only emit it when a non-default template is actually wanted; otherwise leave it out.
-- **Cover**: pattern 1, with the title as a punchline (apply `copy-rules.md` rule 10).
-- **Slide titles**: every `## H2` is a takeaway (`copy-rules.md` rule 1). Test each: could it appear unchanged on a different deck? If yes, rewrite.
+- **Cover**: pattern 1, with a title that names the subject specifically (apply `copy-rules.md` rule 10).
+- **Slide titles**: every `## H2` is a takeaway stated as a plain declarative sentence (`copy-rules.md` rule 1). Test each twice: could it appear unchanged on a different deck (→ it's a label)? And does a reader learn a fact from it, or only feel confidence (→ it's a slogan)? Rewrite either way.
+- **No rhetorical constructions** anywhere — titles, subtitles, blockquotes, cover lines (`copy-rules.md` rule 7b). No triads, antithesis, chiasmus, fragments for emphasis, aphorisms or wordplay. This is unconditional and does not relax for board audiences.
 - **Bullet density**: max 6 bullets, max ~6 words/bullet for presented decks; up to 10-12 words for leave-behind (`copy-rules.md` rule 6).
 - **Numbers and sources**: every load-bearing number cites its source inline (`copy-rules.md` rule 8).
 - **Chart slides**: at most 1-2 short lines of description alongside the chart. No second chart, no table on the same slide. Pie charts standalone (`print-constraints.md` rules 1-3).
@@ -123,8 +124,9 @@ Do not pre-load all knowledge files; load each one when you reach the correspond
 
 Before reporting completion, run through this checklist:
 
-- [ ] Cover has a punchline title and a 1-line subtitle.
-- [ ] Every slide has a `## H2` that states a takeaway.
+- [ ] Cover names the subject specifically, with a 1-line subtitle stating what the deck is for.
+- [ ] Every slide has a `## H2` that states a takeaway as a plain declarative sentence.
+- [ ] No rhetorical constructions anywhere — triads, antithesis, chiasmus, fragments for emphasis, aphorisms, wordplay (`copy-rules.md` rule 7b). Re-read every chapter/section subtitle specifically: that is where they hide.
 - [ ] No slide is title-only — every slide has body content beyond the H2.
 - [ ] No slide has more than 6 bullets.
 - [ ] Every chart slide has at most 2 short lines of description alongside.

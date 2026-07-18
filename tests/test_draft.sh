@@ -69,6 +69,8 @@ assert_grep "copy-rules.md" 'number|concrete|specific' "numbers > adjectives rul
 assert_grep "copy-rules.md" 'one idea|single idea|one message' "one idea per slide"
 assert_grep "copy-rules.md" '6x6|6.bullets|6.words|word.limit' "word/bullet ceiling rule"
 assert_grep "copy-rules.md" 'banned|avoid|filler|do not|don.t' "banned phrases / filler"
+assert_grep "copy-rules.md" 'triad|chiasmus|antithesis|aphorism' "banned rhetorical constructions (M23)"
+assert_grep "copy-rules.md" 'slogan' "slogan rejected as a headline failure mode (M23)"
 assert_grep "copy-rules.md" 'pyramid|conclusion[- ]first' "pyramid principle / conclusion-first"
 
 # --- md2-cheatsheet.md ---

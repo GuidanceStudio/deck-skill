@@ -6,20 +6,27 @@ When in doubt, cut. When the rule conflicts with the user's explicit request, fo
 
 ---
 
-## 1. Headline = punchline, not topic
+## 1. Headline = the sentence that summarises what matters
 
-The slide's `## H2` must state the **takeaway**, not the **topic**.
+The slide's `## H2` must state the **takeaway** — the thing the audience needs to know — not the **topic label**.
 
-The audience reads the title first; if the title is the conclusion, the body just needs to back it up. If the title is generic, the audience has to read the whole slide to figure out what you're saying.
+The audience reads the title first. If the title carries the conclusion, the body just backs it up. If the title is a generic label, they have to read the whole slide to work out what you're saying.
 
-| Bad headline (topic) | Good headline (punchline) |
-|---|---|
-| "Market data" | "AI market in Italy is growing +50% YoY" |
-| "Q4 results" | "Q4 missed plan by 12%, here's why" |
-| "Competitive analysis" | "Only one competitor has EU-native hosting — and it's us" |
-| "Team" | "Three founders, eight years building AI for SMBs" |
+**There are two ways to get this wrong, and the second is the dangerous one.** A topic label says too little. A slogan says it with rhetoric instead of information — and because it *feels* sharper, it slips past review.
 
-If the headline could appear unchanged on three different decks about three different products, it's too generic. Rewrite.
+| ❌ Topic label | ❌ Slogan | ✅ Informative summary |
+|---|---|---|
+| "Market data" | "The market waits for no one" | "The Italian AI market is growing 50% a year" |
+| "Q4 results" | "Q4: the quarter that got away" | "Q4 came in 12% under plan, driven by churn in enterprise" |
+| "Competitive analysis" | "One competitor stands alone — and it's us" | "We are the only vendor of the four with EU-native hosting" |
+| "Compliance" | "Compliance isn't a document you write later" | "Liability stays with the controller, even when a vendor processes the data" |
+
+The right-hand column is longer than the middle one. That is expected and correct: it carries information rather than emphasis. **Never trade a fact for a cadence.**
+
+Two tests, both of which must pass:
+
+1. **Substitution test** — could this headline appear unchanged on three different decks about three different subjects? If yes, it's a label. Rewrite.
+2. **Information test** — strip the rhetoric and ask what a reader now knows that they didn't before. If the answer is "nothing, but it sounded confident", it's a slogan. Rewrite.
 
 ---
 
@@ -108,6 +115,27 @@ Replace these with the substantive sentence you'd write next.
 
 ---
 
+## 7b. Banned constructions (rhetoric)
+
+Rule 7 bans filler *phrases*. This rule bans **sentence shapes** — the ones that make copy sound like a keynote instead of a professional document. They are seductive precisely because they read as confident, so they survive review unless you look for them by name.
+
+| Construction | What it looks like | Write instead |
+|---|---|---|
+| **Rhetorical triad** | "Seven acts, two hours, one terminal." | "Seven acts over two hours, run from the terminal." |
+| **Antithesis for effect** | "You don't code the tool, you commission it." | "The tool is specified in a prompt rather than written by hand." |
+| **Chiasmus** | "The slides carry the commands; the terminal does the work." | "The commands are printed on the slides and executed in the terminal." |
+| **Fragment for emphasis** | "Live. No screenshots." | "Executed live during the session, with no screenshots." |
+| **Aphorism** | "Approving is not rubber-stamping." | "At this point you add one constraint and let the model decide the rest." |
+| **Wordplay on the subject** | "The expensive way to be right" | "Bulk edits should be batched rather than made cell by cell" |
+
+**The tell:** if a line would work as a slide *title* in a conference talk, or if removing a comma would break its rhythm, it is doing rhetorical work instead of informational work. Rewrite it as a plain declarative sentence.
+
+This applies to every text surface — slide titles, chapter/section subtitles, blockquote takeaways, cover subtitles, closing lines. **Chapter and section subtitles are where it surfaces most**, because a short framing line invites a flourish.
+
+> Standing feedback from the skill's primary user, after a real deck shipped with all six of these: *"niente frasi da fuffaguru magic jargon fuffa. siamo una realtà professionale, non cazzari."* The rule is unconditional — it is **not** relaxed for board or investor audiences.
+
+---
+
 ## 8. Inline source citations
 
 When a number or claim is load-bearing, cite the source on the same slide. Audiences trust numbers with sources; they discount numbers without.
@@ -139,5 +167,6 @@ The cover's H1 should be specific enough that the audience knows the deck's doma
 - Strong: *"Vantio — Innovafondo €280k application"*
 - Weak: *"Project Update"*
 - Weak: *"Q4 Review"* (no project, no team, no quarter dates)
+- Weak: *"Beyond the paperwork"* (a slogan — names a mood, not a subject; see rule 7b)
 
-Pair it with a 1-line subtitle that says what the deck is *for*: *"Approval request for the Modena operating site, 24-month plan."*
+Pair it with a 1-line subtitle that says what the deck is *for*: *"Approval request for the Modena operating site, 24-month plan."* The subtitle is a statement of purpose, not a tagline.
