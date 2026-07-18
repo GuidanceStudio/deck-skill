@@ -628,3 +628,50 @@ Three changes landed together this session:
    - `deck/render/render.sh` — `--template NAME` flag parsing (value-required, like `--paper`), template resolution before the md2 call, conditional `md2 --template`/`md2` invocation, usage/help comment block + `--help` range updated.
    - `deck/render/prompt.md` — documents `--template NAME` and the `<!-- deck-template: NAME -->` comment with the CLI → comment → none precedence; keeps the "only render.sh, don't improvise" stance.
    - `deck/draft/prompt.md` — Step 5 notes that an optional `<!-- deck-template: NAME -->` comment can be emitted at the end of the file alongside the orientation/paper comments.
+
+---
+
+# 2026-07-05 — Fix: print `.slide table` override breaks chart tables
+
+**Bug:** the M17 defensive print override in `render.sh` — added to stop
+long markdown tables from getting a scrollbar/truncated columns in print
+(mobile media query leaking into print, see md2 M70/M17) — targets
+`.slide table` with `!important`:
+
+```css
+.slide table { display: table !important; overflow-x: visible !important;
+  white-space: normal !important; width: auto !important;
+  max-width: 100% !important; margin: 30px auto !important; }
+```
+
+`table.charts-css` (md2's bar/column/pie/line chart markup) is *also* a
+`<table>` inside `.slide`, so this selector catches it too. `width: auto
+!important` / `max-width: 100% !important` override the chart's own
+sizing rules, which Charts.css needs to correctly compute `--size`
+percentages for bars/columns. Result: in print, chart tables collapse
+to a tiny fraction of their intended width — bars render as slivers,
+and data-value text (e.g. "4.3") wraps character-by-character inside
+the collapsed cell instead of fitting on one line.
+
+Confirmed by rendering a real deck (Subaru BEV benchmark) with a
+`:::chart bar` block: with `render.sh`'s injected override in place,
+every bar rendered as a narrow, disproportionate strip regardless of
+its data value. Stripping just that `<style>` block from the generated
+HTML and re-printing to PDF made the bars render correctly (full width,
+correct relative proportions) — isolating the override as the cause.
+
+**Fix:** exclude chart tables from the override — `.slide table:not(.charts-css)`.
+Regular markdown tables (the M17 target) don't carry the `charts-css`
+class, so they're unaffected; chart tables now fall through to their
+own CSS.
+
+**Tasks:**
+- [x] `deck/render/render.sh`: `.slide table` → `.slide table:not(.charts-css)` in the injected print `<style>` block.
+- [x] `tests/test_render.sh`: existing M17 assertion still matches (substring, unaffected by `:not()`); added a behavioral test rendering a deck with a `:::chart bar` block and asserting the injected CSS doesn't apply to `table.charts-css`.
+- [x] Re-rendered the real Subaru deck via `render.sh`, confirmed bars fill available width proportionally in the printed PDF.
+- [x] Full test suite green.
+
+**Done when:** `render.sh`'s print override no longer touches chart
+tables; a deck with both a markdown table and a `:::chart` block prints
+correctly for both.
+
