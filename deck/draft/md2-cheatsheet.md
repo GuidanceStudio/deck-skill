@@ -176,6 +176,26 @@ Right column content (chart, table, image, anything).
 
 ---
 
+## Chapter cover (`:::chapter`)
+
+Turn a whole slide into a full-height "act divider" — vertically centered, left-aligned, one type-step smaller than the cover. Use it to open a major section of a multi-part deck (slide pattern 2b).
+
+```
+:::chapter
+# What you can automate
+Concrete workflows, ranked by effort-to-impact.
+:::
+```
+
+Parsing inside the fence:
+
+- The `# ` **H1** line is the **title** (also the sidebar nav label).
+- Everything **after** the H1 is the **subtitle** (optional, rendered as normal markdown).
+
+Only an explicit `:::chapter` fence triggers a chapter slide — a bare `# ` H1 inside an ordinary slide (the hero-stat pattern) stays a normal heading. Like any slide, the fenced block needs a blank line and `---` before and after it.
+
+---
+
 ## Other supported markdown
 
 - **Bold**: `**text**` → **text**

@@ -46,6 +46,25 @@ Where we stand after three quarters, and how big the gap to plan really is.
 
 ---
 
+## 2b. Chapter cover (act divider)
+
+**When to use**: opening a *major* section or act of a multi-part deck — the heavyweight sibling of the section divider (pattern 2). Gives a long deck clear chapters: "Part 1 — The problem", "Part 2 — The solution", "Part 3 — The ask". One per major act; a deck with 3-4 acts gets 3-4 of these. It renders full-height, vertically centered, left-aligned — clearly distinct from the cover.
+
+**Anti-pattern**: don't overuse. This is a full-page act break, not a per-topic transition. For a lighter transition between two slides *inside* the same act, use the section divider (pattern 2) instead. If a chapter cover appears every few slides it kills pacing. The two coexist: chapter cover = act boundary, section divider = in-act beat.
+
+**md2 syntax** (a `:::chapter` fence wrapping the whole slide — a `# ` H1 title, optional subtitle line(s) *after* it):
+
+```markdown
+:::chapter
+# What you can automate
+Concrete workflows, ranked by effort-to-impact.
+:::
+```
+
+The `# ` H1 is the chapter title (and the sidebar nav label); the line(s) below it are an optional subtitle. Only an explicit `:::chapter` fence triggers this — a bare `# ` H1 inside an ordinary slide (the hero-stat pattern) stays a normal heading.
+
+---
+
 ## 3. Hero stat (big number)
 
 **When to use**: a single number is the headline insight (e.g. "+50% YoY", "€1.8B market"). Maximum 1-2 per deck — they lose impact if overused.
@@ -294,6 +313,7 @@ Architect of the Control Plane. Ex-Instilla.
 |---------------------------------------------|----------------------------|
 | Open the deck                              | 1. Cover                    |
 | Mark a section transition                  | 2. Section divider          |
+| Open a major act / chapter                 | 2b. Chapter cover           |
 | Anchor a key number in memory              | 3. Hero stat                |
 | Three things you must remember             | 4. Bullet list              |
 | Compare today vs tomorrow                  | 5. Two-column compare       |
