@@ -80,6 +80,7 @@ Sanity checks:
 - Cover (pattern 1) is always slide 1.
 - Closing/CTA (pattern 13) is always the last slide.
 - Section dividers (pattern 2) appear at most 2-3 times, only between major narrative blocks — each must carry at least one line of context under the H2 (never a title-only slide).
+- Multi-section decks open each major section/act with a **chapter cover** (pattern 2b, the `:::chapter` fence) — the heavier, full-page act divider — while pattern 2 stays for lighter in-act transitions. One chapter cover per major act; don't overuse them.
 - Hero stats (pattern 3) appear at most 1-2 times, on the strongest numbers.
 
 If two adjacent beats both want the same pattern, consider whether they should merge.
