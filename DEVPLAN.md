@@ -121,7 +121,7 @@ Initial set (v0.1):
 
 ### Copywriting rules (`draft/copy-rules.md`)
 
-- **Headline = punchline**: the slide's `## H2` must state the takeaway, not the topic. *"Mercato IA cresce +50% YoY"* > *"Dati di mercato"*.
+- **Headline = the sentence that summarises what matters**: the slide's `## H2` states the takeaway, not the topic label — and not a slogan. *"Mercato IA cresce +50% YoY"* > *"Dati di mercato"* (label) and > *"Il mercato non aspetta i lenti"* (slogan). See also rule 7b, banned rhetorical constructions.
 - **Pyramid principle**: top of the deck states the conclusion; the rest proves it.
 - **One idea per slide** (test: "if this were the only slide, what would the audience remember?").
 - **Numbers > adjectives**: *"+50% YoY"* > *"crescita esplosiva"*.
@@ -675,3 +675,50 @@ own CSS.
 tables; a deck with both a markdown table and a `:::chart` block prints
 correctly for both.
 
+---
+
+# 2026-07-18 — M23: kill "punchline", the headline rule is producing guru copy
+
+**Reported by Paolo, on a real deck** (Edison training session). The `deck`
+skill drafted an act divider reading *"Sette atti, due ore, un terminale. Le
+slide portano i comandi; il lavoro lo fa il terminale."* — a rhetorical triad
+followed by a chiasmus. His verdict: *"niente frasi da fuffaguru magic jargon
+fuffa. siamo una realtà professionale, non cazzari."*
+
+**Root cause: the skill instructs this.** `copy-rules.md` rule 1 is titled
+"Headline = punchline, not topic". "Punchline" names a *joke's payoff*, so a
+model optimising for it produces wordplay, antithesis, sentence fragments for
+emphasis, and triads. The rule's actual intent — say the conclusion, not the
+label — is correct and stays. Only the word and the register it summons are wrong.
+
+**Scope correction from Paolo:** this is NOT "punchy for boards, plain for
+training". *"neanche davanti al board voglio punchline, voglio una frase che
+sintetizzi le cose importanti da sapere."* So the fix is unconditional — no
+audience-dependent switch, no register toggle.
+
+**The replacement concept:** a headline is **the sentence that summarises what
+matters on the slide**. Three-way distinction to teach, since the failure mode
+is drifting past the target into slogan:
+
+| ❌ Topic label | ❌ Slogan / punchline | ✅ Informative summary |
+|---|---|---|
+| "Dati di mercato" | "Il mercato non aspetta i lenti" | "Il mercato IA italiano cresce del 50% annuo" |
+| "Compliance" | "La compliance non è un documento" | "La responsabilità resta al titolare, anche usando un fornitore" |
+
+**Tasks:**
+- [x] `deck/draft/copy-rules.md` rule 1 — retitle to "Headline = the sentence that summarises what matters"; replace the 2-column bad/good table with the 3-column table above so the slogan column is explicitly rejected; keep the "could this appear unchanged on another deck?" test.
+- [x] `deck/draft/copy-rules.md` — new **banned constructions** subsection alongside rule 7 (which today bans filler *phrases* but permits these): rhetorical triads, antithesis for effect, chiasmus, sentence fragments for emphasis, aphorisms, wordplay on the subject matter.
+- [x] `deck/draft/copy-rules.md` rule 10 — "cover headline test" drops "punchline" phrasing.
+- [x] `deck/draft/prompt.md` ×3 — step 3 ("headline-as-punchline" outline), step 5 (cover as punchline), step 6 checklist item.
+- [x] `deck/draft/slide-patterns.md` — check pattern 1 (cover), 2 (section divider) and 2b (chapter cover) example copy for the same register; chapter subtitles are where it surfaced.
+- [x] `DEVPLAN.md` line ~124 — the "Headline = punchline" summary line.
+- [x] Tests: `tests/test_draft.sh:66` asserts `punchline|takeaway|conclusion` — an alternation, so it stays green on "takeaway". Add an assertion that the banned-constructions rule exists, so this can't silently regress.
+- [x] `./install.sh --force`, then re-run the full suite.
+
+**⚠️ Precondition:** the dev tree already carries uncommitted WIP not from this
+session (`DEVPLAN.md`, `deck/render/render.sh`, `tests/test_render.sh` — the
+chart-table print fix). Commit or stash that first so M23 lands as its own diff.
+
+**Done when:** no file in the skill instructs "punchline"; the rule teaches the
+three-way distinction; banned constructions are listed explicitly; suite green
+and deployed.

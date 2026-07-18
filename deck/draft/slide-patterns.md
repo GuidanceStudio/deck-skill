@@ -23,7 +23,7 @@ lang = "en"
 
 # Project Aurora — Q4 Review
 
-Quarterly progress, milestones missed and hit, plan for Q1.
+Progress against the Q4 plan, the two milestones that slipped, and the Q1 schedule.
 
 **Audience:** Board · **Date:** 2026-04-29
 ```
@@ -39,10 +39,12 @@ Quarterly progress, milestones missed and hit, plan for Q1.
 **md2 syntax** (H2 + one framing line — never the H2 alone):
 
 ```markdown
-## The numbers
+## Revenue after three quarters is 12% below plan
 
-Where we stand after three quarters, and how big the gap to plan really is.
+The gap, where it came from, and what closing it in Q4 would require.
 ```
+
+The H2 still states a takeaway — a divider is not an exemption from rule 1. The framing line says what is coming, in plain terms; it is not a teaser (see `copy-rules.md` rule 7b).
 
 ---
 
@@ -62,6 +64,8 @@ Concrete workflows, ranked by effort-to-impact.
 ```
 
 The `# ` H1 is the chapter title (and the sidebar nav label); the line(s) below it are an optional subtitle. Only an explicit `:::chapter` fence triggers this — a bare `# ` H1 inside an ordinary slide (the hero-stat pattern) stays a normal heading.
+
+> ⚠️ **The subtitle is where rhetorical copy creeps in.** A short framing line under a big title invites a flourish, and the result reads as a keynote slogan rather than a document. Write it as a plain statement of what the act contains: *"Come è stato prodotto questo materiale, e l'indice delle due ore"* — **not** *"Sette atti, due ore, un terminale."* See `copy-rules.md` rule 7b.
 
 ---
 
