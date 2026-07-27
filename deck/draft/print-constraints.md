@@ -95,7 +95,7 @@ When in doubt, follow them. They prefer page-correctness over information densit
 
 **Fixes when violated**:
 - Compress the intro to one line; drop the closing blockquote.
-- Cut bullet text or count down to ≤ 4 per column.
+- Cut the bullet **count** down to ≤ 4 per column. **Remove whole bullets, do not shorten them** — see `copy-rules.md` §0 procedure (c): compression takes out information first and cadence last, so a shortened bullet keeps its shape and loses its content.
 - If both columns are heavy, split into two slides (one per column) and use a section divider above.
 - Verify after rendering: PDF page count must equal slide count (cover + N H2 slides). Mismatch ⇒ at least one slide overflowed.
 
@@ -106,7 +106,7 @@ When in doubt, follow them. They prefer page-correctness over information densit
 After generating `presentation.md`, the `/deck render` step produces both an HTML and a PDF. Open the PDF (not the HTML) and check for:
 
 - Empty bottom halves of pages (rule 6) → compact or merge.
-- Charts on lonely pages without their slide title above them (rules 1-3) → reduce text alongside.
+- Charts on lonely pages without their slide title above them (rules 1-3) → **remove** text alongside (a whole sentence or bullet), rather than rewriting it shorter.
 - Truncated chart labels, especially on small bars (rule 4) → split or drop the smallest values.
 - Sidebar / nav showing "Slide N" entries (rule 7) → add missing H2s.
 
