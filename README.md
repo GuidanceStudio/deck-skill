@@ -44,35 +44,46 @@ copy it anywhere your tool reads skills.
 
 ## Requirements
 
-The skill orchestrates two external tools. The installer checks both and warns if missing.
+The skill orchestrates two external tools — a markdown converter and a browser. The installer checks both
+and warns if missing. Everything here is bash, so on Windows that is the first thing to sort out.
 
-### md2 — markdown → HTML presentation converter
+| What | Why | Linux | macOS | Windows |
+|---|---|---|---|---|
+| **bash** | `install.sh`, `render.sh` | native | native | **WSL2** (recommended — then follow the Linux column inside it) or **Git Bash** |
+| **uv** | installs md2 | `curl -LsSf https://astral.sh/uv/install.sh \| sh` | same | `powershell -c "irm https://astral.sh/uv/install.ps1 \| iex"` |
+| **md2** | markdown → HTML | `uv tool install md2-presenter` | same | same |
+| **a browser** | HTML → PDF | `sudo apt install chromium-browser` | Chrome or Brave | **Edge is already there**; inside WSL2, `sudo apt install chromium-browser` |
+
+### md2
+
+`md2-presenter` is on **PyPI** as a pure-Python wheel (Python ≥ 3.9), so one command installs it on all
+three systems with no account and no clone:
 
 ```bash
-# Clone and run the bundled installer
-git clone https://github.com/guidance-studio/md2.git
-cd md2 && bash install.sh
+uv tool install md2-presenter
 ```
 
-This puts `md2` in `~/.local/bin/`. Make sure that's on your `$PATH`:
+`uv` puts the executable on your `PATH` itself. To work *on* md2 rather than just use it, clone
+`github.com/guidance-studio/md2` and run its `install.sh`, which does `uv tool install .` from source.
 
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-```
+**The wheel ships one template, `default`.** Brand templates are separate — they install into
+`~/.md2/templates/` and are selected with `<!-- deck-template: NAME -->` or `--template NAME`. The Forest
+Valley one lives at `fv-institute/md2-template-forestvalley` (private); Guidance Studio's is in
+`gitlab.com/guidance-studio/templates/md2`. **md2 fails loudly on a template it cannot find**, so a
+missing brand template is an error, not a silent fallback.
+
+Brand templates load their fonts from Google Fonts **at render time**. An offline machine renders with
+fallback system fonts.
 
 ### Browser for HTML → PDF
 
-The render script auto-detects, in this order: `chromium`, `google-chrome`, `chromium-browser`, `chrome`, `brave-browser`, `brave`, `firefox` (102+).
+The render script auto-detects, in this order: `chromium`, `google-chrome`, `chromium-browser`, `chrome`,
+`brave-browser`, `brave`, `msedge`, `msedge.exe`, `firefox` (102+).
 
-Chromium-family is preferred (higher CSS fidelity in print). Brave is a chromium derivative and produces identical output. Firefox is a last-resort fallback — it works, but on Linux snap installs `firefox --headless --print-to-pdf` can hang for several minutes; install any chromium-family browser to avoid that path.
-
-- **Linux**: `sudo apt install chromium-browser` — or distro equivalent.
-- **macOS**: install Google Chrome from [chrome.google.com](https://chrome.google.com), or [Brave](https://brave.com).
-- **Already have Chrome or Brave installed?** No action needed.
-
-If no supported browser is available, you can still use `/deck render --no-pdf` to generate the HTML only.
-
-The script prints which browser it picked (e.g. `Using: brave-browser (chromium)`) so you can tell at a glance which path it took, and warns explicitly when it falls back to firefox.
+Chromium-family is preferred (higher CSS fidelity in print). Brave and **Edge** are chromium derivatives
+and produce identical output — which is why nothing extra needs installing on Windows. Firefox is a
+last-resort fallback: it works, but on Linux snap installs `firefox --headless --print-to-pdf` can hang
+for several minutes, so install any chromium-family browser to avoid that path.
 
 ## Usage
 

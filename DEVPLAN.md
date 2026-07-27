@@ -840,3 +840,110 @@ stage against a deck written under them**, rather than building both at once and
 worked. The argument for the stage is not withdrawn — `deck` runs `brief` → `draft` → `render` and has **no
 reader that is not the author**, where fv-scout's §4a already spawns a fresh blocking one and needed only a
 question added to it (fv-scout M95 T3). If the procedures do not hold here, there is nothing downstream.
+
+---
+
+## M24 — The install instructions describe the one path that cannot work on Windows — ✅ DONE (built + deployed 2026-07-28, 51 tests green)
+
+**Trigger.** The team runs Windows and macOS; the operator asked how they install md2 and playwright.
+Answering it turned up four things, and two of them are code.
+
+**Verified before writing this, because the question's premise was wrong in one place: md2 does not use
+playwright.** `grep` over the whole md2 checkout outside `node_modules` — `*.py`, `*.js`, `*.sh`,
+`Makefile`, `*.toml`, `*.md` — returns **zero** references. Its Python dependencies are `markdown`,
+`bleach`, `tinycss2`, `jinja2`: pure Python, nothing compiled. The `playwright` line in md2's
+`package.json` is unused by the shipped CLI, which converts **markdown → HTML only**. The PDF is produced
+by `render/render.sh` shelling out to a system Chromium. **Playwright is a real requirement elsewhere** —
+patchright's chromium for the LinkedIn MCP — but that belongs to fv-scout's LinkedIn channel and has
+nothing to do with this skill.
+
+**The findings.**
+
+1. **bash is the actual Windows prerequisite, and it is documented nowhere.** `install.sh` and
+   `render/render.sh` are both `#!/usr/bin/env bash`. Native Windows has no bash, so the team needs
+   **WSL2 or Git Bash** before anything else in this README applies. The Requirements section names Linux
+   and macOS and stops.
+2. **The documented md2 install is the one that cannot work there.** README says
+   `git clone … && cd md2 && bash install.sh`. That installer's real work is one line — `uv tool install .`
+   — and **`uv tool install git+ssh://git@github.com/GuidanceStudio/md2.git` does the same job in one
+   command, on Windows PowerShell and macOS alike**, with no clone and no bash.
+3. **md2 is a private repo and is not on PyPI.** Anyone installing it needs GitHub access to
+   `GuidanceStudio/md2` (SSH key, or HTTPS with a token). The README does not say so, so a teammate
+   without access gets an authentication failure rather than an explanation.
+4. **Edge is chromium, ships on every Windows machine, and `render.sh` does not detect it.** The probe
+   loop is `for cmd in chromium google-chrome chromium-browser chrome brave-browser brave`. A Windows user
+   whose only chromium-family browser is Edge is told no browser was found. (Under WSL the Windows Edge
+   binary is reachable as `msedge.exe`; under Git Bash it is `msedge`.)
+
+**CORRECTION (2026-07-28, operator prompt: *"controlla perché md2 forse è stato pubblicato"*). The
+private-repo premise above is WRONG and the finding is better than it.** `md2-presenter` **is on PyPI**
+at 0.2.1 — the same version as the local checkout, same four dependencies — shipped as a **pure-Python
+wheel** (`md2_presenter-0.2.1-py3-none-any.whl`, `requires_python >=3.9`). Verified functionally, not just
+by registry lookup: installed into a clean venv from PyPI and rendered a real markdown file to HTML. So
+**`uv tool install md2-presenter` works on Windows, macOS and Linux with no GitHub access and no clone**,
+and every task below that assumed otherwise is simplified.
+
+**The access requirement moved one level down, and this is what the team actually cannot get.** The PyPI
+wheel ships **only the `default` template**. The **`forestvalley`** template — the FV house brand, which
+`fv-scout/deck/render.sh` requires by name — is not in it. It lives in a **separate private GitLab repo**,
+`git@gitlab.com:guidance-studio/templates/md2.git`, whose own `install.sh` copies templates into
+`~/.md2/templates/` and palettes into `~/.md2/palettes/`. The operator's ruling — *leave it private,
+document the requirement* — therefore applies to **that** repo rather than to md2.
+
+**And a defect surfaced while checking it.** `fv-scout/deck/render.sh` prints a **WARNING and renders
+anyway** when `~/.md2/templates/forestvalley` is absent, producing a client deck on md2's generic default
+theme. A teammate who installs md2 from PyPI and misses the template repo ships an unbranded deck with
+nothing stopping them. In a skill built on evidence-or-block this is the one place that degrades silently.
+
+**Operator ruling (2026-07-28):** *"documentazione per linux, mac e windows. così che indipendentemente
+dalla piattaforma, sai cosa fare."* — so the table covers **three** operating systems, not two plus a note.
+Edge detection stays in scope for one reason: Windows is documented with **WSL2 as the primary path** (bash
+and a real chromium, no code change needed) **and Git Bash as the lighter alternative**, and on that
+alternative the only chromium-family browser present is Edge. Documenting a path the script cannot complete
+would be worse than not offering it. **md2 stays private and not on PyPI** — the requirement is documented
+so the authentication failure is legible, per the same ruling.
+
+### Tasks
+
+- [x] **T1 — `render.sh`: add Edge to the chromium probe**, after the existing entries so nothing changes
+      on a machine that already resolves: `msedge`, then `msedge.exe`. Same `--headless --print-to-pdf`
+      contract; Edge is chromium and needs no special-casing beyond the name.
+- [x] **T2 — README Requirements gains a per-OS table**, replacing the Linux/macOS prose: what is needed
+      (bash · uv · md2 · a chromium browser), and the concrete command per OS. **Windows: WSL2 recommended,
+      Git Bash as the lighter path**, and Edge accepted so nothing extra is installed for the PDF step.
+- [x] **T3 — `uv tool install md2-presenter` is the install, on all three OSes.** One line, from PyPI, no
+      clone, no bash, no account. Keep clone + `bash install.sh` only as the from-source path for people
+      working ON md2. **Add a templates note:** the wheel ships `default` only; the house templates
+      (`forestvalley`, `guidance`) come from `git@gitlab.com:guidance-studio/templates/md2.git` and its
+      `install.sh`, which populates `~/.md2/templates/` and `~/.md2/palettes/`. That repo is **private** —
+      state it, so the failure is legible.
+**Resolved by the correction above:** md2 needed no internal index — it is already on PyPI. What remains
+private is the **template** repo, and the operator's ruling stands: leave it private, document the requirement.
+
+- [x] **T4 — the test suite holds the section to three operating systems.** `tests/test_install.sh` gains
+      seven assertions: Linux / macOS / Windows each named, the bash route (WSL2 or Git Bash) named, the
+      PyPI package name present, Edge named — **and one that greps `render.sh` itself for `msedge`**, so the
+      README cannot advertise a browser the script does not probe for. The suite already asserted that
+      Requirements mentions md2 and a browser; it would have caught this omission had it known to look for a
+      third OS. (Restored here after the task-list rewrite above dropped the entry — the work shipped.)
+
+### M24 close-out (2026-07-28)
+
+**Shipped:** Requirements is now a **three-OS table** (bash · uv · md2 · a browser), `uv tool install
+md2-presenter` is the documented install, `render.sh` probes `msedge` / `msedge.exe`, and seven assertions
+in `test_install.sh` hold the section to all three systems — including one that checks `render.sh` really
+probes for Edge, so the README cannot promise what the script does not do.
+
+**The premise this milestone opened with was wrong, and the operator caught it.** It said md2 was a private
+repo needing GitHub access. `md2-presenter` **is on PyPI**, and the check was functional rather than a
+registry lookup: installed into a clean venv and rendered a real file. So the hardest part of the
+cross-platform story did not exist.
+
+**What is genuinely private moved one level down.** The wheel ships `default` only, so a brand template is
+a separate install — and `md2` **errors out** on a template it cannot find, which is the correct behaviour
+and worth stating in the README because a reader who has only ever used the FV path may assume otherwise.
+
+**Edge is the whole Windows browser story and it was one word away.** Every Windows machine already has a
+chromium-family browser; the probe simply did not name it. On the WSL2 path it is moot — `apt install
+chromium-browser` inside WSL — which is why WSL2 is documented as the recommended route and Git Bash as
+the lighter alternative that now also works.
