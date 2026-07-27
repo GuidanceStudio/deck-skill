@@ -6,6 +6,49 @@ When in doubt, cut. When the rule conflicts with the user's explicit request, fo
 
 ---
 
+## 0. Four procedures — do these, rather than avoiding their opposite
+
+Everything from rule 1 down is a prohibition or a test. A prohibition needs you to catch yourself
+mid-sentence, at the moment you write the line, while convinced the line is good — **and that is the
+condition that fails.** Rules 1, 7 and 7b each describe this exact defect; all three were in force when a
+client deck shipped with three lines the reader could not parse.
+
+These four are different in kind: they change the **order of work**, so the empty line is never generated
+and there is nothing to catch.
+
+**(a) Write the takeaway sentence at full length before you build the slide.** Then build the slide to
+carry it. **No sentence, no slide** — if you cannot write what the slide establishes, the slide has no
+takeaway, and it is merged into its neighbour or cut. Writing the outline first and the sentences after
+inverts this: the slot exists, so a line gets written to fill it.
+
+**(b) A slide may end on its table.** Or its chart, or its facts. **There is no mandatory closing line.**
+A layout slot that demands an assertion manufactures one — forty paragraph slots against twenty-five
+things worth asserting is where fifteen invented assertions came from, and *"Condizione · previsione ·
+forensica · ambiente"* was one of them: four abstract nouns, no verb, filling a required slot under a
+table that already said it.
+
+**(c) Over budget removes a fact, a row, or a whole slide. It never shortens a sentence.** Compression
+takes out information first and cadence last, because cadence is what survives rewriting. Measured: the
+offending slide was shortened five times to hit a page count, and every pass cut a clause of content and
+preserved the rhythm. What finally fixed it was removing content outright — narrowing a column, deleting
+a sentence whole. **A page that will not fit is carrying too much, not writing too long.**
+
+**(d) The label test.** Show someone a label and **one** value under it. They must be able to say what
+that value asserts. `Outage? / no` fails: the reader cannot tell whether `no` means the system did not go
+down, or that outages are out of scope, or that the vendor does not report them.
+
+This is the one test the others structurally cannot reach. **The delete test never gets to a label,
+because a label cannot be deleted** — a table needs its headers, so an empty one survives every rule
+above it. Apply it to **column headers and to every first-column row label**: `Fuori servizio` survived on
+slide 3 of the failing deck *after being fixed on slide 2*, because only the header had been looked at.
+
+**When writing in another language, re-derive the label** from "what does a value under this assert" —
+never translate the source deck's label. English `outage?` → Italian `Fuori servizio?` is a faithful
+translation and a worse label, because the English shorthand carried a domain convention the Italian
+does not.
+
+---
+
 ## 1. Headline = the sentence that summarises what matters
 
 The slide's `## H2` must state the **takeaway** — the thing the audience needs to know — not the **topic label**.

@@ -61,7 +61,7 @@ Ask **targeted** follow-up questions only for the gaps. Don't re-run the full in
 
 ### Step 3 — Propose a narrative arc
 
-Choose a framework based on the objective. Present the arc to the user as a **1-line outline** (one bullet per slide, each headline written as the sentence that summarises what matters — see `copy-rules.md` rules 1 and 7b) before writing any markdown. Wait for the user's go-ahead or revisions.
+Choose a framework based on the objective. Present the arc to the user as a **1-line outline** (one bullet per slide, each headline written as the sentence that summarises what matters — see `copy-rules.md` rules 1 and 7b) before writing any markdown. **Write each takeaway at full length here, and apply `copy-rules.md` §0 procedure (a): no sentence, no slide.** A slide whose takeaway you cannot write at this step has none — merge it into its neighbour or cut it now, rather than carrying an empty slot into Step 5 for a line to be invented into. Wait for the user's go-ahead or revisions.
 
 | Objective class    | First-choice framework                                          |
 |--------------------|----------------------------------------------------------------|
@@ -112,6 +112,13 @@ Apply the rules from the knowledge files as you write:
 - **No rhetorical constructions** anywhere — titles, subtitles, blockquotes, cover lines (`copy-rules.md` rule 7b). No triads, antithesis, chiasmus, fragments for emphasis, aphorisms or wordplay. This is unconditional and does not relax for board audiences.
 - **Bullet density**: max 6 bullets, max ~6 words/bullet for presented decks; up to 10-12 words for leave-behind (`copy-rules.md` rule 6).
 - **Numbers and sources**: every load-bearing number cites its source inline (`copy-rules.md` rule 8).
+- **No mandatory closing line** (`copy-rules.md` §0 procedure (b)): a slide may end on its table, its chart
+  or its facts. Do not add a sentence under a table because the shape of the slide seems to want one — that
+  slot is what manufactures an assertion nobody had.
+- **Every label passes the label test** (`copy-rules.md` §0 procedure (d)): for each column header **and each
+  first-column row label**, a reader shown the label and one value must be able to say what that value
+  asserts. When writing in a language other than the source material's, re-derive the label from the values
+  rather than translating it.
 - **Chart slides**: at most 1-2 short lines of description alongside the chart. No second chart, no table on the same slide. Pie charts standalone (`print-constraints.md` rules 1-3).
 - **Bar/column ratios**: keep largest:smallest ≤ 10x or split the chart (`print-constraints.md` rule 4).
 - **No empty slides**: ≥ 1/3 of the page filled (`print-constraints.md` rule 6).
@@ -134,6 +141,12 @@ Before reporting completion, run through this checklist:
 - [ ] Pie chart slides are minimal (H2 + 1 line, no other content).
 - [ ] Every load-bearing number has an inline source.
 - [ ] No banned filler phrases (`copy-rules.md` rule 7).
+- [ ] **Label test** (`copy-rules.md` §0 (d)): every column header and every first-column row label, read
+      with one value under it, says what that value asserts. Check row labels on **every** slide — a label
+      fixed on one slide survives on the next.
+- [ ] **No slide ends on a line that exists because the layout wanted one** (`copy-rules.md` §0 (b)).
+- [ ] **Nothing was made to fit by shortening a sentence** (`copy-rules.md` §0 (c)) — if a slide went over,
+      a fact, a row or the slide came out.
 - [ ] Closing slide states an ask, not just "Thank you".
 - [ ] The deck ends with the file written to CWD as `presentation.md`.
 
@@ -161,7 +174,7 @@ After `/deck render` produces a PDF (Step 8 onward), run a second sanity check o
 pdfinfo presentation.pdf | grep Pages
 ```
 
-Expected page count is `N H2 slides + 1 cover`. If the PDF has more pages than that, at least one slide overflowed onto a second page — almost always a column slide that combined `:::columns` with too much surrounding content (intro paragraph + closing blockquote). See `print-constraints.md` rule 8: lighten the offending slide (compress intro to one line, drop closing blockquote, cut bullet count to ≤ 4 per column) and re-render.
+Expected page count is `N H2 slides + 1 cover`. If the PDF has more pages than that, at least one slide overflowed onto a second page — almost always a column slide that combined `:::columns` with too much surrounding content (intro paragraph + closing blockquote). See `print-constraints.md` rule 8: lighten the offending slide by **removing content, never by shortening a sentence** (§0 procedure (c)) — drop the intro paragraph outright, drop the closing blockquote, cut the bullet **count** to ≤ 4 per column — and re-render.
 
 ### Step 8 — Hand off
 

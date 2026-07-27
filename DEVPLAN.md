@@ -722,3 +722,121 @@ chart-table print fix). Commit or stash that first so M23 lands as its own diff.
 **Done when:** no file in the skill instructs "punchline"; the rule teaches the
 three-way distinction; banned constructions are listed explicitly; suite green
 and deployed.
+
+## M23 — A deck has no revision stage, so every line is written exactly once — ✅ T1 DONE (built + deployed 2026-07-28, 7 test suites green) · T2–T5 HELD on operator ruling
+
+**What happened.** On 2026-07-27 an Italian client deck shipped with three lines the operator could not
+parse. He quoted each back: *"Condizione · previsione · forensica · ambiente."* — four abstract nouns, no
+verb — *"Il costo viene prima della capacità."*, and the column header *"Fuori servizio?"* over yes/no
+cells. The first response to this was a candidate-finder script. His ruling on it: *"non voglio un linter,
+voglio una scrittura migliore"*. **He is right, and the reason is structural: a linter finds, it does not
+write. It sits downstream of the sentence it is trying to fix.**
+
+**The stage that is missing.** The skill runs `brief` → `draft` → `render`. Nothing between draft and render
+reads the copy again. Every line therefore gets written once — under page pressure, by an author who knows
+what they meant and cannot see that the words do not carry it.
+
+**Why a stage and not another rule.** `copy-rules.md` already states this at `:15`, `:29` and `:124`, and the
+global CLAUDE.md states it as HARD. All three were in force and all three were violated in one deck. A rule
+inside a prompt is advice followed *while doing something else* — drafting, fitting, translating. A stage is
+a separate pass with its own input and its own output, and the deck is not finished until it has run. That
+difference is the whole milestone.
+
+**Three mechanisms that produced the empty lines, each measured on the deck that failed.**
+
+1. **A self-imposed paragraph shape.** Roughly forty paragraphs across twenty slides, each opening with a
+   bold assertion followed by explanation. **`slide-patterns.md` does not ask for this — checked before
+   asserting it.** It was the author's own template. With twenty-five things worth asserting and forty slots
+   demanding an assertion, fifteen get invented. *"Condizione · previsione · forensica · ambiente"* was an
+   invented assertion filling the mandatory slot under a table.
+2. **Compression under page pressure removes information before it removes rhythm.** The offending slide was
+   shortened five times to fit twenty pages. Every pass cut a clause of content and preserved the cadence,
+   because cadence is what survives compression. What finally fixed it was removing *content* — narrowing a
+   column, deleting a sentence outright.
+3. **Translated labels.** English `outage?` → Italian `Fuori servizio?` is a faithful translation and a worse
+   label: the English shorthand had a domain convention behind it that the Italian does not.
+
+### Tasks
+
+**Reordered after checking the downstream facts (2026-07-27).** The four authoring procedures were T4, last,
+behind the revise stage. They belong first, because **they are the only part of this milestone that changes
+what gets written** — everything else is catching, and the whole finding is that authors do not catch
+themselves. Two of the four were also stranded inside the revise stage (the label test, the over-budget rule)
+where they only ever run after the line already exists.
+
+- [x] **T1 — `copy-rules.md` gains four PROCEDURES, and they go before the ten existing rules.** All ten
+      current rules are prohibitions or tests; rules 1, 7 and 7b each state this defect, all three were in
+      force, and one deck violated all three. A prohibition needs the author to catch themselves mid-sentence
+      while convinced the line is good. A procedure removes the slot that manufactured the line.
+      **(a)** The takeaway sentence is written **at full length before the slide is built**, and the slide is
+      then built to carry it. **No sentence, no slide.**
+      **(b)** **A slide may end on its table** — or its chart, or its facts. There is no mandatory closing
+      line. A layout slot that demands an assertion manufactures one: forty paragraph slots against
+      twenty-five things worth asserting is where the fifteen invented ones came from.
+      **(c)** **Over budget removes a fact, a row or a slide. It never shortens a sentence.** Compression
+      takes out information first and cadence last — measured on the failing deck across five passes, each of
+      which cut a clause and kept the rhythm. What fixed it was deleting content outright.
+      **(d)** **LABEL TEST — new, and absent from every rule today.** Labels cannot be deleted, so the delete
+      test structurally never reaches them: a table needs its row headers, so an empty one survives every
+      existing rule. Someone shown a label and **one** value must be able to say what that value asserts.
+      Applies to column headers **and every first-column row label** — the scope is empirical, not
+      theoretical: `Fuori servizio` survived on slide 3 after being fixed on slide 2, because only the header
+      had been looked at. A label is **re-derived in the target language** from "what does a value under this
+      assert", never translated from the source deck.
+
+**The revise stage — T2–T5 below — is now a separate decision, and it is the operator's.** The argument for
+it is stronger here than in fv-scout and for one reason: **`deck` has no reader that is not the author.** The
+skill runs `brief` → `draft` → `render`, and nothing between draft and render reads the copy again.
+fv-scout's §4a already spawns a fresh, blocking, post-render agent and only needs one more question put to
+it (fv-scout M95 T3). `deck` has no such hook, so if the four procedures above are not enough, there is
+nothing downstream to catch what they miss. **Recommendation: ship T1 first and judge the stage against a
+deck written under the procedures**, rather than building both at once and never learning which one worked.
+
+- [ ] **T2 — `deck/revise/prompt.md`: a fourth stage, between draft and render** *(operator's call)*. Four
+      checks, in this order: **(a)** per slide, write the one sentence that slide establishes — if it cannot
+      be written the slide has no takeaway and is merged or cut; if it can be written but is not on the
+      slide, it goes on the slide. **(b)** the delete test on every line that is not a fact: delete it, and
+      if nothing is lost leave it deleted. **(c)** the label test per T1(d). **(d)** anything over budget
+      loses a fact, a row or a whole slide — never a shortened sentence.
+- [ ] **T3 — the stage runs after a first render, on the rendered deck** *(operator's call)*. Page-fit
+      pressure has to be visible for (d) to have anything to act on, and the labels have to be read as the
+      audience reads them.
+- [ ] **T4 — wire it** *(operator's call)*. `SKILL.md` routing gains `revise`; `render/prompt.md` states that
+      a deck is not deliverable until the revise pass has run.
+- [ ] **T5 — the isolation clause** *(operator's call)*. Whoever runs the revise stage gets the rendered deck
+      and not the reasoning behind it. An author re-reading their own draft supplies the missing meaning from
+      memory; that is precisely why the operator saw all three lines in seconds and the author saw none.
+
+**Explicitly dropped: the candidate-finder script.** A working prototype exists at
+`~/Documents/software/check_copy-prototype.sh` — it caught all three quoted lines, and produced 23 candidates
+on the real deck of which 4 were genuine. It is parked, not shipped, and this milestone does not depend on
+it. Operator's ruling stands: *"non voglio un linter, voglio una scrittura migliore"*.
+
+### M23 T1 close-out (2026-07-28)
+
+**Shipped:** `copy-rules.md` gains **§0 — four procedures, placed above the ten existing rules** so they are
+read before the prohibitions they replace. Wired where the work happens, not only where the rules live:
+Step 3 now applies *no sentence, no slide* **at the outline**, so a slide whose takeaway cannot be written
+is merged or cut there instead of carrying an empty slot into Step 5 for a line to be invented into; Step 5
+gains the no-mandatory-closing-line rule and the label test; Step 6's self-check gains three boxes,
+including the label test with the instruction to check row labels on **every** slide.
+
+**A conflict found while landing procedure (c), and it was live in two files.** The procedure is *over
+budget removes a fact, a row or a slide — never shortens a sentence.* The overflow instructions then said
+the opposite in three places: `draft/prompt.md` — *"compress intro to one line … cut bullet count"* —
+and `print-constraints.md` rule 8 — *"cut bullet text or count down to ≤ 4 per column"* — plus rule 9's
+*"reduce text alongside"*. **"Cut bullet count" is a fact leaving and is correct; "compress intro to one
+line" and "cut bullet text" are the exact move the procedure forbids**, and they were the standing
+instruction for the most common overflow in the skill. All three rewritten to remove content rather than
+shorten it. Shipping §0 without this would have left the author two instructions and no way to obey both.
+
+**The label test is the item with no equivalent anywhere today, and the reason is structural:** a label
+cannot be deleted — a table needs its headers — so the delete test never reaches it and an empty label
+survives every rule in the file. Its scope is empirical rather than symmetric: column headers **and
+first-column row labels**, because `Fuori servizio` survived on slide 3 after being fixed on slide 2.
+
+**T2–T5 (the `revise` stage) stay HELD on the operator's ruling: ship the procedures first and judge the
+stage against a deck written under them**, rather than building both at once and never learning which one
+worked. The argument for the stage is not withdrawn — `deck` runs `brief` → `draft` → `render` and has **no
+reader that is not the author**, where fv-scout's §4a already spawns a fresh blocking one and needed only a
+question added to it (fv-scout M95 T3). If the procedures do not hold here, there is nothing downstream.
