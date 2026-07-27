@@ -105,10 +105,22 @@ HOME="$H" assert_run 0 "deck" "manual prints payload path" -- --target manual
 assert_nofile "$H/.claude" "manual wrote nothing under HOME"
 cleanup "$H"
 
+RENDER="$REPO_ROOT/deck/render/render.sh"
+[ -f "$RENDER" ] || RENDER="$(cd "$(dirname "$0")/.." && pwd)/deck/render/render.sh"
 echo "=== README Requirements ==="
 assert_grep_i "$README" '^##.*[Rr]equirements' "has Requirements section"
 assert_grep_i "$README" 'md2' "Requirements mentions md2"
 assert_grep_i "$README" 'chromium|google-chrome|chrome|firefox' "Requirements mentions browser"
+# M24: the Requirements section named Linux and macOS and stopped, while every script here is bash --
+# the one thing Windows does not have. Operator ruling: document all three, so whatever platform you
+# are on you know what to do. These assertions are what stop it narrowing back to two.
+assert_grep_i "$README" 'Linux'            "Requirements covers Linux"
+assert_grep_i "$README" 'macOS'            "Requirements covers macOS"
+assert_grep_i "$README" 'Windows'          "Requirements covers Windows"
+assert_grep_i "$README" 'WSL2|Git Bash'    "Windows: names the bash route"
+assert_grep_i "$README" 'md2-presenter'    "Requirements gives the PyPI package name"
+assert_grep_i "$README" 'msedge'           "Requirements names Edge as an accepted browser"
+assert_grep   "$RENDER" 'msedge'           "render.sh actually probes for Edge"
 assert_grep "$README" '/deck brief'  "documents /deck brief"
 assert_grep "$README" '/deck draft'  "documents /deck draft"
 assert_grep "$README" '/deck render' "documents /deck render"

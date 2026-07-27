@@ -7,7 +7,7 @@
 # Dependencies (must be on $PATH):
 #   - md2                  (markdown → HTML)
 #   - chromium / google-chrome / chromium-browser / chrome /
-#     brave-browser / brave / firefox
+#     brave-browser / brave / msedge / msedge.exe / firefox
 #                          (HTML → PDF via headless print-to-pdf;
 #                           Chromium-family is preferred for higher fidelity
 #                           — chromium and chrome detected first, brave as a
@@ -216,7 +216,7 @@ fi
 
 BROWSER=""
 BROWSER_FAMILY=""
-for cmd in chromium google-chrome chromium-browser chrome brave-browser brave; do
+for cmd in chromium google-chrome chromium-browser chrome brave-browser brave msedge msedge.exe; do
     if command -v "$cmd" >/dev/null 2>&1; then
         BROWSER="$cmd"
         BROWSER_FAMILY="chromium"
