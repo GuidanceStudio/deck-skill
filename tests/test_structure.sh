@@ -54,6 +54,7 @@ assert_dir "deck"
 assert_dir "deck/brief"
 assert_dir "deck/draft"
 assert_dir "deck/render"
+assert_dir "deck/revise"
 assert_dir "tests"
 
 # Skill files (existence; content tested by other suites)
@@ -66,6 +67,7 @@ assert_file "deck/draft/md2-cheatsheet.md"
 assert_file "deck/draft/print-constraints.md"
 assert_file "deck/render/prompt.md"
 assert_file "deck/render/render.sh"
+assert_file "deck/revise/prompt.md"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="

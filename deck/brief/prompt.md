@@ -29,6 +29,12 @@ Run the interview in this order. Ask one or two questions at a time, not the who
 
 - Who is in the room? (Roles, seniority, function — board, exec team, prospects, internal team, conference, etc.)
 - What do they already know about the topic? (Cold, warm, expert.)
+- **Which terms does this audience use daily, and which would they have to look up?** Ask it as those two
+  lists, by name. "Expert" does not answer it: someone can run hydro plants for twenty years and never have
+  met `Rietveld` or `ASTM G75`, because those belong to the supplier market you are about to describe, not
+  to their job. Capture the answer verbatim — the draft stage tests every term against this list
+  (`draft/copy-rules.md` §0(e)), and with no list it falls back to the writer's own vocabulary, which is
+  the vocabulary that produced the unreadable deck.
 - What do they care about? (KPIs, risk, status, vision, learning, decision, funding.)
 
 ### 2. Objective
@@ -94,6 +100,8 @@ Write the artifact in this structure. Use markdown headings exactly. Keep entrie
 ## Audience
 - Who: ...
 - What they know: ...
+- Vocabulary they use daily: ...
+- Vocabulary they would have to look up: ...
 - What they care about: ...
 
 ## Objective

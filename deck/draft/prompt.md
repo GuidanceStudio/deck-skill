@@ -146,7 +146,11 @@ Before reporting completion, run through this checklist:
       fixed on one slide survives on the next.
 - [ ] **No slide ends on a line that exists because the layout wanted one** (`copy-rules.md` §0 (b)).
 - [ ] **Nothing was made to fit by shortening a sentence** (`copy-rules.md` §0 (c)) — if a slide went over,
-      a fact, a row or the slide came out.
+      a fact, a row or the slide came out, and **no definition was among what came out**.
+- [ ] **Decode test** (`copy-rules.md` §0 (e)): every method, standard, norm article, material, instrument,
+      unit convention and acronym carries its meaning the first time it appears, tested against the brief's
+      audience vocabulary and not against your own. You have spent this run inside the vertical; the reader
+      has not.
 - [ ] Closing slide states an ask, not just "Thank you".
 - [ ] The deck ends with the file written to CWD as `presentation.md`.
 
@@ -181,7 +185,8 @@ Expected page count is `N H2 slides + 1 cover`. If the PDF has more pages than t
 Report to the user:
 - File written: `<absolute path>/presentation.md`.
 - Slide count.
-- Suggested next step: `/deck render` to produce HTML and PDF.
+- Suggested next step: `/deck render` to produce HTML and PDF, **then `/deck revise`** — the deck is not
+  deliverable until a reader that is not its author has been over it.
 
 ---
 
