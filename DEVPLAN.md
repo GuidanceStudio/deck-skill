@@ -947,3 +947,82 @@ and worth stating in the README because a reader who has only ever used the FV p
 chromium-family browser; the probe simply did not name it. On the WSL2 path it is moot — `apt install
 chromium-browser` inside WSL — which is why WSL2 is documented as the recommended route and Git Bash as
 the lighter alternative that now also works.
+
+---
+
+## M25 — Two extension points, so fv-scout can stop carrying a fork of this renderer — PLANNED (2026-07-28, awaiting approval, NO code yet)
+
+**Trigger.** fv-scout ships its own `deck/render.sh` — 282 lines against this one's 278, **80 lines
+different**. It is not stale drift: it is a **superset**. Measured, the two pipelines are structurally
+identical —
+
+```
+this skill:  Step 1 md→HTML  ·                        Step 1.5 inject PAGE_CSS  ·  Step 2 HTML→PDF
+fv-scout:    Step 1 md→HTML  ·  Step 1.4 images  ·    Step 1.5 inject PAGE_CSS  ·  Step 2 HTML→PDF
+                                 ^^^ inserted            ^^^ substituted
+```
+
+— so fv-scout **inserts one stage and substitutes one string**, and duplicates everything else: argument
+parsing, the md2 call, browser detection, the print-to-pdf invocation. That duplication has now cost
+something three times (M95's copy rules restated instead of referenced · M97's `msedge` patched by hand in
+both files, with a diff run to prove they stayed identical · and `--template`, which exists **only here**
+while fv-scout hardcodes `FV_TEMPLATE="forestvalley"`).
+
+**Two extension points close it, and they are the two differences above.**
+
+1. **`--page-css FILE`** — inject the file's contents in place of the built-in `PAGE_CSS`. fv-scout's is
+   1,470 characters against this skill's ~400: different margins (14/12/16 vs 12mm), `min-height:95vh`,
+   `.logo-chip` styling, body font sizes, image constraints — and **no `@page` footer**, because the
+   `forestvalley` template draws its own via `.slide::before/::after` and injecting a second one
+   **double-printed it**. So this must *replace*, not append. `${PAPER}` and `${ORIENTATION}` are expanded
+   in the file, since those are resolved here from the flags and the deck's comments.
+2. **`--post-html CMD`** — run `CMD "$HTML" "$INPUT_ABS"` between Step 1 and Step 1.5. **A non-zero exit
+   aborts before the PDF.** That is not a convenience: fv-scout's image stage was fail-soft until M72 and a
+   delivered Campaign-01 deck rendered with silent gaps — 114 remote URLs, the first already HTTP 410 — and
+   still reported success. The hook must preserve that contract, so the failure path is part of the spec.
+
+### Tasks
+
+- [ ] **T1 — `--page-css FILE`.** Replaces the built-in block entirely; `${PAPER}` / `${ORIENTATION}`
+      expanded; a missing or unreadable file is a hard error, never a silent fall-back to the default —
+      falling back would render an unstyled deck and report success.
+- [ ] **T2 — `--post-html CMD`.** Runs after the HTML exists and before any CSS injection, invoked as
+      `CMD <html> <input.md>`. Non-zero exit → print the hook's failure, **do not produce the PDF**, exit
+      non-zero. Absent flag → today's behaviour exactly.
+- [ ] **T3 — tests for both, including the failure paths**: `--page-css` on a missing file exits non-zero;
+      a `--post-html` hook that exits 1 leaves **no PDF** on disk. A hook that cannot stop the PDF is the
+      whole M72 defect re-introduced, so that assertion is the point of the pair.
+- [ ] **T4 — document both** in `render/prompt.md` and the README usage section, next to `--template`.
+
+**Why here and not a shared library:** these are two flags on a script that already parses eight. A shared
+bash library between two independently-installed skills is a third thing to keep in sync — which is the
+problem, not the fix.
+
+---
+
+## M26 — The skill moves to `GuidanceStudio/deck-skill` — 🔄 IN PROGRESS (2026-07-28)
+
+**Operator instruction:** *"ma deck è una skill pubblica? se non lo è, spostala in
+https://github.com/GuidanceStudio come deck-skill"*. It **is** public — `Ymx1ZQ/deck`, 0 stars, not a fork —
+so the move is about ownership rather than exposure: it sits on a personal account while the org already
+holds `tech-audit-skill` and `uxui-audit-skill`, both public, both named to the same convention.
+Visibility is **unchanged** (public); nothing about the move is a disclosure.
+
+**The part that breaks if only the transfer happens.** Four references carry the old path, and one of them
+is the remote installer:
+
+- `install.sh:11` — the documented one-liner `bash <(curl -fsSL https://raw.githubusercontent.com/Ymx1ZQ/deck/main/install.sh)`
+- `install.sh:13` — `REPO_URL="${DECK_REPO_URL:-https://github.com/Ymx1ZQ/deck.git}"`
+- `README.md:18` — the clone command
+- `README.md:32` — the same remote one-liner
+
+GitHub redirects a renamed repo, so these would keep working for a while. **That is exactly why they get
+rewritten now:** a redirect makes the wrong URL work until it silently does not, and the one that fails
+first is `raw.githubusercontent.com`, which is the install path a new teammate uses.
+
+### Tasks
+
+- [x] **T1 — transfer `Ymx1ZQ/deck` to `GuidanceStudio` and rename it `deck-skill`**, preserving history.
+- [x] **T2 — rewrite the four URLs** and point the local remote at the new origin.
+- [x] **T3 — verify the remote installer end to end** against the new URL, rather than assuming the
+      rewrite is correct: fetch it and check it is the installer, not a 404 page.
