@@ -101,7 +101,7 @@ Run the three subcommands in order, from your project directory:
 
 - **`/deck brief`** — short structured interview: audience, objective, format (deck vs leave-behind), length budget, brand palette, mandatory vs optional content, language.
 - **`/deck draft`** — reads the brief, walks you through content gathering (key data, claims, sources), proposes a narrative arc (Pyramid / SCQA / 3-act), maps each beat to a slide pattern, then writes the full md2 markdown applying copywriting and print-stamp constraints.
-- **`/deck render`** — runs `md2` for HTML, then headless Chrome / Firefox for PDF. Honors orientation and paper-size choices captured in the brief (default landscape A4); CLI flags `--landscape` / `--portrait` / `--paper A4|letter` override on a one-off basis. Pass `--no-pdf` to produce HTML only.
+- **`/deck render`** — runs `md2` for HTML, then headless Chrome / Firefox for PDF. Honors orientation and paper-size choices captured in the brief (default landscape A4); CLI flags `--landscape` / `--portrait` / `--paper A4|letter` override on a one-off basis. Pass `--no-pdf` to produce HTML only. Two extension points let another skill reuse this renderer instead of forking it: **`--page-css FILE`** replaces the built-in `@page` block (`${PAPER}` / `${ORIENTATION}` expanded; a missing file is a hard error), and **`--post-html CMD`** runs `CMD <html> <input.md>` between the HTML and the PDF, **aborting without a PDF if it exits non-zero**.
 
 ### Language
 

@@ -950,7 +950,7 @@ the lighter alternative that now also works.
 
 ---
 
-## M25 — Two extension points, so fv-scout can stop carrying a fork of this renderer — PLANNED (2026-07-28, awaiting approval, NO code yet)
+## M25 — Two extension points, so fv-scout can stop carrying a fork of this renderer — ✅ DONE (built + deployed 2026-07-28, 50 render tests green)
 
 **Trigger.** fv-scout ships its own `deck/render.sh` — 282 lines against this one's 278, **80 lines
 different**. It is not stale drift: it is a **superset**. Measured, the two pipelines are structurally
@@ -983,22 +983,44 @@ while fv-scout hardcodes `FV_TEMPLATE="forestvalley"`).
 
 ### Tasks
 
-- [ ] **T1 — `--page-css FILE`.** Replaces the built-in block entirely; `${PAPER}` / `${ORIENTATION}`
+- [x] **T1 — `--page-css FILE`.** Replaces the built-in block entirely; `${PAPER}` / `${ORIENTATION}`
       expanded; a missing or unreadable file is a hard error, never a silent fall-back to the default —
       falling back would render an unstyled deck and report success.
-- [ ] **T2 — `--post-html CMD`.** Runs after the HTML exists and before any CSS injection, invoked as
+- [x] **T2 — `--post-html CMD`.** Runs after the HTML exists and before any CSS injection, invoked as
       `CMD <html> <input.md>`. Non-zero exit → print the hook's failure, **do not produce the PDF**, exit
       non-zero. Absent flag → today's behaviour exactly.
-- [ ] **T3 — tests for both, including the failure paths**: `--page-css` on a missing file exits non-zero;
+- [x] **T3 — tests for both, including the failure paths**: `--page-css` on a missing file exits non-zero;
       a `--post-html` hook that exits 1 leaves **no PDF** on disk. A hook that cannot stop the PDF is the
       whole M72 defect re-introduced, so that assertion is the point of the pair.
-- [ ] **T4 — document both** in `render/prompt.md` and the README usage section, next to `--template`.
+- [x] **T4 — document both** in `render/prompt.md` and the README usage section, next to `--template`.
 
 **Why here and not a shared library:** these are two flags on a script that already parses eight. A shared
 bash library between two independently-installed skills is a third thing to keep in sync — which is the
 problem, not the fix.
 
 ---
+
+### M25 close-out (2026-07-28)
+
+**Both flags land where the two pipelines actually differ**, which is why there are two and not five:
+`--post-html CMD` at the stage fv-scout *inserts*, `--page-css FILE` at the string it *substitutes*.
+Everything else in the two scripts was already the same code.
+
+**The failure paths are the specification, and both are tested.** `--page-css` on an unreadable file
+**aborts** — falling back to the built-in block would render a deck in the wrong style and report success,
+which is the exact shape of the bug the flag exists to avoid. A `--post-html` hook that exits non-zero
+**leaves no PDF on disk**, asserted by rendering with a deliberately failing hook and then checking the
+filesystem, because that is fv-scout's M72 contract and a hook that could not stop the PDF would silently
+re-introduce it.
+
+**Arbitrary CSS cannot break the injection.** The built-in path keeps its proven `sed`; `--page-css` inserts
+the file line-by-line with `awk`, so there is no delimiter for a user's CSS to collide with. The default
+path was left untouched on purpose — the change should not be able to regress a rendering that works today.
+
+**One defect found by using the thing.** Adding the flags pushed the header past line 30, and `--help`
+printed a hardcoded `sed -n '2,30p'` — so it silently truncated mid-sentence, dropping the precedence
+section. Caught by reading the `--help` output rather than by a test, and fixed by deriving the range from
+where the block actually ends.
 
 ## M26 — The skill moves to `GuidanceStudio/deck-skill` — ✅ DONE (2026-07-28, transferred, renamed, URLs rewritten, installer verified)
 

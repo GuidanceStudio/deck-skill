@@ -22,6 +22,13 @@
 #   --portrait          Force portrait orientation (overrides deck-orientation comment).
 #   --paper A4|letter   Force paper size (overrides deck-paper comment).
 #   --template NAME     Use a custom md2 template (overrides deck-template comment).
+#   --page-css FILE     Inject FILE's contents INSTEAD OF the built-in @page block.
+#                       ${PAPER} and ${ORIENTATION} are expanded in it. Replaces, never
+#                       appends — a template that draws its own print footer needs the
+#                       default gone, or the footer prints twice. A missing file is a
+#                       hard error, not a fall-back to the default.
+#   --post-html CMD     Run  CMD <html> <input.md>  after the HTML exists and before any
+#                       CSS injection. A NON-ZERO EXIT ABORTS AND NO PDF IS WRITTEN.
 #
 # Orientation/paper/template precedence (highest first):
 #   1. CLI flag
@@ -38,6 +45,8 @@ NO_PDF=false
 ORIENTATION_OVERRIDE=""
 PAPER_OVERRIDE=""
 TEMPLATE_OVERRIDE=""
+PAGE_CSS_FILE=""
+POST_HTML_CMD=""
 
 if [ $# -eq 0 ]; then
     echo "Usage: $(basename "$0") <input.md> [--no-pdf] [--landscape|--portrait] [--paper A4|letter] [--template NAME]" >&2
@@ -86,8 +95,26 @@ while [ $# -gt 0 ]; do
             TEMPLATE_OVERRIDE="$1"
             shift
             ;;
+        --page-css)
+            shift
+            if [ $# -eq 0 ]; then
+                echo "Error: --page-css requires a file" >&2
+                exit 1
+            fi
+            PAGE_CSS_FILE="$1"
+            shift
+            ;;
+        --post-html)
+            shift
+            if [ $# -eq 0 ]; then
+                echo "Error: --post-html requires a command" >&2
+                exit 1
+            fi
+            POST_HTML_CMD="$1"
+            shift
+            ;;
         --help|-h)
-            sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//'
+            sed -n '2,37p' "$0" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
         *)
@@ -109,6 +136,14 @@ fi
 
 if [ ! -f "$INPUT" ]; then
     echo "Error: input file not found: $INPUT" >&2
+    exit 1
+fi
+
+# A --page-css that does not resolve is a HARD error, never a fall-back to the built-in block:
+# falling back would render an unstyled deck and report success, which is the failure mode the
+# flag exists to prevent (a caller passes it precisely because the default is wrong for them).
+if [ -n "$PAGE_CSS_FILE" ] && [ ! -r "$PAGE_CSS_FILE" ]; then
+    echo "Error: --page-css file not found or unreadable: $PAGE_CSS_FILE" >&2
     exit 1
 fi
 
@@ -149,6 +184,21 @@ fi
 if [ ! -f "$HTML" ]; then
     echo "Error: md2 ran but did not produce $HTML" >&2
     exit 2
+fi
+
+# --- Step 1.4: post-HTML hook (optional) ------------------------------------
+# Runs between "the HTML exists" and any CSS injection, as  CMD <html> <input.md>.
+# A NON-ZERO EXIT ABORTS BEFORE THE PDF, and that is the contract, not a convenience:
+# fv-scout's image stage was fail-soft until its M72 and a delivered deck rendered with
+# silent gaps (114 remote URLs, the first already HTTP 410) while reporting success.
+# A hook that cannot stop the PDF would re-introduce exactly that.
+if [ -n "$POST_HTML_CMD" ]; then
+    echo "render.sh: post-html hook -> $POST_HTML_CMD"
+    if ! $POST_HTML_CMD "$HTML" "$INPUT_ABS"; then
+        echo "Error: --post-html hook failed; the HTML was written but is incomplete," >&2
+        echo "       and no PDF was produced. Fix the cause above and re-run." >&2
+        exit 1
+    fi
 fi
 
 # --- Step 1.5: inject @page CSS for orientation/paper -----------------------
@@ -203,7 +253,25 @@ fi
 # on older md2 builds.
 PAGE_CSS="<style>@page { size: ${PAPER} ${ORIENTATION}; margin: 12mm; } @media print { .md2-columns { flex-direction: row !important; gap: 20px; } .slide table:not(.charts-css) { display: table !important; overflow-x: visible !important; white-space: normal !important; width: auto !important; max-width: 100% !important; margin: 30px auto !important; } }</style>"
 # Use a non-/ delimiter to avoid escaping the / in </head>
-sed -i "s|</head>|${PAGE_CSS}</head>|" "$HTML"
+if [ -n "$PAGE_CSS_FILE" ]; then
+    # REPLACES the block above, never appends: a caller passing --page-css needs the default
+    # gone (the forestvalley template draws its own @page footer, and a second one double-prints).
+    # Inserted line-by-line from a file rather than through sed's replacement, so arbitrary CSS
+    # cannot break the escaping -- there is no delimiter to collide with.
+    CSS_TMP="$(mktemp)"
+    PAGE_CSS_CONTENT="$(cat "$PAGE_CSS_FILE")"
+    PAGE_CSS_CONTENT="${PAGE_CSS_CONTENT//\$\{PAPER\}/$PAPER}"
+    PAGE_CSS_CONTENT="${PAGE_CSS_CONTENT//\$\{ORIENTATION\}/$ORIENTATION}"
+    printf '%s\n' "$PAGE_CSS_CONTENT" > "$CSS_TMP"
+    awk -v cssfile="$CSS_TMP" '
+        /<\/head>/ && !done { while ((getline line < cssfile) > 0) print line; done = 1 }
+        { print }
+    ' "$HTML" > "$HTML.tmp" && mv "$HTML.tmp" "$HTML"
+    rm -f "$CSS_TMP"
+    echo "render.sh: page CSS from $PAGE_CSS_FILE (built-in block not injected)"
+else
+    sed -i "s|</head>|${PAGE_CSS}</head>|" "$HTML"
+fi
 
 echo "Generated: $HTML"
 echo "  Orientation: $ORIENTATION · Paper: $PAPER"
