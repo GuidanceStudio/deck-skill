@@ -59,6 +59,11 @@ assert_grep "$RENDER_SH" '--no-pdf|--html-only|skip.pdf' "supports flag to skip 
 assert_grep "$RENDER_SH" '\-\-landscape' "supports --landscape flag"
 assert_grep "$RENDER_SH" '\-\-portrait' "supports --portrait flag"
 assert_grep "$RENDER_SH" '\-\-paper' "supports --paper flag"
+# M25 — the two extension points that let fv-scout stop forking this script.
+assert_grep "$RENDER_SH" '\-\-page-css' "supports --page-css flag"
+assert_grep "$RENDER_SH" '\-\-post-html' "supports --post-html flag"
+assert_grep "$RENDER_SH" 'not found or unreadable' "--page-css: a missing file is a hard error"
+assert_grep "$RENDER_SH" 'no PDF was produced' "--post-html: a failing hook stops the PDF"
 assert_grep "$RENDER_SH" 'deck-orientation' "parses deck-orientation HTML comment"
 assert_grep "$RENDER_SH" 'deck-paper' "parses deck-paper HTML comment"
 assert_grep "$RENDER_SH" '@page' "injects @page CSS rule"
@@ -252,6 +257,74 @@ DECK
     else
         echo "  FAIL: render.sh failed on chart deck"
         FAIL=$((FAIL + 1))
+    fi
+    # --- M25 behavioural: the two extension points, and both failure paths -------
+    DECK_X="$TMPDIR_T/deck-ext.md"
+    cat > "$DECK_X" <<'DECK'
++++
+title = "Extension Test"
++++
+
+# Extension Test
+
+---
+
+## A slide
+
+Body.
+DECK
+
+    # --page-css REPLACES the built-in block (the default 12mm margin must be gone)
+    CSSF="$TMPDIR_T/custom.css"
+    printf '%s\n' '<style>@page { size: ${PAPER} ${ORIENTATION}; margin: 14mm 12mm 16mm 12mm; } /* sentinel-xyzzy */</style>' > "$CSSF"
+    if "$RENDER_SH" "$DECK_X" --no-pdf --page-css "$CSSF" >/dev/null 2>&1; then
+        H="$TMPDIR_T/deck-ext.html"
+        if grep -q 'sentinel-xyzzy' "$H" && grep -qE '@page[^}]*A4[[:space:]]+landscape' "$H" \
+           && ! grep -qE '@page[^}]*margin:[[:space:]]*12mm[[:space:]]*;' "$H"; then
+            echo "  PASS: --page-css replaced the built-in block and expanded \${PAPER}/\${ORIENTATION}"
+            PASS=$((PASS + 1))
+        else
+            echo "  FAIL: --page-css did not replace the built-in block (or did not expand the vars)"
+            FAIL=$((FAIL + 1))
+        fi
+    else
+        echo "  FAIL: render.sh --page-css failed"
+        FAIL=$((FAIL + 1))
+    fi
+
+    # a missing --page-css file is a hard error, never a silent fall-back
+    if "$RENDER_SH" "$DECK_X" --no-pdf --page-css "$TMPDIR_T/nope.css" >/dev/null 2>&1; then
+        echo "  FAIL: --page-css on a missing file succeeded (it must abort)"
+        FAIL=$((FAIL + 1))
+    else
+        echo "  PASS: --page-css on a missing file aborts"
+        PASS=$((PASS + 1))
+    fi
+
+    # --post-html runs, and a FAILING hook must leave no PDF behind (the M72 contract)
+    HOOK_OK="$TMPDIR_T/hook_ok.sh"
+    printf '#!/usr/bin/env bash\nprintf "hooked %%s\\n" "$1" >> "$1.hooklog"\n' > "$HOOK_OK"; chmod +x "$HOOK_OK"
+    if "$RENDER_SH" "$DECK_X" --no-pdf --post-html "$HOOK_OK" >/dev/null 2>&1 \
+       && [ -f "$TMPDIR_T/deck-ext.html.hooklog" ]; then
+        echo "  PASS: --post-html hook ran against the generated HTML"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: --post-html hook did not run"
+        FAIL=$((FAIL + 1))
+    fi
+
+    HOOK_BAD="$TMPDIR_T/hook_bad.sh"
+    printf '#!/usr/bin/env bash\nexit 1\n' > "$HOOK_BAD"; chmod +x "$HOOK_BAD"
+    rm -f "$TMPDIR_T/deck-ext.pdf"
+    if "$RENDER_SH" "$DECK_X" --post-html "$HOOK_BAD" >/dev/null 2>&1; then
+        echo "  FAIL: a failing --post-html hook did not abort the render"
+        FAIL=$((FAIL + 1))
+    elif [ -f "$TMPDIR_T/deck-ext.pdf" ]; then
+        echo "  FAIL: a failing --post-html hook still produced a PDF"
+        FAIL=$((FAIL + 1))
+    else
+        echo "  PASS: a failing --post-html hook aborts and leaves NO PDF"
+        PASS=$((PASS + 1))
     fi
 else
     echo "  SKIP: behavioral @page tests skipped — md2 not installed"

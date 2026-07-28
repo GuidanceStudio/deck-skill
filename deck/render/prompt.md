@@ -18,7 +18,7 @@ These rules exist because past runs occasionally drifted — the agent reached f
   bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md"
   ```
 
-  Optional flags: `--no-pdf`, `--landscape`, `--portrait`, `--paper A4`, `--paper letter`, `--template NAME`. They are documented in `render.sh --help`.
+  Optional flags: `--no-pdf`, `--landscape`, `--portrait`, `--paper A4`, `--paper letter`, `--template NAME`, `--page-css FILE`, `--post-html CMD`. They are documented in `render.sh --help`.
 
 - Surface the script's `stdout` and `stderr` to the user **verbatim**. Do not paraphrase. Do not silently swallow output. The script is the source of truth — its messages and exit code drive the user-facing report.
 
@@ -71,6 +71,8 @@ With optional flags:
 | Force portrait                          | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --portrait`       |
 | Force paper size                        | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --paper letter`   |
 | Use a custom md2 template               | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --template guidance` |
+| Supply the print CSS yourself           | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --page-css brand-print.css` |
+| Post-process the HTML before the PDF    | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --post-html ./fix-images.sh` |
 
 Orientation and paper size are usually picked up automatically from the `<!-- deck-orientation: ... -->` and `<!-- deck-paper: ... -->` comments at the top of `presentation.md` (written by `/deck draft`). The CLI flags are an override, used only when the user explicitly asks for a different orientation than what the deck declared.
 
@@ -95,3 +97,18 @@ On success, report to the user:
 - A short hint: "Open the PDF and visually check for empty slides, truncated chart labels, or charts on lonely pages — if you see any, run `/deck draft` again with the issue noted."
 
 This keeps the loop tight: render → human eyeball → if needed, re-draft.
+
+## `--page-css` and `--post-html` (M25)
+
+Two extension points, so a caller with its own house pipeline does not have to fork this script.
+
+**`--page-css FILE`** injects the file's contents **instead of** the built-in `@page` block —
+`${PAPER}` and `${ORIENTATION}` are expanded in it. It replaces rather than appends, because a template
+that draws its own print footer (as the `forestvalley` one does, via `.slide::before/::after`) prints the
+footer twice if a second `@page` block is also injected. **A missing or unreadable file is a hard error:**
+falling back to the default would render a deck in the wrong style and report success.
+
+**`--post-html CMD`** runs `CMD <html> <input.md>` after the HTML exists and before any CSS injection.
+**A non-zero exit aborts and no PDF is written.** That failure path is the point of the flag, not a
+detail — a hook exists to reject an HTML that is not fit to print, and a hook that could not stop the PDF
+would be decoration.
