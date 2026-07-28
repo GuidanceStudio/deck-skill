@@ -15,7 +15,7 @@ The installer is multi-assistant. Run it with no target for an
 interactive menu, or pass `--target`:
 
 ```bash
-git clone https://github.com/GuidanceStudio/deck-skill.git && cd deck
+git clone https://github.com/GuidanceStudio/deck-skill.git && cd deck-skill
 ./install.sh                      # interactive menu
 ./install.sh --target claude      # ~/.claude/skills/deck/
 ./install.sh --target codex        # ~/.codex/skills/deck/
