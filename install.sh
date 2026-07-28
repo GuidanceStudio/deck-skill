@@ -144,7 +144,7 @@ write_gemini_toml() {
     copy_payload "$NEUTRAL_HOME" || return 0
     mkdir -p "$(dirname "$GEMINI_TOML")"
     cat > "$GEMINI_TOML" <<TOML
-description = "deck — build a business presentation (brief / draft / render)"
+description = "deck — build a business presentation (brief / draft / render / revise)"
 prompt = """
 You are the deck skill. Follow the router and staged prompts in the skill
 payload, reading files on demand as it directs.
@@ -173,7 +173,7 @@ $AGENTS_MARK_START
 
 When asked to build a presentation/deck, act as the deck skill: read
 \`$NEUTRAL_HOME/SKILL.md\` and follow its staged pipeline (brief / draft /
-render). The render stage needs md2 + a Chromium-family browser.
+render / revise). The render stage needs md2 + a Chromium-family browser.
 $AGENTS_MARK_END
 AGENTS
     echo "✅ Added deck pointer → $file (payload in $NEUTRAL_HOME)"

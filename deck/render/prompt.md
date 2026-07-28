@@ -94,9 +94,15 @@ If the script exits 0, both the HTML and (if requested) the PDF were generated s
 
 On success, report to the user:
 - The two file paths produced.
-- A short hint: "Open the PDF and visually check for empty slides, truncated chart labels, or charts on lonely pages — if you see any, run `/deck draft` again with the issue noted."
+- **Whether `/deck revise` has run on this deck yet, and if not, that the deck is not deliverable until it
+  has.** This is the first render of the loop `draft` → `render` → `revise` → `render`: the revision pass
+  needs the PDF, because page-fit compression and printed reading order are only visible once printed.
+- A short hint for the eyeball pass that is worth doing anyway: "Open the PDF and check for empty slides,
+  truncated chart labels, or charts on lonely pages — if you see any, note them for the revise pass."
 
-This keeps the loop tight: render → human eyeball → if needed, re-draft.
+Do not tell the user the deck is finished on the strength of a clean render. The script's exit code proves
+the files were produced, not that the copy can be read. That is `/deck revise`, and the reason it is a
+separate stage rather than a hint here is in `revise/prompt.md`.
 
 ## `--page-css` and `--post-html` (M25)
 

@@ -1,6 +1,6 @@
 # `deck` — presentation skill
 
-Generate a business presentation in three staged artifacts: **brief → draft (md2 markdown) → rendered HTML/PDF**. Each stage reads the previous one, so you can iterate on positioning and narrative before touching the visual output.
+Generate a business presentation in four staged artifacts: **brief → draft (md2 markdown) → rendered HTML/PDF → revision pass**. Each stage reads the previous one, so you can iterate on positioning and narrative before touching the visual output — and the last stage reads the finished deck the way its audience will, which is the one thing its author cannot do.
 
 Assistant-neutral — the `deck/` folder is the whole skill; install it into Claude Code, Codex, opencode, Gemini CLI, or any tool that reads skills (see [Install](#install)).
 
@@ -87,13 +87,17 @@ for several minutes, so install any chromium-family browser to avoid that path.
 
 ## Usage
 
-Run the three subcommands in order, from your project directory:
+Run the subcommands in order, from your project directory:
 
 | Command          | Input (read from CWD)        | Output (written to CWD)                |
 |------------------|------------------------------|----------------------------------------|
 | `/deck brief`    | — (interactive interview)    | `presentation-brief.md`                |
 | `/deck draft`    | `presentation-brief.md`      | `presentation.md` (md2-compliant)      |
 | `/deck render`   | `presentation.md`            | `presentation.html` + `presentation.pdf` |
+| `/deck revise`   | `presentation.pdf` + `presentation.md` | `presentation-revision.md` + a rewritten `presentation.md` |
+
+`revise` runs **after** `render` — page-fit compression is only visible once the deck is printed — and the
+loop closes with a second render: `brief` → `draft` → `render` → `revise` → `render`.
 
 `/deck` without arguments shows the menu.
 
@@ -102,6 +106,8 @@ Run the three subcommands in order, from your project directory:
 - **`/deck brief`** — short structured interview: audience, objective, format (deck vs leave-behind), length budget, brand palette, mandatory vs optional content, language.
 - **`/deck draft`** — reads the brief, walks you through content gathering (key data, claims, sources), proposes a narrative arc (Pyramid / SCQA / 3-act), maps each beat to a slide pattern, then writes the full md2 markdown applying copywriting and print-stamp constraints.
 - **`/deck render`** — runs `md2` for HTML, then headless Chrome / Firefox for PDF. Honors orientation and paper-size choices captured in the brief (default landscape A4); CLI flags `--landscape` / `--portrait` / `--paper A4|letter` override on a one-off basis. Pass `--no-pdf` to produce HTML only. Two extension points let another skill reuse this renderer instead of forking it: **`--page-css FILE`** replaces the built-in `@page` block (`${PAPER}` / `${ORIENTATION}` expanded; a missing file is a hard error), and **`--post-html CMD`** runs `CMD <html> <input.md>` between the HTML and the PDF, **aborting without a PDF if it exits non-zero**.
+
+- **`/deck revise`** — reads the *rendered* deck and runs five checks on it: the takeaway each slide establishes, the delete test on every non-fact line, the label test on column headers and first-column row labels, the decode test (every method, standard, material or acronym defined the first time it appears, judged against the audience's vocabulary and not the writer's), and the page budget. Prefers a **fresh sub-agent** handed the deck and *not* the reasoning behind it: an author re-reading their own draft supplies the missing meaning from memory, which is why this is a separate stage and not a checklist item in `draft`.
 
 ### Language
 
@@ -121,9 +127,11 @@ deck/                           # the flat skill payload (copied verbatim by ins
 │   ├── copy-rules.md           # headline-first, 6x6, parallel bullets
 │   ├── md2-cheatsheet.md       # frontmatter, columns, charts syntax
 │   └── print-constraints.md    # chart ratios, page-break, pie sizing
-└── render/
-    ├── prompt.md               # how to invoke render.sh + handle errors
-    └── render.sh               # md → html → pdf pipeline
+├── render/
+│   ├── prompt.md               # how to invoke render.sh + handle errors
+│   └── render.sh               # md → html → pdf pipeline
+└── revise/
+    └── prompt.md               # the five checks, read as the audience
 
 install.sh                      # local + remote installer
 tests/                          # bash test suite

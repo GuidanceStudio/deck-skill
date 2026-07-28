@@ -124,6 +124,7 @@ assert_grep   "$RENDER" 'msedge'           "render.sh actually probes for Edge"
 assert_grep "$README" '/deck brief'  "documents /deck brief"
 assert_grep "$README" '/deck draft'  "documents /deck draft"
 assert_grep "$README" '/deck render' "documents /deck render"
+assert_grep "$README" '/deck revise' "documents /deck revise"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="

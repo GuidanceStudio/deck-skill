@@ -1,12 +1,12 @@
 ---
 name: deck
-description: Generate a business presentation in three staged artifacts — brief, md2-compliant markdown, rendered HTML/PDF. `/deck brief` captures audience, objective, format, brand and content; `/deck draft` turns the brief into a deck following slide patterns, copywriting and print constraints; `/deck render` produces the HTML and PDF. Each stage reads the previous artifact from the current working directory.
+description: Generate a business presentation in four staged artifacts — brief, md2-compliant markdown, rendered HTML/PDF, revision pass. `/deck brief` captures audience, vocabulary, objective, format, brand and content; `/deck draft` turns the brief into a deck following slide patterns, copywriting and print constraints; `/deck render` produces the HTML and PDF; `/deck revise` reads the rendered deck as the audience would and fixes what the author could not see. Each stage reads the previous artifact from the current working directory.
 compatibility: Requires md2 (markdown-to-HTML presentation converter) and a Chromium-family browser (chromium, google-chrome, chromium-browser, chrome, brave-browser, or brave) on $PATH; firefox 102+ works as a last-resort fallback. Assistant-neutral — works with any coding assistant that loads skills.
 ---
 
 # Deck — Router
 
-This skill builds a business presentation in three stages. Each stage produces a file that feeds the next.
+This skill builds a business presentation in four stages. Each stage produces a file that feeds the next.
 
 ## Prerequisites
 
@@ -26,8 +26,14 @@ All artifacts land in the user's **current working directory** (CWD) with fixed 
 | `/deck brief`   | user interview               | `presentation-brief.md`                       |
 | `/deck draft`   | `presentation-brief.md`      | `presentation.md`                             |
 | `/deck render`  | `presentation.md`            | `presentation.html` and `presentation.pdf`    |
+| `/deck revise`  | `presentation.pdf` + `presentation.md` + the brief's `## Audience` block | `presentation-revision.md`, and `presentation.md` rewritten |
 
 If the required input file is missing from CWD, stop and offer the user two paths: (a) run the previous subcommand first, or (b) paste the content inline. Never invent input silently.
+
+**`revise` runs after `render`, not before it** — page-fit compression is only visible once the deck has
+been printed, and it is one of the things the pass exists to catch. The loop closes with a second render:
+`brief` → `draft` → `render` → `revise` → `render`. **A deck is not deliverable until `revise` has run**;
+see `revise/prompt.md` for why the drafting agent cannot stand in for it.
 
 ## Language rules (apply to every subcommand)
 
@@ -42,10 +48,12 @@ Parse the first argument after `/deck`:
 - `brief` → read `brief/prompt.md` and follow it end-to-end.
 - `draft` → read `draft/prompt.md` and follow it end-to-end. The draft prompt references `draft/slide-patterns.md`, `draft/copy-rules.md`, `draft/md2-cheatsheet.md`, and `draft/print-constraints.md`; load each one lazily, only when the prompt directs you to.
 - `render` → read `render/prompt.md` and follow it end-to-end.
-- **no argument, or an unknown argument** → show this 3-line menu and ask which one to run:
-  - `brief`  — interview about audience, objective, format, brand; write `presentation-brief.md`
+- `revise` → read `revise/prompt.md` and follow it end-to-end.
+- **no argument, or an unknown argument** → show this 4-line menu and ask which one to run:
+  - `brief`  — interview about audience, vocabulary, objective, format, brand; write `presentation-brief.md`
   - `draft`  — turn the brief into a md2-compliant deck; write `presentation.md`
   - `render` — convert the deck to HTML and PDF; write `presentation.html` and `presentation.pdf`
+  - `revise` — read the rendered deck as the audience would; write `presentation-revision.md` and fix `presentation.md`
 
 ## Subcommand isolation
 

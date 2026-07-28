@@ -723,7 +723,7 @@ chart-table print fix). Commit or stash that first so M23 lands as its own diff.
 three-way distinction; banned constructions are listed explicitly; suite green
 and deployed.
 
-## M23 — A deck has no revision stage, so every line is written exactly once — ✅ T1 DONE (built + deployed 2026-07-28, 7 test suites green) · T2–T5 HELD on operator ruling
+## M23 — A deck has no revision stage, so every line is written exactly once — ✅ T1 DONE (built + deployed 2026-07-28, 7 test suites green) · T2–T5 UNHELD and absorbed into M27 (2026-07-28)
 
 **What happened.** On 2026-07-27 an Italian client deck shipped with three lines the operator could not
 parse. He quoted each back: *"Condizione · previsione · forensica · ambiente."* — four abstract nouns, no
@@ -1058,3 +1058,114 @@ than left to the redirect, because the one that fails first is the `raw.githubus
 one-liner and that is what a new teammate runs. Verified by fetching the new URL and checking it serves the
 installer rather than a 404 page. `DEVPLAN.md` keeps the old path in its history entries, which is correct
 — those were true when written.
+
+---
+
+## M27 — every rule asks whether the line says something; none asks whether the reader can decode it — ✅ DONE (built + deployed 2026-07-28, 8 suites green)
+
+**What happened.** On 2026-07-28 the operator read the Italian deck rebuilt for him the previous day and
+could not parse it: *"mi sono rotto i coglioni di frasi fatte ad effetto buttate lì a caso; così come
+'Fermo impianto' senza spiegare cos'è. la presentazione in italiano è una merda. devi farla esplicativa,
+non fuffa."* The line he quoted — *"Ogni riga è una domanda diversa e chi risponde bene a una non copre le
+altre. Prima si sceglie la domanda, poi il fornitore."* — **had been written the day before as the fix for
+a line he could not parse**, minutes after the correction, by an author who had the rule in front of him.
+
+**That is the evidence M23 T2–T5 were held waiting for, and it points the other way.** The hold read: *ship
+the procedures first and judge the stage against a deck written under them.* Judged. The author cannot do
+this, not while trying, not one correction later. T5's isolation clause is the finding: an author re-reading
+their own draft supplies the missing meaning from memory. **T2–T5 are unheld and absorbed into this
+milestone.**
+
+**A defect class §0 does not cover.** The four procedures and fv-scout's §4a check all ask whether a line
+**says** something. `Il Rietveld vuole 3–4 g di solidi` says a great deal: it survives the delete test, it
+is not a label, it passes the information test. It is unreadable to anyone who does not know that Rietveld
+is a computation applied to an X-ray diffraction pattern. The missing question is whether the reader can
+**decode** it. Measured on the failing deck: LIRA, XLPE, PILC, VLF tan delta, partial discharge, TICA,
+CEI 0-16, zero-sequence CT, Mohs, XRD/Rietveld, the Reynolds Cup, ASTM G75, specific speed and high head
+all appeared undefined, in a deck whose reader was the operator himself.
+
+**Why a fresh-agent reader passed it, and would pass it again.** The counter-check is run by an agent that
+knows the domain better than the audience does. An LLM knows what XRD, PILC and Mohs are, so it answers
+"what did this tell me" without difficulty and moves on. **A reviewer's own vocabulary is not the
+audience's**, and unless the audience's is stated, the reviewer substitutes its own. This is the one change
+that has to reach fv-scout as well (M96 there).
+
+**Measured while fixing the deck: page-fit pressure removes definitions first.** Five render passes, five
+overflows, and every one was resolved by deleting an explanation. Procedure (c) already forbids shortening
+a sentence, but it treats all content as equally droppable — and a definition, carrying no number, reads as
+the cheapest line on the slide. It needs to be a protected class, and the term has to leave with its gloss:
+keeping the term and dropping the definition is worse than dropping both.
+
+**Scope note — the failing deck never ran through a command.** It was produced conversationally
+("rifammela in italiano"), so fv-scout's §4a never fired, `check_deck.sh` never ran, and no ledger line was
+owed. `deck` is the skill that owns *someone asked me for a deck*, and it is the path with no reader that
+is not the author. That is why the stage lands here and not only in fv-scout.
+
+### Tasks
+
+- [x] **T1 — `copy-rules.md` §0 gains procedure (e), the decode test.** Every term naming a method, a
+      standard, a norm article, a material, an instrument or a unit convention carries its meaning **in the
+      same sentence or the next**, the first time it appears. The test is read from the audience, not from
+      the author: someone who knows the client's business but not this vertical must be able to restate what
+      the line asserts. It is distinct from the delete test (which a dense jargon line passes — deleting it
+      loses information) and from the label test (which never reaches prose).
+- [x] **T2 — procedure (c) gains a protected class.** Definitions are the last content removed under page
+      pressure, and **a term that cannot afford its definition is removed together with it**. Measured
+      2026-07-28: five overflows, five deleted explanations, because the lines with no numbers in them look
+      cheapest.
+- [x] **T3 — the second-language rule widens from the label to the deck.** §0(d) already says a label is
+      re-derived in the target language and never translated. The measured failure is wider: the whole
+      Italian deck inherited the English deck's terseness, and terseness that a domain-native English reader
+      absorbs is opaque once translated. **A deck delivered in a second language is re-drafted against the
+      facts, not translated**, and it gets its own revise pass.
+- [x] **T4 — `brief/prompt.md` captures the audience's vocabulary.** Item 1 asks *"What do they already know
+      about the topic? (Cold, warm, expert.)"* — three levels, and none of them answers whether the reader
+      knows what Rietveld is. Add: **which terms does this audience use daily, and which would they have to
+      look up?** Write it into the brief template under `## Audience`, because the revise stage needs an
+      authority to check against and cannot invent one.
+- [x] **T5 — `deck/revise/prompt.md`: the fourth stage** *(was M23 T2/T3/T5)*. Five checks: **(a)** per
+      slide, the one sentence that slide establishes — unwritable means merge or cut, written-but-absent
+      means put it on the slide; **(b)** the delete test on every line that is not a fact; **(c)** the label
+      test on column headers and first-column row labels; **(d)** the decode test per T1, against the brief's
+      vocabulary line; **(e)** anything over budget loses a fact, a row or a slide. Runs **on the rendered
+      deck** so page-fit compression is visible, and **whoever runs it gets the deck and not the reasoning
+      behind it**.
+- [x] **T6 — wire it** *(was M23 T4)*. `SKILL.md` routing and the artifact table gain `revise`;
+      `render/prompt.md` states that a deck is not deliverable until the pass has run and stops hinting at
+      a human eyeball as the only check.
+- [x] **T7 — tests.** A `revise` suite in `tests/`, and `test_structure.sh` extended to the new folder.
+
+### M27 close-out (2026-07-28)
+
+**Shipped as a stage, not as a sixth restatement of the rule.** `deck/revise/prompt.md` is the fourth
+subcommand and it runs **after** the first render, because two of its five checks have nothing to act on
+until the deck has been printed: page-fit compression is invisible in the source, and printed reading order
+is what the audience gets. The loop is now `brief` → `draft` → `render` → `revise` → `render`.
+
+**The isolation clause is the load-bearing part, and it is stated twice** — once as a rule of the stage and
+once as a fallback that declares its own weakness. Where the runtime has sub-agents, the five checks go to a
+fresh one handed the deck, the PDF and **only the brief's `## Audience` block**. Where it does not, the
+drafting agent runs them and **says so in the report**, because a self-run pass that finds nothing is not
+evidence the deck is clean. The audience block is not reasoning: it says who reads this and what words they
+have, and nothing about why any card is on any slide.
+
+**Why the audience block had to be invented before the check could exist (T4).** The brief asked *"What do
+they already know? (Cold, warm, expert.)"* — three levels, none of which answers whether the reader knows
+what Rietveld is. Someone can run hydro plants for twenty years and never have met `ASTM G75`, because it
+belongs to the supplier market the deck describes and not to their job. The brief now captures two lists by
+name — terms used daily, terms they would have to look up — and both the draft self-check and the revise
+stage test against them. **Without that list the decode test silently falls back to the writer's own
+vocabulary, which is the vocabulary that produced the unreadable deck.**
+
+**A conflict with (c) that had to be resolved rather than layered.** Procedure (c) says over budget removes
+a fact, a row or a slide. Measured on the repair itself — five render passes, five overflows — **every
+single one was resolved by deleting an explanation**, because a definition carries no number and reads as
+the cheapest line on the slide. (c) now names definitions as the protected class and requires the term to
+leave with its gloss: keeping the jargon and dropping the definition leaves the reader a word they cannot
+decode instead of one fact fewer, which is strictly worse than either.
+
+**What this milestone does not claim.** The stage catches what the author missed; it does not make the
+author write better, and (e) in `copy-rules.md` is the only part of this that changes what gets written.
+The honest expectation is that the procedures reduce the count and the stage catches the remainder — and
+the remainder is not zero, because the deck that triggered this had a rule against its defect in three
+places.

@@ -6,14 +6,14 @@ When in doubt, cut. When the rule conflicts with the user's explicit request, fo
 
 ---
 
-## 0. Four procedures — do these, rather than avoiding their opposite
+## 0. Five procedures — do these, rather than avoiding their opposite
 
 Everything from rule 1 down is a prohibition or a test. A prohibition needs you to catch yourself
 mid-sentence, at the moment you write the line, while convinced the line is good — **and that is the
 condition that fails.** Rules 1, 7 and 7b each describe this exact defect; all three were in force when a
 client deck shipped with three lines the reader could not parse.
 
-These four are different in kind: they change the **order of work**, so the empty line is never generated
+These five are different in kind: they change the **order of work**, so the empty line is never generated
 and there is nothing to catch.
 
 **(a) Write the takeaway sentence at full length before you build the slide.** Then build the slide to
@@ -33,6 +33,13 @@ offending slide was shortened five times to hit a page count, and every pass cut
 preserved the rhythm. What finally fixed it was removing content outright — narrowing a column, deleting
 a sentence whole. **A page that will not fit is carrying too much, not writing too long.**
 
+**Definitions are the protected class here, and a term leaves with its gloss.** Measured 2026-07-28 while
+repairing that same deck: five overflows, and every one was resolved by deleting an explanation. A
+definition carries no number, so under page pressure it reads as the cheapest line on the slide, and it is
+the first thing the eye offers up. It goes **last**. And when a term cannot afford its definition, **cut
+the term too** — keeping the jargon and dropping the gloss is worse than dropping both, because the reader
+is left with a word they cannot decode instead of one fact fewer.
+
 **(d) The label test.** Show someone a label and **one** value under it. They must be able to say what
 that value asserts. `Outage? / no` fails: the reader cannot tell whether `no` means the system did not go
 down, or that outages are out of scope, or that the vendor does not report them.
@@ -42,10 +49,30 @@ because a label cannot be deleted** — a table needs its headers, so an empty o
 above it. Apply it to **column headers and to every first-column row label**: `Fuori servizio` survived on
 slide 3 of the failing deck *after being fixed on slide 2*, because only the header had been looked at.
 
-**When writing in another language, re-derive the label** from "what does a value under this assert" —
-never translate the source deck's label. English `outage?` → Italian `Fuori servizio?` is a faithful
-translation and a worse label, because the English shorthand carried a domain convention the Italian
-does not.
+**(e) The decode test.** Every term that names a method, a standard, a norm article, a material, an
+instrument or a unit convention carries its meaning **in the same sentence or the next**, the first time it
+appears. Read the line as the audience, not as yourself: someone who knows the client's business but not
+this particular vertical must be able to restate what it asserts. `The Rietveld wants 3–4 g of solids`
+fails; `Rietveld refinement — the computation that turns an X-ray diffraction pattern into percentages of
+each mineral — needs 3–4 g of dried solids per sample` passes.
+
+**This is the test the other four structurally cannot reach.** A dense jargon line **passes** the delete
+test, because deleting it does lose information. It is not a label, so (d) never sees it. It states a fact,
+so rule 4 approves of it. Every existing rule asks whether the line **says** something; this one asks
+whether the reader can **decode** it, and a line can pass all of them and still be unreadable. Measured
+2026-07-28 on a deck whose reader was the client himself: LIRA, XLPE, PILC, tan delta, partial discharge,
+Mohs, XRD/Rietveld, ASTM G75 and specific speed all shipped undefined.
+
+**Your own familiarity is not evidence.** You have spent the whole run inside this vertical and every term
+in it is transparent to you by the time you draft. That is the same asymmetry as (a): you know what you
+meant. Work from the brief's audience vocabulary, and where the brief does not settle it, define the term.
+
+**A deck in a second language is re-drafted against the facts, not translated.** Translation preserves the
+source deck's compression, and shorthand a domain-native reader absorbs in the original becomes opaque once
+moved. This covers labels first — English `outage?` → Italian `Fuori servizio?` is faithful and worse,
+because the English carried a domain convention the Italian does not, so **re-derive the label** from "what
+does a value under this assert" — and it covers the prose the same way: every term gets the decode test
+again in the new language, where the reader's shorthand is different.
 
 ---
 
