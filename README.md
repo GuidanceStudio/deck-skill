@@ -15,7 +15,7 @@ The installer is multi-assistant. Run it with no target for an
 interactive menu, or pass `--target`:
 
 ```bash
-git clone https://github.com/Ymx1ZQ/deck.git && cd deck
+git clone https://github.com/GuidanceStudio/deck-skill.git && cd deck
 ./install.sh                      # interactive menu
 ./install.sh --target claude      # ~/.claude/skills/deck/
 ./install.sh --target codex        # ~/.codex/skills/deck/
@@ -29,7 +29,7 @@ git clone https://github.com/Ymx1ZQ/deck.git && cd deck
 Remote one-liner (no clone; needs `git` + `curl`):
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Ymx1ZQ/deck/main/install.sh) --target claude
+bash <(curl -fsSL https://raw.githubusercontent.com/GuidanceStudio/deck-skill/main/install.sh) --target claude
 ```
 
 `claude`, `codex`, and `opencode` get the `deck/` folder copied verbatim

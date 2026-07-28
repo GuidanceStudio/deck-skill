@@ -1000,7 +1000,7 @@ problem, not the fix.
 
 ---
 
-## M26 — The skill moves to `GuidanceStudio/deck-skill` — 🔄 IN PROGRESS (2026-07-28)
+## M26 — The skill moves to `GuidanceStudio/deck-skill` — ✅ DONE (2026-07-28, transferred, renamed, URLs rewritten, installer verified)
 
 **Operator instruction:** *"ma deck è una skill pubblica? se non lo è, spostala in
 https://github.com/GuidanceStudio come deck-skill"*. It **is** public — `Ymx1ZQ/deck`, 0 stars, not a fork —
@@ -1026,3 +1026,13 @@ first is `raw.githubusercontent.com`, which is the install path a new teammate u
 - [x] **T2 — rewrite the four URLs** and point the local remote at the new origin.
 - [x] **T3 — verify the remote installer end to end** against the new URL, rather than assuming the
       rewrite is correct: fetch it and check it is the installer, not a 404 page.
+
+### M26 close-out (2026-07-28)
+
+Transferred and renamed in one step — history, commits and the issue surface preserved, and GitHub keeps a
+redirect from the old path. **Visibility unchanged: PUBLIC**, matching `tech-audit-skill` and
+`uxui-audit-skill` in the same org. Four URLs rewritten (two in `install.sh`, two in the README) rather
+than left to the redirect, because the one that fails first is the `raw.githubusercontent.com` install
+one-liner and that is what a new teammate runs. Verified by fetching the new URL and checking it serves the
+installer rather than a 404 page. `DEVPLAN.md` keeps the old path in its history entries, which is correct
+— those were true when written.

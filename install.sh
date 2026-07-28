@@ -8,9 +8,9 @@ set -euo pipefail
 # use a different convention.
 #
 # Local mode:  ./install.sh [OPTIONS]
-# Remote mode: bash <(curl -fsSL https://raw.githubusercontent.com/Ymx1ZQ/deck/main/install.sh) --target claude
+# Remote mode: bash <(curl -fsSL https://raw.githubusercontent.com/GuidanceStudio/deck-skill/main/install.sh) --target claude
 
-REPO_URL="${DECK_REPO_URL:-https://github.com/Ymx1ZQ/deck.git}"
+REPO_URL="${DECK_REPO_URL:-https://github.com/GuidanceStudio/deck-skill.git}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 FORCE=false
