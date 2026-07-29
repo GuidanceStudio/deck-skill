@@ -6,14 +6,14 @@ When in doubt, cut. When the rule conflicts with the user's explicit request, fo
 
 ---
 
-## 0. Five procedures — do these, rather than avoiding their opposite
+## 0. Seven procedures — do these, rather than avoiding their opposite
 
 Everything from rule 1 down is a prohibition or a test. A prohibition needs you to catch yourself
 mid-sentence, at the moment you write the line, while convinced the line is good — **and that is the
 condition that fails.** Rules 1, 7 and 7b each describe this exact defect; all three were in force when a
 client deck shipped with three lines the reader could not parse.
 
-These five are different in kind: they change the **order of work**, so the empty line is never generated
+These seven are different in kind: they change the **order of work**, so the empty line is never generated
 and there is nothing to catch.
 
 **(a) Write the takeaway sentence at full length before you build the slide.** Then build the slide to
@@ -73,6 +73,25 @@ moved. This covers labels first — English `outage?` → Italian `Fuori servizi
 because the English carried a domain convention the Italian does not, so **re-derive the label** from "what
 does a value under this assert" — and it covers the prose the same way: every term gets the decode test
 again in the new language, where the reader's shorthand is different.
+
+
+**(f) Provenance — every claim carries its source class, and ours are labelled as ours.** Before a number
+goes on a slide, name where it came from: **the vendor** · **a norm, a register or a public record** · **a
+primary source we read** · **our own arithmetic** · **our own judgement** · **someone's word**. The first
+three are stated plainly. Our arithmetic and our judgement are stated **and labelled as ours inside the
+sentence** — "our multiplication", "our reading" — because otherwise our estimate and a published figure
+come out in the same voice and the reader cannot separate them. Hearsay is verified or dropped; it never
+ships. **And the hard case: never state a cost, a size or a timeline inside the audience's own domain
+unless you read it somewhere.** They price it for a living, and being wrong there costs more than the
+number was worth. Measured 2026-07-29: a client deck carried a `50–120 k€` civil-works estimate we had
+never priced, and an unverified report about a named company's shareholders.
+
+**(g) The actor — every open question, every imperative and every "we" names who acts.** A list of
+questions with no subject is a homework assignment, and the reader will ask *who is supposed to ask these,
+of whom, and why*. If we will go and get the answer, say so. If it belongs to the reader's own commercial
+conversation, say that instead — and then ask whether they want us to run it. Measured 2026-07-29:
+"what we would ask the two suppliers" read as us making the contact, on suppliers the client would be
+negotiating with directly.
 
 ---
 
@@ -217,6 +236,20 @@ Format options:
 
 Don't bury sources in a "Sources" appendix slide alone — readers won't navigate back. Inline, every time.
 
+**A citation the reader cannot open is half a citation.** Three rules, all measured on one deck on
+2026-07-29, where twenty-two companies were named and not one was reachable:
+
+- **Every named company carries its URL, and every non-vendor claim carries a resolvable reference.** The
+  reader's first instinct on an interesting supplier is to look at it. Operator, verbatim: *"ha senso che
+  non abbiamo MAI messo il link al sito web??"*
+- **Write them as markdown links, on the company name.** A bare `example.com` in body text renders as
+  plain text and **is not clickable in the printed PDF** — the reader cannot follow it, which is the whole
+  point. Verify it after rendering by extracting the anchors from the PDF, not by looking at the markdown.
+- **Verify the URL resolves before you write it.** A guessed link is worse than no link: it fails in front
+  of the reader. Where it cannot be verified, name the company without a link and say so — of fourteen
+  supplier URLs on that deck, three could not be confirmed and were correctly left bare rather than
+  invented.
+
 ---
 
 ## 9. Active voice
@@ -240,3 +273,57 @@ The cover's H1 should be specific enough that the audience knows the deck's doma
 - Weak: *"Beyond the paperwork"* (a slogan — names a mood, not a subject; see rule 7b)
 
 Pair it with a 1-line subtitle that says what the deck is *for*: *"Approval request for the Modena operating site, 24-month plan."* The subtitle is a statement of purpose, not a tagline.
+
+---
+
+## 11. Not their trade, and not our process
+
+Two halves of the same failure: writing about the wrong subject.
+
+**Do not explain the audience their own trade.** Their regulations, their assets, their standard practice
+and the vocabulary of their own industry are not tutorials. It reads as condescension and it is the fastest
+way to lose a technical reader — who will also be the one to catch it if the explanation is slightly wrong.
+Measured 2026-07-29 on a deck for a utility: cross-linked polyethylene versus paper-insulated cable
+explained to cable engineers, the national grid-connection rules explained to their grid department, and
+*"1 bar is atmospheric pressure"* to a technical office. Operator, verbatim: *"mica possiamo noi dire a
+edison cosa deve fare!! gli insegnamo il loro lavoro?"*
+
+The test: **would this sentence be new to someone who does this job every day?** If not, cut it. What is
+outside their trade — a specialist analytical method, a testing protocol from another industry — still gets
+explained, and §0(e) still applies. The line is between *their* field and *the field you are reporting on*.
+
+**Do not narrate our own process, our own corrections or our own diligence.** How hard we searched, how
+many queries we ran, what we got wrong at first and fixed, that we checked the primary source rather than
+the abstract, that we are being transparent about a limitation — none of it is content. It is either
+self-praise or, worse, a confession the reader did not ask for and can only use against us. Measured on the
+same deck: *"at the start we had it set up wrong"*, *"we had a reviewer attack the idea"*, `738 searches in
+27 languages`, and three separate statements about our own honesty. Operator, verbatim: *"ma ti sembra che
+al cliente dico un errore che stavo per fare??"*
+
+The exception, and it is narrow: **§0(f) labelling.** "This is our arithmetic" is provenance, not
+narration — it tells the reader how much weight to put on a number. One clause, inside the sentence that
+carries the number. Never a paragraph about our method.
+
+---
+
+## 12. Which suppliers appear at all
+
+**A supplier appears if it solves the reader's problem — whoever owns it — and the owner is named.**
+Ownership, size and independence are procurement facts the reader weighs themselves; they are not our
+grounds for hiding a working solution.
+
+**A supplier dropped because it is defunct, or because it does not solve the problem, does not appear.** Not as a table row, not as a footnote. The reader cannot act on it, and a page of rejections
+reads as activity reporting.
+
+There is exactly one thing worth carrying from the rejected set, and it is the **pattern**, in one line:
+*"none of the products that meet the specification has an independent supplier behind it"* is a finding.
+The roster that produced it is not. Operator, verbatim: *"se una roba è stata scartata perché è fallita o
+perché non risolveva il problema, che cazzo ci sta a fare nella presentazione?"*
+
+Two consequences worth stating, because they are not obvious:
+
+- **Rejected on our own selection criteria is not rejected for the reader.** "Acquired by a large group"
+  is a scouting rule; the reader may buy from that group happily. Presenting it as a disqualification tells
+  them we applied a rule of ours, not that the product is unfit for them.
+- **A criterion that kills a supplier must be one the reader recognises.** If it is our threshold and not
+  theirs, say so — see §0(f).

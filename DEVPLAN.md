@@ -1169,3 +1169,28 @@ author write better, and (e) in `copy-rules.md` is the only part of this that ch
 The honest expectation is that the procedures reduce the count and the stage catches the remainder — and
 the remainder is not zero, because the deck that triggered this had a rule against its defect in three
 places.
+
+---
+
+## M28 — six defects measured on one client deck in one day, none of which any existing rule catches — ✅ DONE (built + deployed 2026-07-29, 8 suites green)
+
+**What happened.** On 2026-07-29 the operator read the Edison deck line by line and rejected it repeatedly. M27's `revise` stage, shipped the previous day, would have caught **4 of the 13 findings** — counted check by check. The four it caught all die to the delete test. The nine it missed are a different class: they are not about whether a line *says* something, they are about the deck's relationship to the world outside it — where a number came from, who is supposed to act on it, whether a named company can be reached, whether we are entitled to the opinion at all.
+
+**The six, each measured, each with the operator's own words.**
+
+1. **Our estimates rendered in the same voice as vendor facts.** A `50–120 k€` civil-works figure we had never priced, in a domain the client prices for a living. *"ma davvero ci vogliamo imbarcar in una stima di costi di cui non sappiamo un cazzo?"* Also an unverified report about a named company's shareholders, and three inferences stated as findings.
+2. **No actor on any open question.** `Cosa chiederemmo ai due fornitori LIRA` reads as us making the contact. *"ma ha senso che li contattiamo noi? questi meglio che li contattino loro."* And later, on a five-question block: *"a che serve sta frase? chi deve farle ste domande? a chi? perché?"*
+3. **Explaining the audience their own trade.** XLPE vs PILC to a utility; TICA and CEI 0-16 to their grid engineers; *"1 bar è la pressione dell'aria"* to a technical office. *"mica possiamo noi dire a edison cosa deve fare!! gli insegnamo il loro lavoro?"*
+4. **Narrating our own process and our own errors to the client.** *"All'inizio l'avevamo impostata male"*, *"abbiamo fatto attaccare l'idea da un revisore"*, `738 ricerche in 27 lingue`, three separate self-praises. *"ma ti sembra che al cliente dico un errore che stavo per fare??"*
+5. **Rejected suppliers listed with the reason they were rejected.** Four slides of them. *"se una roba è stata scartata perché è fallita o perché non risolveva il problema, che cazzo ci sta a fare nella presentazione?"*
+6. **Twenty-two companies named, zero links.** *"ha senso che non abbiamo MAI messo il link al sito web??"* and then *"i link servono cliccabili"*. `copy-rules.md` §8 has said *cite the source inline* since M4 and never once said the source must be **reachable**.
+
+### Tasks
+
+- [x] **T1 — `copy-rules.md` §0 gains (f), provenance.** Before a number goes on a slide, name its class: the vendor · a norm, register or public record · a primary source we read · **our arithmetic** · **our judgement** · hearsay. The first three are stated plainly, the two middle ones are stated **and labelled as ours in the sentence**, hearsay is verified or dropped. Plus the hard case: **never state a cost, a size or a timeline inside the client's own domain unless you read it somewhere.**
+- [x] **T2 — `copy-rules.md` §0 gains (g), the actor.** Every open question, every imperative and every "we" names who acts. A question with no subject is a homework list; a question we cannot ask ourselves belongs to the reader and must say so.
+- [x] **T3 — `copy-rules.md` §8 gains reachability.** A citation the reader cannot open is half a citation. Every named company carries its URL; every non-vendor claim carries a resolvable reference; **links are markdown links, because a bare domain in print is not clickable**; and a URL is **verified to resolve before it is written** — measured 2026-07-29: of fourteen supplier URLs, three could not be verified and were correctly left unlinked rather than guessed.
+- [x] **T4 — `copy-rules.md` gains a new rule: the audience's own trade is not explained, and our process is never narrated.** Two halves of one failure — writing about the wrong subject. The reader's own domain, their regulations, their assets and their standard practice are not tutorials; and our search effort, our internal corrections and our diligence are not content.
+- [x] **T5 — an inclusion rule for suppliers.** A supplier appears if it solves the reader's problem, **whoever owns it** — with the owner named. A supplier dropped because it is defunct, or because it does not solve the problem, does not appear at all. Rejection reasons belong in the record, not the deck.
+- [x] **T6 — `revise/prompt.md` gains checks (f) provenance and (g) actor**, and the cover check: the `# H1` must not repeat the frontmatter `title` and must name the subject.
+- [x] **T7 — tests.**

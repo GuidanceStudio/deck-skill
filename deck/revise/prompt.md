@@ -5,7 +5,7 @@
 
 ## What this subcommand does
 
-Read the **rendered** deck, run five checks against it, write the findings to `presentation-revision.md`,
+Read the **rendered** deck, run eight checks against it, write the findings to `presentation-revision.md`,
 apply the fixes to `presentation.md`, and tell the user to re-render. A deck is not deliverable until this
 has run.
 
@@ -38,7 +38,7 @@ assumption about the audience rather than silently against your own vocabulary.
 **Whoever runs the checks gets the deck and not the reasoning behind it.** No brief beyond the `## Audience`
 block, no research notes, no source material, no chat history, no "here is why that slide is there".
 
-Prefer to **spawn a fresh sub-agent** for the five checks, handed exactly the rendered deck, the PDF and the
+Prefer to **spawn a fresh sub-agent** for the eight checks, handed exactly the rendered deck, the PDF and the
 audience block. If the runtime has no sub-agents, run them yourself — but then say so in the report, because
 the pass is weaker by exactly the amount you remember. A self-run pass that finds nothing is not evidence
 the deck is clean.
@@ -47,9 +47,9 @@ the deck is clean.
 about why any card is on any slide. Handing over the justification is what turns a review into a review of
 our own argument.
 
-## The five checks
+## The eight checks
 
-Run all five. Go slide by slide, in printed order.
+Run all eight. Go slide by slide, in printed order.
 
 ### (a) The takeaway
 
@@ -107,6 +107,37 @@ A page whose first line is not a slide title is a spill from the page before it.
 **Fix by removing a fact, a row or a whole slide. Never by shortening a sentence.** Compression takes out
 information first and cadence last, so a shortened line keeps its shape and loses its content.
 **Definitions go last**, and a term that cannot afford its definition is cut along with it.
+
+### (f) Provenance
+
+For every number, comparison and conclusion on the slide, name where it came from: the vendor · a norm,
+register or public record · a primary source we read · **our arithmetic** · **our judgement** · hearsay.
+
+- The first three are stated plainly.
+- Our arithmetic and our judgement must be **labelled as ours inside the sentence**. If a slide shows an
+  estimate, an extrapolation or an inference in the same voice as a published figure, flag it.
+- Hearsay does not ship. If a claim about a third party cannot be sourced, it comes out.
+- **Any cost, size or timeline inside the audience's own domain is a defect unless it was read somewhere.**
+
+**Then open every link and check that the page carries the number attributed to it.** This is the check
+that catches the most, and it cannot be done from the markdown. Measured 2026-07-29 on one deck: of the
+suppliers the reader would actually contact, most carried a figure the linked page did not contain — a
+reach quoted as 16 km where the vendor page said 2–15 km, an installed base of 3 300 where the cited
+page said 3 100, accuracy figures on pages that never mention accuracy, and a published-literature
+citation whose paper **contradicted** the claim it was cited for. A technical readership clicks.
+
+### (g) The actor
+
+Every open question, every imperative and every "we": name who acts. A list of questions with no subject
+is a homework assignment. If we will get the answer, the slide says so; if it belongs to the reader's own
+commercial conversation, the slide says that instead.
+
+Also flag: anything that explains the audience their own trade, and any sentence that narrates our own process, effort, corrections or diligence. Both are writing about the wrong subject.
+
+### (h) The cover
+
+The `# H1` must name the subject and **must not repeat the frontmatter `title`** — the template prints
+both, so a deck that puts the same words in each reads as a duplication before the reader has started.
 
 ## Output
 
