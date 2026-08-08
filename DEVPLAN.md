@@ -1194,3 +1194,16 @@ places.
 - [x] **T5 — an inclusion rule for suppliers.** A supplier appears if it solves the reader's problem, **whoever owns it** — with the owner named. A supplier dropped because it is defunct, or because it does not solve the problem, does not appear at all. Rejection reasons belong in the record, not the deck.
 - [x] **T6 — `revise/prompt.md` gains checks (f) provenance and (g) actor**, and the cover check: the `# H1` must not repeat the frontmatter `title` and must name the subject.
 - [x] **T7 — tests.**
+
+## M29 — a Forest Valley deck drafted through `/deck` loses the house template — ✅ DONE (built + deployed 2026-08-08, 8 suites green)
+
+The `forestvalley` selection lived in `~/.claude/CLAUDE.md`, not in the skill. `/fv-scout deck`
+hardcodes `FV_TEMPLATE="forestvalley"` in its own `render.sh`, so that route is covered. A deck
+drafted through `/deck` relied on the always-loaded memory file: `draft/prompt.md` says to emit
+the template comment "only when a non-default template is actually wanted" and never says that
+Forest Valley always is.
+
+### Tasks
+- [x] **T1 — `deck/draft/prompt.md`.** The `<!-- deck-template: NAME -->` paragraph states that Forest Valley decks always want `forestvalley`.
+- [x] **T2 — redeploy.** `./install.sh --force`.
+- [x] **T3 — `~/.claude/CLAUDE.md`.** Remove the now-duplicated line from §Output artifacts.
