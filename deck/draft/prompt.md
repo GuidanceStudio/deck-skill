@@ -106,7 +106,7 @@ Apply the rules from the knowledge files as you write:
   <!-- deck-template: NAME -->
   ```
 
-  `render.sh` reads it with the same precedence as orientation/paper (CLI `--template` flag wins, then this comment, then md2's default template). Only emit it when a non-default template is actually wanted; otherwise leave it out.
+  `render.sh` reads it with the same precedence as orientation/paper (CLI `--template` flag wins, then this comment, then md2's default template). Only emit it when a non-default template is actually wanted; otherwise leave it out. **A Forest Valley deck always wants one**: emit `<!-- deck-template: forestvalley -->` whenever the deck is for Forest Valley. (`fv-scout`'s own `deck` route hardcodes `FV_TEMPLATE="forestvalley"` in its `render.sh`, so this covers the case where an FV deck is drafted through `/deck` instead.)
 - **Cover**: pattern 1, with a title that names the subject specifically (apply `copy-rules.md` rule 10).
 - **Slide titles**: every `## H2` is a takeaway stated as a plain declarative sentence (`copy-rules.md` rule 1). Test each twice: could it appear unchanged on a different deck (→ it's a label)? And does a reader learn a fact from it, or only feel confidence (→ it's a slogan)? Rewrite either way.
 - **No rhetorical constructions** anywhere — titles, subtitles, blockquotes, cover lines (`copy-rules.md` rule 7b). No triads, antithesis, chiasmus, fragments for emphasis, aphorisms or wordplay. This is unconditional and does not relax for board audiences.
