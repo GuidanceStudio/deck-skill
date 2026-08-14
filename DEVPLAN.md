@@ -454,7 +454,7 @@ chart-table print fix). Commit or stash that first so M23 lands as its own diff.
 three-way distinction; banned constructions are listed explicitly; suite green
 and deployed.
 
-## M23 — A deck has no revision stage, so every line is written exactly once — ✅ T1 DONE (built + deployed 2026-07-28, 7 test suites green) · T2–T5 UNHELD and absorbed into M27 (2026-07-28)
+## M23 — A deck has no revision stage, so every line is written exactly once — ✅ DONE (T1 built + deployed 2026-07-28, 7 test suites green; T2–T5 shipped in M27, `9885151`)
 
 **What happened.** On 2026-07-27 an Italian client deck shipped with three lines the operator could not
 parse. He quoted each back: *"Condizione · previsione · forensica · ambiente."* — four abstract nouns, no
@@ -523,20 +523,24 @@ it (fv-scout M95 T3). `deck` has no such hook, so if the four procedures above a
 nothing downstream to catch what they miss. **Recommendation: ship T1 first and judge the stage against a
 deck written under the procedures**, rather than building both at once and never learning which one worked.
 
-- [ ] **T2 — `deck/revise/prompt.md`: a fourth stage, between draft and render** *(operator's call)*. Four
-      checks, in this order: **(a)** per slide, write the one sentence that slide establishes — if it cannot
-      be written the slide has no takeaway and is merged or cut; if it can be written but is not on the
-      slide, it goes on the slide. **(b)** the delete test on every line that is not a fact: delete it, and
-      if nothing is lost leave it deleted. **(c)** the label test per T1(d). **(d)** anything over budget
-      loses a fact, a row or a whole slide — never a shortened sentence.
-- [ ] **T3 — the stage runs after a first render, on the rendered deck** *(operator's call)*. Page-fit
-      pressure has to be visible for (d) to have anything to act on, and the labels have to be read as the
-      audience reads them.
-- [ ] **T4 — wire it** *(operator's call)*. `SKILL.md` routing gains `revise`; `render/prompt.md` states that
-      a deck is not deliverable until the revise pass has run.
-- [ ] **T5 — the isolation clause** *(operator's call)*. Whoever runs the revise stage gets the rendered deck
-      and not the reasoning behind it. An author re-reading their own draft supplies the missing meaning from
-      memory; that is precisely why the operator saw all three lines in seconds and the author saw none.
+**T2–T5 shipped in M27** (`9885151`), which built the stage while answering a different question, and their
+boxes were never reconciled against it. Each is ticked below with where it landed, verified against the
+files rather than against M27's own account.
+
+- [x] **T2 — `deck/revise/prompt.md`: a fourth stage, between draft and render.** ✅ Its four checks are
+      §(a) The takeaway, §(b) The delete test, §(c) The label test and — the one that reads as missing until
+      you look — §(e) The budget, which carries **(d)** verbatim: *"Fix by removing a fact, a row or a whole
+      slide. Never by shortening a sentence."* The stage runs eight checks, so it went past what T2 asked.
+- [x] **T3 — the stage runs after a first render, on the rendered deck.** ✅ `revise/prompt.md:32` stops and
+      sends the caller to `/deck render` when `presentation.pdf` is absent, because two checks have nothing
+      to measure without it.
+- [x] **T4 — wire it.** ✅ `SKILL.md` routes `/deck revise` and states the loop as
+      `brief → draft → render → revise → render`, with a deck not deliverable until it has run;
+      `render/prompt.md:97` says the same at the point the first render finishes.
+- [x] **T5 — the isolation clause.** ✅ `revise/prompt.md:38` — *"Whoever runs the checks gets the deck and
+      not the reasoning behind it"* — with the audience block named as the one exception and the reason it
+      is not reasoning. The stage also prefers a fresh sub-agent, and requires a self-run pass to declare
+      itself weaker by exactly the amount it remembers.
 
 **Explicitly dropped: the candidate-finder script.** A working prototype exists at
 `~/Documents/software/check_copy-prototype.sh` — it caught all three quoted lines, and produced 23 candidates
