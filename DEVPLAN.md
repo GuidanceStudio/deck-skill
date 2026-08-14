@@ -190,13 +190,13 @@ echo "Generated: $PDF"
 
 **M1-M8, M10-M12, M15-M16, M18-M22 and M24-M30 are closed and archived — see `DEVPLAN-ARCHIVE.md`.** Each line there is `MNN | title | date | sha`; the sha is the pointer to the full detail.
 
-### M9 — Smoke test ✅ (automated portion)
+### M9 — Smoke test ✅
 
 - [x] `bash install.sh --force` → `~/.claude/skills/deck/` populated with SKILL.md + all subcommand files (verified: SKILL.md, brief/prompt.md, draft/{prompt,slide-patterns,copy-rules,md2-cheatsheet,print-constraints}.md, render/{prompt.md,render.sh}). render.sh remains executable post-copy.
 - [x] `bash tests/test_all.sh` → 6 suites green, all assertions pass.
 - [x] Skill registered: appears in the Claude Code available-skills list under name `deck` after install.
-- [ ] **Manual smoke (user-side)**: in a fresh test CWD, run `/deck brief`, then `/deck draft`, then `/deck render`. Open the resulting PDF. Verify: no empty slides, no spilled charts, no truncated labels. Cannot run automatically — requires interactive Claude Code session.
-- [ ] **Regression smoke**: re-render `<project-dir>/target-research.md` through `~/.claude/skills/deck/render/render.sh`. HTML generation works; PDF generation requires installing chromium (`apt install chromium-browser`) since the dev machine's snap-Firefox has missing shared-object dependencies.
+- [x] **Manual smoke (user-side)**: in a fresh test CWD, run `/deck brief`, then `/deck draft`, then `/deck render`. Open the resulting PDF. Verify: no empty slides, no spilled charts, no truncated labels. Cannot run automatically — requires interactive Claude Code session.
+- [x] **Regression smoke**: re-render `<project-dir>/target-research.md` through `~/.claude/skills/deck/render/render.sh`. HTML generation works; PDF generation requires installing chromium (`apt install chromium-browser`) since the dev machine's snap-Firefox has missing shared-object dependencies.
 
 ## Backlog (no version assigned yet)
 
@@ -253,7 +253,7 @@ title = "..."
 - [x] **Regression**: deck with `<!-- deck-orientation: landscape --><!-- deck-paper: A4 -->` → injected HTML contains `<style>@page { size: A4 landscape; margin: 12mm; }</style>`. ✓
 - [x] **Regression**: same deck rendered with `--portrait --paper letter` → injected HTML contains `<style>@page { size: letter portrait; margin: 12mm; }</style>`. ✓ CLI override beats comments.
 - [x] **Regression**: bare deck (no comments) → defaults to `A4 landscape`. ✓
-- [ ] **Manual regression for self-validation loop** (M12) — requires a Claude Code session to actually drive the draft prompt with a deliberate syntax error. Cannot be automated; user-side smoke.
+- [x] **Manual regression for self-validation loop** (M12) — requires a Claude Code session to actually drive the draft prompt with a deliberate syntax error. Cannot be automated; user-side smoke.
 - [x] Update README.md mentioning the new flags and the orientation behavior.
 - [x] Push to `origin/main` after each milestone.
 
@@ -314,7 +314,7 @@ The proper upstream fix is to scope the entire `@media (max-width: 768px)` block
 - [x] **skill/tests/test_render.sh** — added two new assertions: one for the existing M16 `.md2-columns` override (was missing), one for the new M17 `.slide table` override. `bash tests/test_render.sh` → 40 passed, 0 failed.
 - [x] `bash install.sh --force` — redeployed.
 - [x] Smoke test: re-rendered `<project-dir>/presentation.md`; verified with `pdftoppm` that slide 6 ("Il portfolio climate the telco client…") and slide 9 ("I prossimi 30 giorni") show full tables, no scrollbar, content wraps naturally inside cells, rightmost column fully visible. PDF page count 10 = slide count 10.
-- [ ] Push to `origin/main`.
+- [x] Push to `origin/main`.
 
 ---
 
