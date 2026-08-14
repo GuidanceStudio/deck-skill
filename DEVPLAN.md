@@ -196,8 +196,6 @@ echo "Generated: $PDF"
 - [x] Create `.gitignore`, `install.sh` (placeholder), `README.md`, `DEVPLAN.md`.
 - [x] Verify tree matches.
 
-Note: no git remote configured — commits stay local. User can add a remote later.
-
 ### M2 — `SKILL.md` (routing + language rules + prerequisites) ✅
 
 - [x] Frontmatter: `name: deck`, `description: <trigger covering brief/draft/render pipeline + business deck context>`.
@@ -251,8 +249,6 @@ Note: no git remote configured — commits stay local. User can add a remote lat
 - [x] `render.sh`: support `--no-pdf` flag to skip PDF generation if user only wants HTML.
 - [x] `prompt.md`: instructs Claude to invoke `~/.claude/skills/deck/render/render.sh <presentation.md>`; on error, surface the message; on success, report both file paths to the user.
 - [x] **Bonus**: `render.sh` falls back to `firefox` if no Chromium-family browser is available (Firefox 102+ supports `--headless --print-to-pdf`). Chromium-family is preferred for higher CSS fidelity.
-
-Note: on the dev machine the user's Firefox is installed via snap and has missing shared-object dependencies, so the live PDF generation hangs. The script is spec-correct; installing chromium (`apt install chromium-browser`) is the recommended fix and is documented in README → Requirements.
 
 ### M7 — `install.sh` + `README.md` polish ✅
 
@@ -1207,3 +1203,24 @@ Forest Valley always is.
 - [x] **T1 — `deck/draft/prompt.md`.** The `<!-- deck-template: NAME -->` paragraph states that Forest Valley decks always want `forestvalley`.
 - [x] **T2 — redeploy.** `./install.sh --force`.
 - [x] **T3 — `~/.claude/CLAUDE.md`.** Remove the now-duplicated line from §Output artifacts.
+
+## M30 — comments and devplan prose brought into forge-flow's comment rules ✅
+
+**Why:** `render.sh` and `test_render.sh` carried a past-tense date on a
+2026-07-05 incident inside an otherwise-good comment; M1 and M6 each left
+a stray `Note:` paragraph under a completed task, one now stale (a remote
+exists), one duplicated by M9's own unchecked task line.
+
+**Approach:** Trim the incident date out of both comments, keeping the
+invariant each already stated. Delete the two `Note:` paragraphs — no
+information is lost, the first is inaccurate and the second is repeated
+where it is actually needed.
+
+**Tasks:**
+- [x] Drop the 2026-07-05 date from `render.sh` and `test_render.sh` comments
+- [x] Delete the stale M1 `Note:` and the redundant M6 `Note:`
+- [x] Test: `bash tests/test_all.sh`
+- [x] Commit & push
+
+**Done when:** No touched comment carries a bare incident date, no `Note:`
+paragraph sits under a completed task in M1/M6, and `test_all.sh` is green.
