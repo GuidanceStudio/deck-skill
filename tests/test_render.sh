@@ -223,9 +223,9 @@ DECK
         FAIL=$((FAIL + 1))
     fi
 
-    # 2026-07-05: a deck with a :::chart block must not have its chart
-    # table caught by the print .slide table override (which would
-    # clobber Charts.css sizing and collapse bars to slivers).
+    # A deck with a :::chart block must not have its chart table caught by
+    # the print .slide table override, which would clobber Charts.css
+    # sizing and collapse bars to slivers.
     DECK_CHART="$TMPDIR_T/deck-chart.md"
     cat > "$DECK_CHART" <<'DECK'
 +++

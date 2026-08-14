@@ -246,7 +246,7 @@ fi
 #      .slide, and this override's width: auto/max-width: 100% !important
 #      clobbers the sizing Charts.css needs to compute bar/column --size
 #      percentages, collapsing every bar to a sliver regardless of its
-#      value (found 2026-07-05 on a real deck with a :::chart bar block).
+#      value.
 #
 # md2 ≥ 0.2.0 fixes both upstream by scoping the mobile media queries to
 # `screen and`; these overrides are kept as a defensive layer for users
