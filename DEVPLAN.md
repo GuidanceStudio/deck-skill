@@ -603,3 +603,46 @@ ticked). Verify the ID sets before/after match exactly.
 **Done when:** `DEVPLAN-ARCHIVE.md` holds one pointer line per archived
 milestone, every sha verified; the before/after ID-set diff is empty;
 `tests/test_all.sh` is green.
+
+## M32 — `--embed-images`: un HTML che si apre anche fuori da questa macchina ✅
+
+**Why:** l'HTML reso da `render.sh` **referenzia** le immagini locali, e i template
+`guidance` e `forestvalley` puntano al proprio logo con un percorso assoluto
+(`file:///home/<utente>/.md2/templates/<nome>/assets/logo.png`, scritto a mano nei
+loro `components/`). Quel file si apre correttamente solo dove quel percorso esiste:
+aperto da un tablet, mandato a un cliente o guardato da un collega mostra un riquadro
+vuoto al posto del logo, e la pagina non dice che manca qualcosa. Trovato sul deck di
+un cliente aperto da tablet: il logo non c'era e il rendering dichiarava successo.
+
+**Approccio:** la flag sta in md2 (M110 di quel repo), non qui — è md2 che genera
+l'HTML, e un post-processing nello script sarebbe stato una pezza per cartella.
+`render.sh` la passa e basta. Spenta per default: incorporare moltiplica il carico
+una volta per occorrenza, e un deck che resta dov'è non ne ha bisogno.
+
+**Nota su chi sbaglia cosa:** il percorso assoluto non lo produce md2, lo scrivono i
+template. Con l'embed il sintomo sparisce ma il template resta non portabile: la
+correzione strutturale (md2 che risolve i percorsi degli asset relativamente alla
+cartella del template) è una voce da aprire su md2, non qui.
+
+**Tasks:**
+- [x] `--embed-images` in `deck/render/render.sh`, costruita via `MD2_ARGS`, spenta
+      per default; l'uscita non-zero di md2 su immagine irrisolta propaga con `set -e`
+      e nessun PDF viene scritto
+- [x] Riga di stato `Images: embedded as data URIs (self-contained HTML)` quando attiva
+- [x] `--help` esteso (finestra `sed -n '2,43p'` allargata per includere la nuova flag)
+- [x] `deck/render/prompt.md` — sezione «quando serve»: HTML come deliverable contro
+      deck che resta locale; più i due comportamenti di md2 (errore su immagine
+      mancante, nessun ridimensionamento) e l'istruzione di riportare l'avviso
+      all'utente invece di ingoiarlo
+- [x] `tests/test_render.sh` — 10 asserzioni: 7 statiche su script e prompt, 3
+      funzionali (default che mantiene il riferimento, embed che incorpora, immagine
+      mancante che aborta senza PDF)
+- [x] Suite verde: 60 passed, 0 failed
+- [x] Deploy `./install.sh --force`
+
+**Incidente durante il lavoro:** un `sed -n <riga>,$d -i` malformato ha svuotato
+`tests/test_render.sh`. Recuperato con `git checkout -- tests/test_render.sh` perché
+il file era tracciato e committato. Gli altri quattro file modificati nel working
+tree (`deck/draft/print-constraints.md`, `deck/revise/prompt.md` e i due di render)
+non sono stati toccati dal recupero.
+
