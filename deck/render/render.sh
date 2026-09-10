@@ -29,6 +29,11 @@
 #                       hard error, not a fall-back to the default.
 #   --post-html CMD     Run  CMD <html> <input.md>  after the HTML exists and before any
 #                       CSS injection. A NON-ZERO EXIT ABORTS AND NO PDF IS WRITTEN.
+#   --embed-images      Pass --embed-images to md2: local images (including the template's
+#                       logo) are inlined as base64 data URIs, so the HTML opens on any
+#                       machine with no server and no missing images. Off by default —
+#                       it makes the file bigger, and a deck that stays put does not
+#                       need it. Requires md2 >= 0.2.2.
 #
 # Orientation/paper/template precedence (highest first):
 #   1. CLI flag
@@ -47,6 +52,7 @@ PAPER_OVERRIDE=""
 TEMPLATE_OVERRIDE=""
 PAGE_CSS_FILE=""
 POST_HTML_CMD=""
+EMBED_IMAGES=false
 
 if [ $# -eq 0 ]; then
     echo "Usage: $(basename "$0") <input.md> [--no-pdf] [--landscape|--portrait] [--paper A4|letter] [--template NAME]" >&2
@@ -104,6 +110,10 @@ while [ $# -gt 0 ]; do
             PAGE_CSS_FILE="$1"
             shift
             ;;
+        --embed-images)
+            EMBED_IMAGES=true
+            shift
+            ;;
         --post-html)
             shift
             if [ $# -eq 0 ]; then
@@ -114,7 +124,7 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         --help|-h)
-            sed -n '2,37p' "$0" | sed 's/^# \{0,1\}//'
+            sed -n '2,43p' "$0" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
         *)
@@ -175,11 +185,13 @@ if [ -z "$TEMPLATE" ]; then
         | sed -E 's/.*:[[:space:]]*//' || true)"
 fi
 
-if [ -n "$TEMPLATE" ]; then
-    md2 --template "$TEMPLATE" "$INPUT_ABS"
-else
-    md2 "$INPUT_ABS"
-fi
+MD2_ARGS=()
+[ -n "$TEMPLATE" ] && MD2_ARGS+=(--template "$TEMPLATE")
+# --embed-images makes md2 exit non-zero, without writing the HTML, when a local
+# image does not resolve. set -e propagates that here: no PDF is produced, which is
+# the point — a deck with silently missing images reports success and ships broken.
+$EMBED_IMAGES && MD2_ARGS+=(--embed-images)
+md2 "${MD2_ARGS[@]}" "$INPUT_ABS"
 
 if [ ! -f "$HTML" ]; then
     echo "Error: md2 ran but did not produce $HTML" >&2
@@ -275,6 +287,7 @@ fi
 
 echo "Generated: $HTML"
 echo "  Orientation: $ORIENTATION · Paper: $PAPER"
+$EMBED_IMAGES && echo "  Images: embedded as data URIs (self-contained HTML)"
 
 # --- Step 2: HTML → PDF (optional) ------------------------------------------
 

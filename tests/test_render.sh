@@ -370,5 +370,48 @@ else
 fi
 
 echo ""
+echo "=== M32: --embed-images ==="
+
+assert_grep "$RENDER_SH" '\-\-embed-images' "supports --embed-images flag"
+assert_grep "$RENDER_SH" 'EMBED_IMAGES=false' "embed is off by default"
+assert_grep "$RENDER_SH" 'MD2_ARGS' "builds the md2 argument list"
+assert_grep_i "$RENDER_SH" 'no PDF is produced' "documents that an unresolved image aborts before the PDF"
+assert_grep_i "$PROMPT" 'embed-images' "prompt documents the flag"
+assert_grep_i "$PROMPT" 'leaves this machine|self-contained' "prompt says when the flag is needed"
+assert_grep_i "$PROMPT" 'right-sized asset|downscal' "prompt says md2 does not downscale"
+
+# Functional: the flag must actually inline, and must abort on a missing image.
+if command -v md2 >/dev/null 2>&1; then
+    EMB_DIR="$(mktemp -d)"
+    python3 - "$EMB_DIR/pix.png" <<'PYPNG'
+import base64, pathlib, sys
+pathlib.Path(sys.argv[1]).write_bytes(base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg=="))
+PYPNG
+    printf '# Titolo\n\n![](pix.png)\n' > "$EMB_DIR/d.md"
+
+    bash "$RENDER_SH" "$EMB_DIR/d.md" --no-pdf >/dev/null 2>&1 || true
+    assert_grep "$EMB_DIR/d.html" 'src="pix.png"' "default keeps the file reference"
+
+    bash "$RENDER_SH" "$EMB_DIR/d.md" --no-pdf --embed-images >/dev/null 2>&1 || true
+    assert_grep "$EMB_DIR/d.html" 'data:image/png;base64,' "--embed-images inlines the image"
+
+    printf '# Titolo\n\n![](assente.png)\n' > "$EMB_DIR/miss.md"
+    if bash "$RENDER_SH" "$EMB_DIR/miss.md" --embed-images >/dev/null 2>&1; then
+        echo "  FAIL: a missing image should abort the render"
+        FAIL=$((FAIL + 1))
+    elif [ -f "$EMB_DIR/miss.pdf" ]; then
+        echo "  FAIL: no PDF must be written when an image does not resolve"
+        FAIL=$((FAIL + 1))
+    else
+        echo "  PASS: missing image aborts and writes no PDF"
+        PASS=$((PASS + 1))
+    fi
+    rm -rf "$EMB_DIR"
+else
+    echo "  SKIP: md2 not on PATH, functional embed checks skipped"
+fi
+
+echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]

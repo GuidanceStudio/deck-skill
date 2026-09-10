@@ -18,7 +18,7 @@ These rules exist because past runs occasionally drifted — the agent reached f
   bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md"
   ```
 
-  Optional flags: `--no-pdf`, `--landscape`, `--portrait`, `--paper A4`, `--paper letter`, `--template NAME`, `--page-css FILE`, `--post-html CMD`. They are documented in `render.sh --help`.
+  Optional flags: `--no-pdf`, `--landscape`, `--portrait`, `--paper A4`, `--paper letter`, `--template NAME`, `--embed-images`, `--page-css FILE`, `--post-html CMD`. They are documented in `render.sh --help`.
 
 - Surface the script's `stdout` and `stderr` to the user **verbatim**. Do not paraphrase. Do not silently swallow output. The script is the source of truth — its messages and exit code drive the user-facing report.
 
@@ -98,7 +98,8 @@ On success, report to the user:
   has.** This is the first render of the loop `draft` → `render` → `revise` → `render`: the revision pass
   needs the PDF, because page-fit compression and printed reading order are only visible once printed.
 - A short hint for the eyeball pass that is worth doing anyway: "Open the PDF and check for empty slides,
-  truncated chart labels, or charts on lonely pages — if you see any, note them for the revise pass."
+  truncated chart labels, soft-wrapped lines — a line the renderer broke mid-phrase — or charts on lonely
+  pages — if you see any, note them for the revise pass."
 
 Do not tell the user the deck is finished on the strength of a clean render. The script's exit code proves
 the files were produced, not that the copy can be read. That is `/deck revise`, and the reason it is a
@@ -118,3 +119,30 @@ falling back to the default would render a deck in the wrong style and report su
 **A non-zero exit aborts and no PDF is written.** That failure path is the point of the flag, not a
 detail — a hook exists to reject an HTML that is not fit to print, and a hook that could not stop the PDF
 would be decoration.
+
+## `--embed-images` — when the deck leaves this machine (M32)
+
+Off by default. Without it the HTML **references** local images: the ones the author wrote as a relative
+path, and the template's own assets — the `guidance` and `forestvalley` templates point at their logo with
+an absolute `file:///home/<user>/.md2/templates/<name>/assets/logo.png`. That resolves only where that
+exact path exists, so the same file opened from a tablet, mailed to a client, or viewed by a colleague shows
+an empty box where the logo should be, and nothing in the page says an image is missing.
+
+`--embed-images` passes the flag through to md2, which inlines every local image as a base64 data URI. The
+result is a single self-contained file that opens anywhere with no server.
+
+**Pass it when the HTML is the deliverable** — emailed, opened on another device, handed to someone else,
+or published. **Leave it off when the deck stays here**: it multiplies the payload once per occurrence, and
+a logo on every slide adds up.
+
+Two behaviours worth knowing, both md2's:
+
+- **An image that does not resolve is an error.** md2 exits non-zero without writing the HTML, `set -e`
+  propagates it, and no PDF is produced. A deck that ships with silently missing images while reporting
+  success is the failure this prevents — the same reasoning as `--post-html` above.
+- **No downscaling.** md2 warns on stderr when a single asset is large enough to matter, naming the file,
+  its weight and how many times it appears. The fix is a right-sized asset, not a flag: a 5001×5001 logo
+  displayed at 150px is 4.8 MB of output on a 16-slide deck. Report the warning to the user rather than
+  swallowing it.
+
+The PDF does not need this flag — headless Chromium reads the local files directly. It exists for the HTML.
