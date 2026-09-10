@@ -104,7 +104,15 @@ pdftotext -layout presentation.pdf - | awk 'BEGIN{RS="\f"} {p++; split($0,L,"\n"
 
 A page whose first line is not a slide title is a spill from the page before it.
 
-**Fix by removing a fact, a row or a whole slide. Never by shortening a sentence.** Compression takes out
+**Then scan for soft wraps — a line the renderer broke, not the author** (`print-constraints.md` rule
+10). Compare the rendered lines against the markdown source lines: a rendered line that is a proper
+prefix of a source line, with the continuation on the next rendered line, is a soft wrap. Fix by
+hand-breaking the source line at a phrase boundary or by removing words from it — never by accepting the
+renderer's break point. Check titles, subtitles, body lines, bullets and blockquotes with the
+comparison, and table headers and row labels by eye: the comparison cannot see inside table cells.
+Chapter titles render in a monospace font at ~21 characters per line — the tightest ceiling in the deck.
+
+**Fix page overflow by removing a fact, a row or a whole slide. Never by shortening a sentence.** Compression takes out
 information first and cadence last, so a shortened line keeps its shape and loses its content.
 **Definitions go last**, and a term that cannot afford its definition is cut along with it.
 
