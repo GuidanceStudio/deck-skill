@@ -108,6 +108,43 @@ After generating `presentation.md`, the `/deck render` step produces both an HTM
 - Empty bottom halves of pages (rule 6) → compact or merge.
 - Charts on lonely pages without their slide title above them (rules 1-3) → **remove** text alongside (a whole sentence or bullet), rather than rewriting it shorter.
 - Truncated chart labels, especially on small bars (rule 4) → split or drop the smallest values.
+- Soft-wrapped lines (rule 10) → hand-break at a phrase boundary or shorten the line.
 - Sidebar / nav showing "Slide N" entries (rule 7) → add missing H2s.
 
 A v0.2 of this skill plans a `/deck review` step that automates this check; until then, do it by eye.
+
+---
+
+## 10. No soft-wrapped lines — the author breaks lines, the renderer never does
+
+**Rule**: every rendered line must be a line the author wrote. Where the renderer would wrap, the line is
+shortened or hand-broken at a phrase boundary; the renderer's own break point is a defect. This covers
+slide titles (`## H2`), chapter titles and subtitles, cover lines, body paragraphs, bullets and
+blockquotes. In tables, headers and first-column row labels must stay on one line; long cell prose may
+wrap at the column width — the one documented exception, because a cell cannot control its break points.
+
+**Why**: a renderer-chosen break lands mid-phrase, is visible at first glance, and reads as unpolished —
+the reader sees where the text ran out of room instead of where the author wanted it to stop. Standing
+operator rule (2026-08-23), measured on a 22-page deck: 11 of 17 slide titles, 3 of 4 chapter titles and
+2 chapter subtitles were soft-wrapped, and the operator spotted it on the first chapter page he opened.
+
+**Line-length ceilings** (forestvalley template, A4 landscape — proportional fonts make char counts
+approximate, so treat these as ceilings; re-measure for any other template, and verify after render):
+
+| Text class | Observed fit | Ceiling |
+|---|---|---|
+| Chapter H1 (Rubik Mono One — monospace, exact) | 21 chars; 22 wraps | 21 |
+| Chapter subtitle | ~89 chars | 85 per line |
+| Slide H2 title | ~80–86 chars | 74 |
+| Body / bullets / blockquotes | ≥ 106 chars | 100 per line |
+| Cover subtitle | ≥ 107 chars | 100 per line |
+| Table headers, row labels | column width | must not wrap — shorten the label |
+
+**Fix when violated**: hand-break the source line at a phrase boundary (content unchanged, the break
+becomes an author line), or remove words — the line is too long, not the font too small. Never accept
+the renderer's break, and never fix a wrap by reflowing the sentence to hide it.
+
+**Verify after render** (rule 9): compare the PDF's rendered lines against the markdown source lines — a
+rendered line that is a proper prefix of a source line is a soft wrap. Tables need an eye-check on top:
+the source-line comparison cannot see inside cells, and a wrapped header ("Annual / budget") is invisible
+to it.
