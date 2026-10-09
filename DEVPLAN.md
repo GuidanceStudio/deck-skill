@@ -646,3 +646,32 @@ il file era tracciato e committato. Gli altri quattro file modificati nel workin
 tree (`deck/draft/print-constraints.md`, `deck/revise/prompt.md` e i due di render)
 non sono stati toccati dal recupero.
 
+
+## M33 — `guidance-modern` e la nuova sintassi md2 nella skill
+
+**Why:** md2 (M111–M113) e md2-templates (M114–M117) aggiungono occhiello, card da 2
+a 4, `:::take`, `:::source`, `:::timeline`, `:::statement`, il front matter della
+copertina (`kicker`, `client`, `subject`, `confidential`, `cover_meta`) e il template
+`guidance-modern`. Finché la skill non li documenta, `/deck draft` non li scrive.
+
+**Approccio:** `deck/draft/md2-cheatsheet.md` riceve la sintassi di ogni costrutto con
+un esempio; `deck/draft/slide-patterns.md` dice quale pattern usa quale costrutto;
+`deck/draft/print-constraints.md` riceve i limiti di lunghezza riga di
+`guidance-modern` in A4 orizzontale, misurati sul PDF di `guidance-modern/example.md`;
+`deck/render/prompt.md` aggiunge il template alla tabella. Avvertenza esplicita: con
+`guidance` e `forestvalley` i costrutti nuovi escono come testo semplice. Il repo è
+pubblico, quindi gli esempi usano un soggetto inventato.
+
+**Tasks:**
+- [ ] `deck/draft/md2-cheatsheet.md`: occhiello, `:::columns cards` / `:::col highlight`, `:::take`, `:::source`, `:::timeline`, `:::statement`, chiavi di front matter
+- [ ] `deck/draft/slide-patterns.md`: corrispondenza pattern → costrutto
+- [ ] `deck/draft/print-constraints.md`: limiti di riga di `guidance-modern` misurati sul PDF d'esempio
+- [ ] `deck/render/prompt.md`: `guidance-modern` nella tabella dei template, con l'avvertenza sugli altri due
+- [ ] Test: `tests/test_draft.sh` e `tests/test_render.sh` — asserzioni sui costrutti documentati e sul template
+- [ ] Test: funzionale — un `presentation.md` scritto con i costrutti nuovi reso con `render.sh --template guidance-modern`
+- [ ] `bash tests/test_all.sh` verde; deploy `./install.sh --force`
+- [ ] Commit & push
+
+**Done when:** un `/deck draft` che segue la skill produce markdown con i costrutti
+nuovi, il PDF con `guidance-modern` ha una pagina per slide, e `tests/test_all.sh` è
+verde.
