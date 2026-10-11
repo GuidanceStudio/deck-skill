@@ -681,3 +681,33 @@ verde.
 - Trovato: md2 fa l'escape del titolo di copertina (un `<br>` esce come testo) e un `<br>` nel titolo di capitolo finisce in ogni occhiello del capitolo; documentato in regola 10, la correzione del primo spetta a md2.
 - `palette = "guidance-modern"` documentata, ma il file palette arriva con md2-templates M117 (in corso) e md2 si ferma su una palette mancante: la fixture `tests/fixtures/modern.md` la omette.
 - `deck/revise/prompt.md` (h) presume che il template stampi `title` e `# H1`; `guidance-modern` stampa solo `title`. Non toccato.
+
+## M34 — Il controllo della copertina in `/deck revise` e il cheatsheet allineati a md2
+
+**Why:** il controllo (h) di `deck/revise/prompt.md` dice che il template stampa
+sia il `title` del front matter sia il `# H1`. md2 fa altro: con un `title` nel
+front matter la copertina mostra solo quello e la riga `# ` viene scartata
+(`prepare_context` in md2). Il controllo quindi segnala un doppione che non
+esiste e non vede un H1 che sparisce. Nel cheatsheet ci sono anche le opzioni di
+`:::chart` che md2 ignora, e la nota di M33 sul `<br>` nei titoli è superata
+da md2 M119.
+
+**Approccio:** riscrivere (h) su quello che il lettore vede davvero: il titolo
+di copertina è il `title` del front matter, oppure l'H1 se il `title` manca. Il
+controllo verifica che nomini il soggetto e segnala un H1 diverso dal `title`,
+perché è testo che non verrà stampato. Comportamento verificato rendendo un deck
+di prova con `guidance-modern` e con il template default. In
+`deck/draft/md2-cheatsheet.md` tolgo `--labels`, `--legend`, `--stacked` e
+`--show-data` e aggiorno la nota sul `<br>`. La fixture `tests/fixtures/modern.md`
+riceve `palette = "guidance-modern"`, che adesso è installata.
+
+**Tasks:**
+- [ ] `deck/revise/prompt.md` (h) riscritto sul comportamento reale, verificato con un render di prova
+- [ ] `deck/draft/md2-cheatsheet.md`: opzioni di `:::chart` ignorate rimosse, nota sul `<br>` nei titoli aggiornata a md2 M119
+- [ ] `tests/fixtures/modern.md` con `palette = "guidance-modern"`
+- [ ] Test: `tests/test_revise.sh` e `tests/test_draft.sh` — asserzioni sul nuovo (h) e sull'assenza delle opzioni ignorate
+- [ ] `bash tests/test_all.sh` verde; deploy `./install.sh --target claude --force`
+- [ ] Commit & push
+
+**Done when:** (h) descrive la copertina che md2 stampa, il cheatsheet non cita
+opzioni ignorate, e `tests/test_all.sh` è verde.
