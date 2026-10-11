@@ -73,7 +73,7 @@ The `# ` H1 is the chapter title (and the sidebar nav label); the line(s) below 
 
 **When to use**: a single number is the headline insight (e.g. "+50% YoY", "€1.8B market"). Maximum 1-2 per deck — they lose impact if overused.
 
-**Anti-pattern**: don't pile multiple big numbers on one slide; that's a stat-grid pattern (use bullets or a table instead).
+**Anti-pattern**: don't pile multiple big numbers on one slide; that's a stat-grid pattern (use bullets or a table instead — or, with `guidance-modern`, the stat row in [With the `guidance-modern` template](#with-the-guidance-modern-template)).
 
 **md2 syntax** (H2 takeaway + an H1 inside the slide as the big number + 1 framing sentence):
 
@@ -311,6 +311,76 @@ Architect of the Control Plane. Ex-Instilla.
 
 ---
 
+## With the `guidance-modern` template
+
+`guidance-modern` styles a set of md2 constructs that the other templates print as plain text (syntax in
+`md2-cheatsheet.md`, "The `guidance-modern` template"). When the deck uses that template, the patterns
+above take these forms. With `guidance` or `forestvalley`, keep the plain forms above: the constructs come
+out unstyled there.
+
+| Pattern | Construct in `guidance-modern` |
+|---|---|
+| 1. Cover | front matter `kicker`, `client`, `subject`, `confidential`, `cover_meta` |
+| 2b. Chapter cover | `:::chapter` with `# Title` and a bullet list of the act's topics; `Part N of T` is added |
+| 3. Hero stat | unchanged: `# 92%` in the content, the next paragraph is its caption |
+| Stat row: two to four numbers | `:::columns cards`, a `# ` figure and a `### ` label per card; `:::col highlight` on the number the title is about |
+| Agenda, or the questions the deck answers | `:::columns cards` with `# 1` … `# 4` |
+| 5. Two-column compare | `:::columns cards` with two cards; `:::col highlight` on the recommended side |
+| 7. Process / 8. Timeline | `:::timeline` over a list of three to five items, each opening with a `**Phase**` lead-in |
+| 10. Table | a bold first cell tints the row the slide is about; `` `tag` `` pills for short categorical values |
+| Thesis or recommendation in one sentence | `:::statement`: the sentence, then three numbered reasons |
+| The sentence a slide establishes | `:::take` instead of a closing `>` blockquote |
+| The source of the slide's numbers | `:::source`, one line in the bottom margin |
+| Any content slide | `^ ` eyebrow above the `## ` title; without one, the current chapter is shown |
+
+**md2 syntax** (stat row: eyebrow, cards, take, source):
+
+```markdown
+^ Demand
+## Commuters fill the boats all year
+
+:::columns cards
+
+:::col
+# 2,400
+### passengers a day
+On the Northpoint crossing,
+the busiest of the three.
+
+:::col highlight
+# 61%
+### are commuters
+They travel on weekdays
+in every month of the year.
+
+:::col
+# 18 min
+### saved per trip
+Against the bridge route
+at the evening peak.
+
+:::
+
+:::take Key point
+The Northpoint crossing keeps its boats full outside the summer season.
+:::
+
+:::source
+Source: ticket counts and passenger survey, 2026.
+:::
+```
+
+**Anti-patterns**:
+
+- A `:::take` on every slide. The box carries a sentence the slide already has; it is not a slot to fill
+  (`copy-rules.md` §0 procedure (b)). A slide that ends on its table or its cards needs none.
+- More than one `:::statement` per act. Each one presents itself as the act's conclusion, so a second
+  one leaves the reader to choose between them.
+- A thesis written for effect. The `:::statement` sentence carries a fact, like a title (`copy-rules.md`
+  rules 1 and 7b).
+
+---
+
 ## Quick selection guide
 
 | Beat in the narrative                       | First-choice pattern        |
@@ -329,3 +399,5 @@ Architect of the Control Plane. Ex-Instilla.
 | Architecture / screenshot                  | 11. Diagram / image         |
 | Introduce the team                         | 12. People                  |
 | Close with the ask                         | 13. Closing / CTA           |
+| Two to four numbers side by side           | Stat row (`guidance-modern`) |
+| The answer in one sentence                 | `:::statement` (`guidance-modern`) |

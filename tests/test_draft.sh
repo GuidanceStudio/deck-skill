@@ -31,6 +31,31 @@ assert_nonempty() {
     fi
 }
 
+assert_no_grep() {
+    local file="$1" pattern="$2" label="$3"
+    if grep -qiE "$pattern" "$DRAFT/$file"; then
+        echo "  FAIL: $file — $label — pattern still present: $pattern"
+        FAIL=$((FAIL + 1))
+    else
+        echo "  PASS: $file — $label"
+        PASS=$((PASS + 1))
+    fi
+}
+
+# Rows of the guidance-modern ceilings table only: everything from the line that
+# introduces it, so the forestvalley table above it cannot satisfy the check.
+assert_gm_ceiling() {
+    local label="$1"
+    if awk '/[Cc]eilings/ && /guidance-modern/ {f=1} f' "$DRAFT/print-constraints.md" \
+        | grep -qiE "^\| *$label[^|]*\|.*\| *[0-9]+[^|]*\| *\$"; then
+        echo "  PASS: print-constraints.md — guidance-modern ceiling for $label"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: print-constraints.md — no guidance-modern ceiling row for $label"
+        FAIL=$((FAIL + 1))
+    fi
+}
+
 echo "=== M4: draft/ knowledge files ==="
 
 assert_nonempty "slide-patterns.md"
@@ -131,6 +156,44 @@ assert_grep "prompt.md" 'retr(y|ies)|fix.*re-run|max.*retries' "retry on md2 err
 
 # md2-cheatsheet.md callout about +++ vs ---
 assert_grep "md2-cheatsheet.md" '\+\+\+.*---|TOML.*YAML|NOT.*---' "callout: +++ (TOML) NOT --- (YAML)"
+
+# --- M33: the constructs guidance-modern styles ---
+echo ""
+echo "--- M33: guidance-modern constructs ---"
+assert_grep "md2-cheatsheet.md" 'guidance-modern' "cheatsheet names the guidance-modern template"
+assert_grep "md2-cheatsheet.md" '^\^ [^ ]' "cheatsheet shows a ^ eyebrow line"
+assert_grep "md2-cheatsheet.md" 'eyebrow' "cheatsheet explains the eyebrow"
+assert_grep "md2-cheatsheet.md" '^:::columns cards' "cheatsheet shows :::columns cards"
+assert_grep "md2-cheatsheet.md" '^:::col highlight' "cheatsheet shows :::col highlight"
+assert_grep "md2-cheatsheet.md" 'two to four' "cheatsheet: two to four columns"
+assert_no_grep "md2-cheatsheet.md" 'max(imum)? two columns' "cheatsheet no longer caps columns at two"
+assert_grep "md2-cheatsheet.md" '^:::take' "cheatsheet shows :::take"
+assert_grep "md2-cheatsheet.md" '^:::source' "cheatsheet shows :::source"
+assert_grep "md2-cheatsheet.md" '^:::timeline' "cheatsheet shows :::timeline"
+assert_grep "md2-cheatsheet.md" '^:::statement' "cheatsheet shows :::statement"
+for key in palette kicker client subject confidential cover_meta; do
+    assert_grep "md2-cheatsheet.md" "^$key = " "cheatsheet front matter example sets $key"
+done
+assert_grep "md2-cheatsheet.md" 'Part N of T' "cheatsheet: the chapter's part label is automatic"
+assert_grep "md2-cheatsheet.md" 'pill' "cheatsheet: inline code renders as a pill"
+assert_grep "md2-cheatsheet.md" 'first cell' "cheatsheet: a bold first cell tints the table row"
+assert_grep "md2-cheatsheet.md" 'unstyled' "cheatsheet warns the constructs are unstyled in guidance/forestvalley"
+
+assert_grep "slide-patterns.md" 'guidance-modern' "patterns name the template that styles the constructs"
+assert_grep "slide-patterns.md" ':::columns cards' "patterns: stat row as cards"
+assert_grep "slide-patterns.md" ':::take' "patterns: takeaway box"
+assert_grep "slide-patterns.md" ':::source' "patterns: source line"
+assert_grep "slide-patterns.md" ':::timeline' "patterns: process as a timeline"
+assert_grep "slide-patterns.md" ':::statement' "patterns: thesis slide"
+assert_grep "slide-patterns.md" '^\^ [^ ]' "patterns show an eyebrow line"
+
+assert_grep "print-constraints.md" '[Cc]eilings.*guidance-modern' "print constraints carry guidance-modern ceilings"
+for label in 'Slide H2' 'Lede' 'Body' 'Card title' 'Card body' 'Take' 'Statement thesis'; do
+    assert_gm_ceiling "$label"
+done
+
+assert_grep "prompt.md" 'deck-template: guidance-modern' "draft emits the guidance-modern template comment"
+assert_grep "prompt.md" 'only (for )?a `?guidance-modern`? deck' "draft writes the new constructs only for a guidance-modern deck"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="

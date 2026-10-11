@@ -72,6 +72,12 @@ Valley one lives at `fv-institute/md2-template-forestvalley` (private); Guidance
 `gitlab.com/guidance-studio/templates/md2`. **md2 fails loudly on a template it cannot find**, so a
 missing brand template is an error, not a silent fallback.
 
+The same Guidance Studio repository carries **`guidance-modern`**, the only template that styles md2's
+newer constructs (`^` eyebrow, `:::columns cards`, `:::take`, `:::source`, `:::timeline`, `:::statement`
+and the cover front-matter keys); `guidance` and `forestvalley` print them as plain text. It needs an md2
+built after 0.2.1, so install md2 from source for it until the next release. The syntax is in
+`deck/draft/md2-cheatsheet.md`.
+
 Brand templates load their fonts from Google Fonts **at render time**. An offline machine renders with
 fallback system fonts.
 
@@ -125,7 +131,7 @@ deck/                           # the flat skill payload (copied verbatim by ins
 │   ├── prompt.md               # writer (orchestrates the others)
 │   ├── slide-patterns.md       # 12+ patterns with md2 examples
 │   ├── copy-rules.md           # headline-first, 6x6, parallel bullets
-│   ├── md2-cheatsheet.md       # frontmatter, columns, charts syntax
+│   ├── md2-cheatsheet.md       # frontmatter, columns, charts, guidance-modern syntax
 │   └── print-constraints.md    # chart ratios, page-break, pie sizing
 ├── render/
 │   ├── prompt.md               # how to invoke render.sh + handle errors

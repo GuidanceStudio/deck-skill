@@ -413,5 +413,70 @@ else
 fi
 
 echo ""
+echo "=== M33: guidance-modern ==="
+
+assert_grep "$PROMPT" '^\| *`guidance-modern`' "template table lists guidance-modern"
+assert_grep "$PROMPT" '^\| *`guidance`' "template table lists guidance"
+assert_grep "$PROMPT" '^\| *`forestvalley`' "template table lists forestvalley"
+assert_grep_i "$PROMPT" 'unstyled' "prompt warns the new constructs are unstyled in guidance and forestvalley"
+
+count_eq() {
+    local file="$1" pattern="$2" want="$3" label="$4" got
+    got="$(grep -oE -e "$pattern" "$file" 2>/dev/null | wc -l | tr -d ' ')"
+    if [ "$got" = "$want" ]; then
+        echo "  PASS: $label ($got)"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: $label — expected $want, found $got"
+        FAIL=$((FAIL + 1))
+    fi
+}
+
+# Functional: a deck written with every new construct renders one PDF page per slide.
+GM_BROWSER=""
+for b in chromium google-chrome chromium-browser chrome brave-browser brave msedge; do
+    command -v "$b" >/dev/null 2>&1 && { GM_BROWSER="$b"; break; }
+done
+GM_FIXTURE="$REPO_ROOT/tests/fixtures/modern.md"
+if ! command -v md2 >/dev/null 2>&1 || [ -z "$GM_BROWSER" ] || ! command -v pdfinfo >/dev/null 2>&1; then
+    echo "  SKIP: guidance-modern render needs md2, a Chromium-family browser and pdfinfo"
+elif [ ! -d "$HOME/.md2/templates/guidance-modern" ]; then
+    echo "  SKIP: guidance-modern is not installed in ~/.md2/templates"
+else
+    GM_DIR="$(mktemp -d)"
+    cp "$GM_FIXTURE" "$GM_DIR/modern.md" 2>/dev/null || true
+    if bash "$RENDER_SH" "$GM_DIR/modern.md" --template guidance-modern >/dev/null 2>&1; then
+        echo "  PASS: render.sh --template guidance-modern renders the fixture"
+        PASS=$((PASS + 1))
+        SLIDES=$(( $(grep -c '^---$' "$GM_DIR/modern.md") + 1 ))
+        PAGES="$(pdfinfo "$GM_DIR/modern.pdf" | awk '/^Pages:/ {print $2}')"
+        if [ "$PAGES" = "$SLIDES" ]; then
+            echo "  PASS: one PDF page per slide ($PAGES pages, $SLIDES slides)"
+            PASS=$((PASS + 1))
+        else
+            echo "  FAIL: $PAGES PDF pages for $SLIDES slides"
+            FAIL=$((FAIL + 1))
+        fi
+        H="$GM_DIR/modern.html"
+        count_eq "$H" 'class="gm-kicker"' 1 "front matter kicker reaches the cover"
+        count_eq "$H" 'class="gm-meta"' 1 "cover_meta becomes the cover's label/value row"
+        count_eq "$H" 'class="gm-eyebrow">The question<' 1 "a ^ line becomes the slide's eyebrow"
+        count_eq "$H" 'class="md2-columns md2-cols-4 cards"' 1 "four :::col in :::columns cards"
+        count_eq "$H" 'class="md2-columns md2-cols-3 cards"' 1 "three :::col in :::columns cards"
+        count_eq "$H" 'class="md2-col highlight"' 1 ":::col highlight"
+        count_eq "$H" 'class="md2-take"' 2 ":::take blocks"
+        count_eq "$H" 'class="md2-source"' 2 ":::source blocks"
+        count_eq "$H" 'class="md2-timeline"' 1 ":::timeline block"
+        count_eq "$H" 'class="slide statement' 1 ":::statement slide"
+        count_eq "$H" 'class="slide chapter' 2 ":::chapter slides"
+        count_eq "$H" 'Part 1 of 2' 1 "the chapter's part label is automatic"
+    else
+        echo "  FAIL: render.sh --template guidance-modern failed on the fixture"
+        FAIL=$((FAIL + 1))
+    fi
+    rm -rf "$GM_DIR"
+fi
+
+echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]

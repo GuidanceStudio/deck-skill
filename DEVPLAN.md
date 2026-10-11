@@ -647,7 +647,7 @@ tree (`deck/draft/print-constraints.md`, `deck/revise/prompt.md` e i due di rend
 non sono stati toccati dal recupero.
 
 
-## M33 — `guidance-modern` e la nuova sintassi md2 nella skill
+## M33 — `guidance-modern` e la nuova sintassi md2 nella skill ✅
 
 **Why:** md2 (M111–M113) e md2-templates (M114–M117) aggiungono occhiello, card da 2
 a 4, `:::take`, `:::source`, `:::timeline`, `:::statement`, il front matter della
@@ -663,15 +663,21 @@ un esempio; `deck/draft/slide-patterns.md` dice quale pattern usa quale costrutt
 pubblico, quindi gli esempi usano un soggetto inventato.
 
 **Tasks:**
-- [ ] `deck/draft/md2-cheatsheet.md`: occhiello, `:::columns cards` / `:::col highlight`, `:::take`, `:::source`, `:::timeline`, `:::statement`, chiavi di front matter
-- [ ] `deck/draft/slide-patterns.md`: corrispondenza pattern → costrutto
-- [ ] `deck/draft/print-constraints.md`: limiti di riga di `guidance-modern` misurati sul PDF d'esempio
-- [ ] `deck/render/prompt.md`: `guidance-modern` nella tabella dei template, con l'avvertenza sugli altri due
-- [ ] Test: `tests/test_draft.sh` e `tests/test_render.sh` — asserzioni sui costrutti documentati e sul template
-- [ ] Test: funzionale — un `presentation.md` scritto con i costrutti nuovi reso con `render.sh --template guidance-modern`
-- [ ] `bash tests/test_all.sh` verde; deploy `./install.sh --force`
-- [ ] Commit & push
+- [x] `deck/draft/md2-cheatsheet.md`: occhiello, `:::columns cards` / `:::col highlight`, `:::take`, `:::source`, `:::timeline`, `:::statement`, chiavi di front matter
+- [x] `deck/draft/slide-patterns.md`: corrispondenza pattern → costrutto
+- [x] `deck/draft/print-constraints.md`: limiti di riga di `guidance-modern` misurati sul PDF d'esempio
+- [x] `deck/render/prompt.md`: `guidance-modern` nella tabella dei template, con l'avvertenza sugli altri due
+- [x] Test: `tests/test_draft.sh` e `tests/test_render.sh` — asserzioni sui costrutti documentati e sul template
+- [x] Test: funzionale — un `presentation.md` scritto con i costrutti nuovi reso con `render.sh --template guidance-modern`
+- [x] `bash tests/test_all.sh` verde; deploy `./install.sh --force`
+- [x] Commit & push
 
 **Done when:** un `/deck draft` che segue la skill produce markdown con i costrutti
 nuovi, il PDF con `guidance-modern` ha una pagina per slide, e `tests/test_all.sh` è
 verde.
+
+**Deviations:**
+- Toccati anche `deck/draft/prompt.md` (quando emettere `deck-template: guidance-modern` e i costrutti) e il README: senza, il Done-when sul `/deck draft` non regge; `print-constraints.md` regola 7 ora esenta `:::chapter` e `:::statement`.
+- Trovato: md2 fa l'escape del titolo di copertina (un `<br>` esce come testo) e un `<br>` nel titolo di capitolo finisce in ogni occhiello del capitolo; documentato in regola 10, la correzione del primo spetta a md2.
+- `palette = "guidance-modern"` documentata, ma il file palette arriva con md2-templates M117 (in corso) e md2 si ferma su una palette mancante: la fixture `tests/fixtures/modern.md` la omette.
+- `deck/revise/prompt.md` (h) presume che il template stampi `title` e `# H1`; `guidance-modern` stampa solo `title`. Non toccato.

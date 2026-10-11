@@ -85,6 +85,9 @@ When in doubt, follow them. They prefer page-correctness over information densit
 
 **Fix when violated**: add the H2. If you can't think of a meaningful H2 for the slide, the slide probably shouldn't exist (see rule 6).
 
+**Exceptions**: a `:::chapter` slide takes its title from its `# ` line, and a `:::statement` slide
+(`guidance-modern`) from its first line of text. Neither carries a `## `.
+
 ---
 
 ## 8. Column slides: keep content light
@@ -139,6 +142,42 @@ approximate, so treat these as ceilings; re-measure for any other template, and 
 | Body / bullets / blockquotes | ≥ 106 chars | 100 per line |
 | Cover subtitle | ≥ 107 chars | 100 per line |
 | Table headers, row labels | column width | must not wrap — shorten the label |
+
+**Line-length ceilings** (guidance-modern template, A4 landscape — measured in Chromium on the rendered
+`example.md` that ships with the template, with Italian and English prose at each element's width; the
+same caveat on proportional fonts applies):
+
+| Text class | Observed fit | Ceiling |
+|---|---|---|
+| Slide H2 title (Domine 30pt) | 48–49 chars | 44 per line |
+| Lede, the first paragraph (Inter 12pt) | ~104 | 95 per line |
+| Body / bullets (Inter 11pt) | ~141 | 125 per line |
+| Card title, 2 / 3 / 4 cards (Domine 15.5pt) | 40 / 24 / 14 | 36 / 22 / 12 per line |
+| Card body, 2 / 3 / 4 cards (Inter 9.5pt) | 67 / 42 / 27 | 60 / 38 / 24 per line |
+| Take text (Inter 11pt) | ~131 | 120 per line |
+| Source line (mono capitals) | 170 | 165, on one line |
+| Timeline phase name, 3 / 4 / 5 items | 28 / 19 / 13 | 25 / 17 / 11 |
+| Timeline item text, 3 / 4 / 5 items | 45 / 31 / 24 | 41 / 28 / 22 per line |
+| Statement thesis (Domine 39pt) | 35–38 | 32 per line |
+| Statement point, three columns | 42–45 | 38 per line |
+| Chapter title (Domine 47pt) | 30–31 | 27, on one line |
+| Chapter subtitle or topic row (mono capitals) | 124–126 | 120 for the whole row |
+| Cover title (Domine 63pt) | 21 | 19 per line |
+| Cover subtitle | 79–82 | 72 per line |
+| Hero-figure caption | 72–75 | 66 per line |
+| Quote | 75–81 | 69 per line |
+| Table headers, row labels | column width | must not wrap — shorten the label |
+
+How to hand-break in `guidance-modern`:
+
+- **Paragraphs, bullets, card text, the take box, the thesis and statement points**: a newline in the
+  source is a line break, because md2 turns a single newline into `<br>`.
+- **`## ` slide titles and `### ` card titles** cannot hold a newline: put `<br>` at the phrase boundary
+  (`## Commuters fill the boats<br>in every season`).
+- **Chapter titles** stay on one line. Their text is repeated in the eyebrow of every slide of the
+  chapter, and a `<br>` would break each of those eyebrows too.
+- **The cover title** is HTML-escaped, so a `<br>` prints as text. Keep it within 19 characters, or choose
+  the words so that the renderer's break lands at a phrase boundary, and check it after render.
 
 **Fix when violated**: hand-break the source line at a phrase boundary (content unchanged, the break
 becomes an author line), or remove words — the line is too long, not the font too small. Never accept
