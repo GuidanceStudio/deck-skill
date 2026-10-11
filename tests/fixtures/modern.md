@@ -1,6 +1,7 @@
 +++
 title = "Harbor Lane Ferries"
 lang = "en"
+palette = "guidance-modern"
 client = "Harbor Lane Ferries"
 subject = "Route review"
 confidential = "Confidential"

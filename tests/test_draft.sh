@@ -33,7 +33,7 @@ assert_nonempty() {
 
 assert_no_grep() {
     local file="$1" pattern="$2" label="$3"
-    if grep -qiE "$pattern" "$DRAFT/$file"; then
+    if grep -qiE -e "$pattern" "$DRAFT/$file"; then
         echo "  FAIL: $file — $label — pattern still present: $pattern"
         FAIL=$((FAIL + 1))
     else
@@ -194,6 +194,30 @@ done
 
 assert_grep "prompt.md" 'deck-template: guidance-modern' "draft emits the guidance-modern template comment"
 assert_grep "prompt.md" 'only (for )?a `?guidance-modern`? deck' "draft writes the new constructs only for a guidance-modern deck"
+
+# --- M34: aligned with md2 M118 and M119 ---
+echo ""
+echo "--- M34: chart options, <br> in titles, the palette ---"
+for opt in labels legend stacked show-data; do
+    assert_no_grep "md2-cheatsheet.md" "--$opt\\b" "cheatsheet does not document --$opt, which md2 ignores"
+    assert_no_grep "slide-patterns.md" "--$opt\\b" "patterns do not use --$opt, which md2 ignores"
+done
+assert_grep "md2-cheatsheet.md" '(--title.* only option|only option.*--title)' "cheatsheet: --title is the only chart option"
+assert_grep "md2-cheatsheet.md" 'labels, legend and values' "cheatsheet: labels, legend and values are automatic"
+assert_grep "md2-cheatsheet.md" '`stacked-bar`' "cheatsheet: stacked-bar chart type"
+assert_grep "md2-cheatsheet.md" '`stacked-column`' "cheatsheet: stacked-column chart type"
+assert_grep "md2-cheatsheet.md" 'alignment[^.]*chart does not change' "cheatsheet: an aligned chart table keeps its values"
+
+assert_no_grep "md2-cheatsheet.md" 'HTML-escaped' "cheatsheet no longer says the cover title is escaped"
+assert_grep "md2-cheatsheet.md" '<br>. in the cover title.*breaks the line' "cheatsheet: <br> breaks the cover title"
+assert_no_grep "print-constraints.md" 'HTML-escaped' "print constraints no longer say the cover title is escaped"
+assert_grep "print-constraints.md" 'cover title[^.]*takes a .<br>.' "print constraints: the cover title takes a <br>"
+assert_no_grep "print-constraints.md" 'break each of those eyebrows' "print constraints: a chapter <br> no longer breaks eyebrows"
+assert_grep "print-constraints.md" 'eyebrow[^.]*shows a space' "print constraints: the eyebrow shows a space for a chapter <br>"
+assert_no_grep "print-constraints.md" '^\| *Chapter title.*on one line' "print constraints: chapter title ceiling is per line"
+
+assert_no_grep "md2-cheatsheet.md" 'not found' "cheatsheet drops the missing-palette workaround"
+assert_grep "md2-cheatsheet.md" 'ships with md2-templates' "cheatsheet: the palette ships with md2-templates"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="

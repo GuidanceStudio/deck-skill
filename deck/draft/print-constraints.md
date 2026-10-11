@@ -160,7 +160,7 @@ same caveat on proportional fonts applies):
 | Timeline item text, 3 / 4 / 5 items | 45 / 31 / 24 | 41 / 28 / 22 per line |
 | Statement thesis (Domine 39pt) | 35–38 | 32 per line |
 | Statement point, three columns | 42–45 | 38 per line |
-| Chapter title (Domine 47pt) | 30–31 | 27, on one line |
+| Chapter title (Domine 47pt) | 30–31 | 27 per line |
 | Chapter subtitle or topic row (mono capitals) | 124–126 | 120 for the whole row |
 | Cover title (Domine 63pt) | 21 | 19 per line |
 | Cover subtitle | 79–82 | 72 per line |
@@ -174,10 +174,10 @@ How to hand-break in `guidance-modern`:
   source is a line break, because md2 turns a single newline into `<br>`.
 - **`## ` slide titles and `### ` card titles** cannot hold a newline: put `<br>` at the phrase boundary
   (`## Commuters fill the boats<br>in every season`).
-- **Chapter titles** stay on one line. Their text is repeated in the eyebrow of every slide of the
-  chapter, and a `<br>` would break each of those eyebrows too.
-- **The cover title** is HTML-escaped, so a `<br>` prints as text. Keep it within 19 characters, or choose
-  the words so that the renderer's break lands at a phrase boundary, and check it after render.
+- **Chapter titles** take a `<br>` at the phrase boundary (`# Demand<br>by season`): it breaks the
+  chapter slide's title, and the eyebrow `NN · title` on the chapter's slides shows a space in its place.
+- **The cover title** takes a `<br>` at the phrase boundary, in `title` or in the `# H1`; the HTML
+  `<title>` shows a space there. Keep each line within 19 characters.
 
 **Fix when violated**: hand-break the source line at a phrase boundary (content unchanged, the break
 becomes an author line), or remove words — the line is too long, not the font too small. Never accept

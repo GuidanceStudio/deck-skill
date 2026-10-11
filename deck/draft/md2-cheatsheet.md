@@ -46,7 +46,7 @@ Body content of slide 2.
 
 | Field     | Type             | Default       | Notes                                                |
 |-----------|------------------|---------------|------------------------------------------------------|
-| `title`   | string           | from H1       | Sets `<title>` and the presentation title            |
+| `title`   | string           | from H1       | Sets `<title>` and the cover title; replaces the H1  |
 | `palette` | string           | `"default"`   | Built-in name or path to user palette                |
 | `colors`  | array of strings | —             | Override the first N colors of the chosen palette    |
 | `lang`    | string           | `"it"`        | HTML `lang` attribute                                |
@@ -93,7 +93,7 @@ If the `[dark]` block is absent, dark variants are computed automatically.
 
 | Level    | Where                 | Effect                                                       |
 |----------|----------------------|--------------------------------------------------------------|
-| `# H1`   | Cover only            | Presentation title (also the page `<title>` if no frontmatter) |
+| `# H1`   | Cover only            | Presentation and page title when the front matter has no `title` |
 | `## H2`  | One per slide         | Slide title; appears in the sidebar nav                      |
 | `### H3` | Within a slide        | Sub-section                                                  |
 | `#### H4`| Within a slide        | Lower sub-section                                            |
@@ -107,13 +107,15 @@ If a slide has no H2, md2 falls back to "Slide N" — which breaks navigation. *
 Turn a markdown table into a visual chart. The first column is the label axis; subsequent columns are data series.
 
 ```
-:::chart TYPE [--option] [--option "value"]
+:::chart TYPE [--title "…"]
 | Label   | Series A |
 |---------|----------|
 | Item 1  | 42       |
 | Item 2  | 73       |
 :::
 ```
+
+The separator row may carry alignment (`---:`, `:---:`, `:---`) as in any table; the chart does not change.
 
 ### Chart types
 
@@ -124,21 +126,25 @@ Turn a markdown table into a visual chart. The first column is the label axis; s
 | `line`         | Trend lines                            |
 | `line filled` | Trend with area below filled (alias `area`) |
 | `pie`          | Proportions, single series only        |
+| `stacked-bar`  | Horizontal bars, series stacked into one bar per row |
+| `stacked-column` | Vertical bars, series stacked into one column per row |
 
 ### Options
 
-| Option         | Effect                                                |
-|----------------|-------------------------------------------------------|
-| `--labels`     | Show the first-column labels on the axis              |
-| `--legend`     | Show a legend (useful for multi-series charts)        |
-| `--stacked`    | Stack bars/columns instead of grouping side-by-side   |
-| `--show-data`  | Show numeric values on/over the bars                  |
-| `--title "…"` | Caption above the chart                                |
+`--title "…"` is the only option: a caption above the chart. Labels, legend and values have no options,
+because md2 decides them from the chart type and the data:
+
+- the first-column labels are always shown;
+- a legend appears when there is more than one data column, and a pie always has one with the slice names;
+- bars and columns carry their values; line and area charts show a scale instead, and a pie writes the
+  value inside large slices and in the legend for slices under 6%.
+
+Stacking comes from the `stacked-bar` and `stacked-column` types. Any other word starting with `--` is ignored.
 
 ### Multi-series example
 
 ```
-:::chart column --labels --legend --show-data --title "Revenue vs Costs"
+:::chart column --title "Revenue vs Costs"
 | Quarter | Revenue | Costs |
 |---------|---------|-------|
 | Q1      | 100     | 80    |
@@ -195,6 +201,8 @@ Parsing inside the fence:
 
 - The `# ` **H1** line is the **title** (also the sidebar nav label).
 - Everything **after** the H1 is the **subtitle** (optional, rendered as normal markdown).
+- A `<br>` in the title breaks the chapter slide's heading; the `NN · title` eyebrow of `guidance-modern`
+  shows a space in its place.
 
 Only an explicit `:::chapter` fence triggers a chapter slide — a bare `# ` H1 inside an ordinary slide (the hero-stat pattern) stays a normal heading. Like any slide, the fenced block needs a blank line and `---` before and after it.
 
@@ -254,11 +262,12 @@ cover_meta = [["For", "Harbor Lane Ferries"], ["Prepared by", "Strategy team"], 
 | `confidential` | the header strip, right side, before the page number `NN/TT` |
 | `kicker` | the small line above the cover title |
 | `cover_meta` | the label/value row at the foot of the cover, as `[label, value]` pairs |
-| `palette` | chart colours; it is installed with the template, and md2 stops with `Palette 'guidance-modern' not found` when it is missing — remove the line in that case |
+| `palette` | chart colours; the `guidance-modern` palette ships with md2-templates |
 
 Every key is optional, and a missing one leaves no empty element behind. The cover subtitle is the
-paragraph under `# H1`, as in every template. The cover title is HTML-escaped, so a `<br>` in it prints
-as text: `print-constraints.md` rule 10 gives its length.
+paragraph under `# H1`, as in every template.
+A `<br>` in the cover title, in `title` or in the `# H1`, breaks the line on the cover; the HTML
+`<title>` gets a space in its place. `print-constraints.md` rule 10 gives the length of each line.
 
 ### Eyebrow (`^`)
 
