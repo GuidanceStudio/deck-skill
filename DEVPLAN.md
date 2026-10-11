@@ -682,7 +682,7 @@ verde.
 - `palette = "guidance-modern"` documentata, ma il file palette arriva con md2-templates M117 (in corso) e md2 si ferma su una palette mancante: la fixture `tests/fixtures/modern.md` la omette.
 - `deck/revise/prompt.md` (h) presume che il template stampi `title` e `# H1`; `guidance-modern` stampa solo `title`. Non toccato.
 
-## M34 — Il controllo della copertina in `/deck revise` e il cheatsheet allineati a md2
+## M34 — Il controllo della copertina in `/deck revise` e il cheatsheet allineati a md2 ✅
 
 **Why:** il controllo (h) di `deck/revise/prompt.md` dice che il template stampa
 sia il `title` del front matter sia il `# H1`. md2 fa altro: con un `title` nel
@@ -702,12 +702,17 @@ di prova con `guidance-modern` e con il template default. In
 riceve `palette = "guidance-modern"`, che adesso è installata.
 
 **Tasks:**
-- [ ] `deck/revise/prompt.md` (h) riscritto sul comportamento reale, verificato con un render di prova
-- [ ] `deck/draft/md2-cheatsheet.md`: opzioni di `:::chart` ignorate rimosse, nota sul `<br>` nei titoli aggiornata a md2 M119
-- [ ] `tests/fixtures/modern.md` con `palette = "guidance-modern"`
-- [ ] Test: `tests/test_revise.sh` e `tests/test_draft.sh` — asserzioni sul nuovo (h) e sull'assenza delle opzioni ignorate
-- [ ] `bash tests/test_all.sh` verde; deploy `./install.sh --target claude --force`
-- [ ] Commit & push
+- [x] `deck/revise/prompt.md` (h) riscritto sul comportamento reale, verificato con un render di prova
+- [x] `deck/draft/md2-cheatsheet.md`: opzioni di `:::chart` ignorate rimosse, nota sul `<br>` nei titoli aggiornata a md2 M119
+- [x] `tests/fixtures/modern.md` con `palette = "guidance-modern"`
+- [x] Test: `tests/test_revise.sh` e `tests/test_draft.sh` — asserzioni sul nuovo (h) e sull'assenza delle opzioni ignorate
+- [x] `bash tests/test_all.sh` verde; deploy `./install.sh --target claude --force`
+- [x] Commit & push
 
 **Done when:** (h) descrive la copertina che md2 stampa, il cheatsheet non cita
 opzioni ignorate, e `tests/test_all.sh` è verde.
+
+**Deviations:**
+- Toccati anche `deck/draft/slide-patterns.md` (l'esempio di `:::chart` usava `--labels --show-data`) e `print-constraints.md` regola 10: il `<br>` ora è ammesso nel titolo di capitolo e di copertina, il tetto del capitolo è per riga; il cheatsheet riceve `stacked-bar` e `stacked-column`.
+- Trovato col render di prova: una riga `# ` che non è la prima della copertina non viene scartata ed esce come secondo titolo; (h) segnala anche questa.
+- `count_eq` in `tests/test_render.sh` interrompeva la suite su un conteggio zero (`set -e` con pipefail) invece di stampare FAIL: corretto. Il test funzionale salta se la palette non è installata.

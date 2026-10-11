@@ -144,8 +144,14 @@ Also flag: anything that explains the audience their own trade, and any sentence
 
 ### (h) The cover
 
-The `# H1` must name the subject and **must not repeat the frontmatter `title`** — the template prints
-both, so a deck that puts the same words in each reads as a duplication before the reader has started.
+The cover title is the front matter `title`; only when `title` is missing is it the `# H1` on the
+first line of the cover. Check that this title names the subject.
+
+**An H1 that differs from `title` is text that will not be printed**: md2 drops the cover's first `# `
+line whenever `title` is set, in every template. Flag it, decide which wording is right, put it in
+`title`, and make the H1 identical to it. A `# ` line further down the cover stays in the cover text and
+prints as a second heading under the title: flag it too, and move its words into `title` or the subtitle
+paragraph.
 
 ## Output
 

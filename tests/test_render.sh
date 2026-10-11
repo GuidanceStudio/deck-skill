@@ -422,7 +422,7 @@ assert_grep_i "$PROMPT" 'unstyled' "prompt warns the new constructs are unstyled
 
 count_eq() {
     local file="$1" pattern="$2" want="$3" label="$4" got
-    got="$(grep -oE -e "$pattern" "$file" 2>/dev/null | wc -l | tr -d ' ')"
+    got="$( { grep -oE -e "$pattern" "$file" 2>/dev/null || true; } | wc -l | tr -d ' ')"
     if [ "$got" = "$want" ]; then
         echo "  PASS: $label ($got)"
         PASS=$((PASS + 1))
@@ -440,8 +440,8 @@ done
 GM_FIXTURE="$REPO_ROOT/tests/fixtures/modern.md"
 if ! command -v md2 >/dev/null 2>&1 || [ -z "$GM_BROWSER" ] || ! command -v pdfinfo >/dev/null 2>&1; then
     echo "  SKIP: guidance-modern render needs md2, a Chromium-family browser and pdfinfo"
-elif [ ! -d "$HOME/.md2/templates/guidance-modern" ]; then
-    echo "  SKIP: guidance-modern is not installed in ~/.md2/templates"
+elif [ ! -d "$HOME/.md2/templates/guidance-modern" ] || [ ! -f "$HOME/.md2/palettes/guidance-modern.toml" ]; then
+    echo "  SKIP: the guidance-modern template or palette is not installed in ~/.md2"
 else
     GM_DIR="$(mktemp -d)"
     cp "$GM_FIXTURE" "$GM_DIR/modern.md" 2>/dev/null || true
@@ -470,6 +470,9 @@ else
         count_eq "$H" 'class="slide statement' 1 ":::statement slide"
         count_eq "$H" 'class="slide chapter' 2 ":::chapter slides"
         count_eq "$H" 'Part 1 of 2' 1 "the chapter's part label is automatic"
+        GM_COLOR1="$(awk '/^colors/ {f=1} f && match($0, /#[0-9A-Fa-f]{6}/) {print substr($0, RSTART, RLENGTH); exit}' \
+            "$HOME/.md2/palettes/guidance-modern.toml")"
+        count_eq "$H" "--md2-color-1: $GM_COLOR1;" 1 "the fixture's palette sets the first chart colour"
     else
         echo "  FAIL: render.sh --template guidance-modern failed on the fixture"
         FAIL=$((FAIL + 1))

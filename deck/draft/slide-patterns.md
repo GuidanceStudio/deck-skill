@@ -208,7 +208,7 @@ Italian AI market YoY growth, 2024 → 2025. Source: Osservatorio AI PoliMI.
 
 Conservative scenario: +25% YoY through 2031, no external funding.
 
-:::chart column --labels --show-data --title "Annual revenue (€)"
+:::chart column --title "Annual revenue (€)"
 | Year | Revenue |
 |------|---------|
 | 2027 | 350000  |

@@ -25,6 +25,19 @@ assert_grep() {
     fi
 }
 
+# Negative checks read the file as one line, so a phrase wrapped across two
+# source lines cannot slip past them.
+assert_no_grep() {
+    local file="$1" pattern="$2" label="$3"
+    if tr '\n' ' ' < "$file" | grep -qiE -e "$pattern"; then
+        echo "  FAIL: $(basename "$file") — $label — pattern still present: $pattern"
+        FAIL=$((FAIL + 1))
+    else
+        echo "  PASS: $(basename "$file") — $label"
+        PASS=$((PASS + 1))
+    fi
+}
+
 assert_nonempty() {
     local file="$1"
     if [ -s "$file" ]; then
@@ -138,8 +151,23 @@ assert_grep "$REVISE/prompt.md" 'homework assignment'                 "questions
 assert_grep "$REVISE/prompt.md" 'own trade'                           "not explaining the audience their trade"
 assert_grep "$REVISE/prompt.md" 'narrates our own process'            "not narrating our process"
 assert_grep "$REVISE/prompt.md" '\(h\) The cover'                     "check (h) — the cover"
-assert_grep "$REVISE/prompt.md" 'must not repeat the frontmatter'     "H1 must not repeat the title"
 assert_grep "$REVISE/prompt.md" 'eight checks'                        "count updated to eight"
+
+echo ""
+echo "=== M34: the cover check describes the cover md2 prints ==="
+
+assert_grep "$REVISE/prompt.md" 'cover title is the front ?matter .title.' \
+    "the cover title is the front matter title"
+assert_grep "$REVISE/prompt.md" 'only when .title. is missing[^.]*# H1' \
+    "the # H1 is the cover title only when title is missing"
+assert_grep "$REVISE/prompt.md" 'H1 that differs from .title. is text that will not be printed' \
+    "an H1 different from title is flagged as unprinted text"
+assert_grep "$REVISE/prompt.md" 'second heading' \
+    "a # line further down the cover prints as a second heading"
+assert_no_grep "$REVISE/prompt.md" 'prints? +both' \
+    "no claim that the template prints both title and H1"
+assert_no_grep "$REVISE/prompt.md" 'must not repeat +the +front ?matter' \
+    "repeating title in the H1 is no longer a defect"
 
 echo ""
 echo "=== M28: copy-rules carries the new procedures and rules ==="
