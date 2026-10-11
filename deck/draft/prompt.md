@@ -89,7 +89,7 @@ If two adjacent beats both want the same pattern, consider whether they should m
 
 Apply the rules from the knowledge files as you write:
 
-- **Frontmatter**: the `+++` TOML block must be the very first thing in the file (no HTML comments, no blank lines before it — md2 only parses frontmatter when it starts on line 1). Include `title`, `palette` (from brief), `lang` (from brief), and optional `dark`. See `md2-cheatsheet.md` for fields.
+- **Frontmatter**: the `+++` TOML block must be the very first thing in the file (no HTML comments, no blank lines before it — md2 only parses frontmatter when it starts on line 1). Include `title`, `palette` (from brief), `lang` (from brief), and optional `dark`. For a `guidance-modern` deck, add the cover keys `client`, `subject`, `confidential`, `kicker` and `cover_meta`. See `md2-cheatsheet.md` for fields.
 
 - **Orientation comments**: at the **end of the file**, after the last slide, emit two HTML comments preserving the brief's choice:
 
@@ -107,6 +107,13 @@ Apply the rules from the knowledge files as you write:
   ```
 
   `render.sh` reads it with the same precedence as orientation/paper (CLI `--template` flag wins, then this comment, then md2's default template). Only emit it when a non-default template is actually wanted; otherwise leave it out. **A Forest Valley deck always wants one**: emit `<!-- deck-template: forestvalley -->` whenever the deck is for Forest Valley. (`fv-scout`'s own `deck` route hardcodes `FV_TEMPLATE="forestvalley"` in its `render.sh`, so this covers the case where an FV deck is drafted through `/deck` instead.)
+
+  Emit `<!-- deck-template: guidance-modern -->` when the brief or the user names `guidance-modern`. It is
+  the only template that styles the `^` eyebrow, `:::columns cards`, `:::take`, `:::source`, `:::timeline`
+  and `:::statement`, so write those constructs only for a `guidance-modern` deck and keep the plain
+  patterns for every other template: `guidance` and `forestvalley` print them as unstyled text. The
+  mapping from pattern to construct is in `slide-patterns.md`, "With the `guidance-modern` template", and
+  its line lengths are in `print-constraints.md` rule 10.
 - **Cover**: pattern 1, with a title that names the subject specifically (apply `copy-rules.md` rule 10).
 - **Slide titles**: every `## H2` is a takeaway stated as a plain declarative sentence (`copy-rules.md` rule 1). Test each twice: could it appear unchanged on a different deck (→ it's a label)? And does a reader learn a fact from it, or only feel confidence (→ it's a slogan)? Rewrite either way.
 - **No rhetorical constructions** anywhere — titles, subtitles, blockquotes, cover lines (`copy-rules.md` rule 7b). No triads, antithesis, chiasmus, fragments for emphasis, aphorisms or wordplay. This is unconditional and does not relax for board audiences.

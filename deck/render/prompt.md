@@ -78,6 +78,25 @@ Orientation and paper size are usually picked up automatically from the `<!-- de
 
 The md2 **template** follows the same precedence: a CLI `--template NAME` flag wins; otherwise `render.sh` reads a `<!-- deck-template: NAME -->` comment from `presentation.md` (emitted by `/deck draft` only when a custom template is wanted); if neither is present, md2 uses its default template. `--template` is supported **by render.sh** — passing it is not improvising. You still call only `render.sh`; never invoke `md2 --template` yourself.
 
+## Templates
+
+| Template | Installed by | What it gives the deck |
+|---|---|---|
+| `default` | md2 itself | md2's own layout; minimal styling for cards, take, source, timeline and statement |
+| `guidance` | the brand templates, into `~/.md2/templates/` | Guidance Studio fonts, accent and logo on md2's older layout, print footer with page number |
+| `forestvalley` | the brand templates, into `~/.md2/templates/` | Forest Valley fonts and accent on md2's older layout, print footer with page number |
+| `guidance-modern` | the brand templates, into `~/.md2/templates/` | full-bleed A4 landscape pages with header strip; cover keys, `^` eyebrow, cards, take box, source line, timeline, statement slides, pills (`draft/md2-cheatsheet.md`) |
+
+**`guidance` and `forestvalley` do not style the newer constructs.** Both are full copies of an older md2
+default, so a deck written with `^` eyebrows, `:::columns cards`, `:::take`, `:::source`, `:::timeline` or
+`:::statement` renders there as plain, unstyled text, and the eyebrows disappear. Such a deck is written
+for `guidance-modern`. If the user asks for `guidance` or `forestvalley` on it, tell them which slides will
+lose their layout before you render.
+
+`guidance-modern` needs an md2 that passes the template context it reads (front matter, page numbers,
+chapter, eyebrow, statement slides). That arrived after md2 0.2.1: until the next release, md2 is
+installed from source for this template.
+
 ## Error handling
 
 The script exits with distinct codes per failure mode. Surface the error message verbatim to the user, then explain the fix:
