@@ -26,7 +26,7 @@ All artifacts land in the user's **current working directory** (CWD) with fixed 
 | `/deck brief`   | user interview               | `presentation-brief.md`                       |
 | `/deck draft`   | `presentation-brief.md`      | `presentation.md`                             |
 | `/deck render`  | `presentation.md`            | `presentation.html` and `presentation.pdf`    |
-| `/deck revise`  | `presentation.pdf` + `presentation.md` + the brief's `## Audience` block | `presentation-revision.md`, and `presentation.md` rewritten |
+| `/deck revise`  | `presentation.pdf` + `presentation.md` + the brief's `## Audience` block and slide count target | `presentation-revision.md`, and `presentation.md` rewritten |
 
 If the required input file is missing from CWD, stop and offer the user two paths: (a) run the previous subcommand first, or (b) paste the content inline. Never invent input silently.
 

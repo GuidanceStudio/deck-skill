@@ -716,3 +716,36 @@ opzioni ignorate, e `tests/test_all.sh` è verde.
 - Toccati anche `deck/draft/slide-patterns.md` (l'esempio di `:::chart` usava `--labels --show-data`) e `print-constraints.md` regola 10: il `<br>` ora è ammesso nel titolo di capitolo e di copertina, il tetto del capitolo è per riga; il cheatsheet riceve `stacked-bar` e `stacked-column`.
 - Trovato col render di prova: una riga `# ` che non è la prima della copertina non viene scartata ed esce come secondo titolo; (h) segnala anche questa.
 - `count_eq` in `tests/test_render.sh` interrompeva la suite su un conteggio zero (`set -e` con pipefail) invece di stampare FAIL: corretto. Il test funzionale salta se la palette non è installata.
+
+## M35 — `/deck revise` legge anche il racconto, non solo le righe ✅
+
+**Why:** il 2026-10-16 la revisione esterna ha segnalato 33 punti di riga su un deck di 54 pagine e ha passato le
+pagine 2-8. L'operatore, leggendolo: "non si capisce nulla. parte da numeri poco utili e non spiega la domanda di
+ricerca e come abbiamo strutturato l'analisi e perché". Gli otto controlli (a-h) di `deck/revise/prompt.md` lavorano
+su una riga o una slide alla volta; nessuno legge il deck come sequenza, quindi un deck fatto di slide corrette e
+messe in un ordine che non si capisce passa.
+
+**Approccio:** un controllo (i), eseguito per primo, sull'insieme. Il revisore legge solo i titoli, poi le prime
+pagine fino a un quarto del deck, e scrive con parole sue: (1) a quale domanda o decisione risponde il deck; (2) come
+è stato prodotto il contenuto e perché in quel modo, quando il deck riferisce un lavoro o un'analisi; (3) come si
+legge ogni numero che compare nei titoli; (4) le 3-5 conclusioni. Ognuna delle quattro che non riesce a scrivere, o
+che compare solo dopo il primo quarto, è un punto a livello di deck, corretto riordinando o aggiungendo una slide.
+Segnala anche: un numero in apertura che non risponde a una domanda del lettore; un primo risultato che non serve
+alla domanda del deck (una classifica, un dettaglio); titoli costruiti su un punteggio non spiegato prima; più del
+25% di slide oltre l'obiettivo del brief. Il file di revisione riceve una sezione «Il racconto» con le quattro
+risposte come le ha scritte il revisore, prima della tabella dei punti.
+
+**Tasks:**
+- [x] `deck/revise/prompt.md`: controllo (i) e sezione «Il racconto» nel formato del file di revisione
+- [x] Test: `tests/test_revise.sh` — asserzioni sul controllo (i), sulle quattro domande e sulla sezione
+- [x] `bash tests/test_all.sh` verde; deploy `./install.sh --target claude --force`
+- [x] Commit & push
+
+**Done when:** il prompt chiede le quattro risposte prima dei controlli di riga, il file di revisione le riporta, e
+`tests/test_all.sh` è verde.
+
+**Deviations:**
+- Nel template del file di revisione la sezione si chiama `## The story`, perché prompt e template sono in inglese; su un deck in italiano diventa «Il racconto» per la regola di lingua del prompt (il file di revisione segue la lingua del deck).
+- Il controllo del 25% richiede l'obiettivo di slide del brief: il revisore riceve ora anche la riga sotto `## Length`. Aggiornati la tabella degli input e la regola di isolamento del prompt, e la riga di `/deck revise` nella tabella di `deck/SKILL.md`.
+- Ogni risposta della sezione indica la pagina da cui viene, così la regola del primo quarto si verifica; un punto a livello di deck usa `deck` nella colonna Slide della tabella.
+- `tests/test_revise.sh`: l'asserzione M28 su «eight checks» è sostituita da «nine checks»; nuovo `assert_before` per l'ordine ((i) prima di (a), `## The story` prima di `## Findings`).

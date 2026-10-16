@@ -5,7 +5,7 @@
 
 ## What this subcommand does
 
-Read the **rendered** deck, run eight checks against it, write the findings to `presentation-revision.md`,
+Read the **rendered** deck, run nine checks against it, write the findings to `presentation-revision.md`,
 apply the fixes to `presentation.md`, and tell the user to re-render. A deck is not deliverable until this
 has run.
 
@@ -27,7 +27,7 @@ from memory, every time, which is why the reader saw all three lines in seconds 
 |---|---|---|
 | `presentation.md` (CWD) | yes | the copy under review |
 | `presentation.pdf` (CWD) | yes | page-fit pressure and the printed reading order |
-| `presentation-brief.md` (CWD) | if present | **the `## Audience` block only** |
+| `presentation-brief.md` (CWD) | if present | **the `## Audience` block and the slide count target under `## Length`, nothing else** |
 
 If `presentation.pdf` is missing, stop and run `/deck render` first — checks (c) and (e) have nothing to
 act on without it. If the brief is missing, say so in the report and run check (d) against a stated
@@ -36,20 +36,73 @@ assumption about the audience rather than silently against your own vocabulary.
 ## The isolation rule — read before anything else
 
 **Whoever runs the checks gets the deck and not the reasoning behind it.** No brief beyond the `## Audience`
-block, no research notes, no source material, no chat history, no "here is why that slide is there".
+block and the slide count target, no research notes, no source material, no chat history, no "here is why
+that slide is there".
 
-Prefer to **spawn a fresh sub-agent** for the eight checks, handed exactly the rendered deck, the PDF and the
-audience block. If the runtime has no sub-agents, run them yourself — but then say so in the report, because
-the pass is weaker by exactly the amount you remember. A self-run pass that finds nothing is not evidence
-the deck is clean.
+Prefer to **spawn a fresh sub-agent** for the nine checks, handed exactly the rendered deck, the PDF, the
+audience block and the slide count target. If the runtime has no sub-agents, run them yourself — but then
+say so in the report, because the pass is weaker by exactly the amount you remember. A self-run pass that
+finds nothing is not evidence the deck is clean.
 
 **The audience block is not reasoning.** It says who reads this and what words they have; it says nothing
-about why any card is on any slide. Handing over the justification is what turns a review into a review of
-our own argument.
+about why any card is on any slide. The slide count target is a number that check (i) measures the deck
+against. Handing over the justification is what turns a review into a review of our own argument.
 
-## The eight checks
+## The nine checks
 
-Run all eight. Go slide by slide, in printed order.
+Run all nine. **Run (i) first**, on the deck as a whole, before any other check: once you have read the slides
+closely, you fill in what the opening leaves out, as the author does. Then run (a)–(h) slide by slide, in
+printed order.
+
+### (i) The story
+
+Checks (a)–(h) read one line or one slide at a time, so a deck of correct slides in an order the reader cannot
+follow passes all of them. Measured 2026-10-16: on a 54-page deck the line checks reported 33 findings and
+passed pages 2–8. The reader then said the deck opened on numbers of little use to him, never stated the
+research question or how the analysis was structured and why, and gave the most weight to a score whose
+construction it never explained.
+
+1. **Read only the slide titles**, in printed order:
+
+   ```bash
+   grep '^## ' presentation.md
+   ```
+
+2. **Then read the first quarter of the deck**: PDF pages 1 to ⌈pages ÷ 4⌉, which is pages 1–14 of a
+   54-page deck. Stop there.
+3. **Write four answers in your own words**, from what you have read and from nothing else:
+   1. **The question.** Which question the deck answers, or which decision it asks the reader to take.
+   2. **The method.** How the content was produced and why it was produced that way: for an analysis, what
+      was measured or asked, of whom or of what, how many, and why that design; for a report on work, what
+      was done and why that way. Write it when the deck reports on work or an analysis; for any other deck,
+      mark it as not applicable.
+   3. **The numbers.** For every number that appears in a slide title: what it counts or measures, its unit
+      or scale, and which direction is better.
+   4. **The conclusions.** The 3–5 things the reader should know at the end, one sentence each.
+
+   Name the page each answer comes from. If you drafted the deck yourself, you already know all four: write
+   only what the titles and the first quarter state.
+
+**A deck-level finding is any of the four that the first quarter does not give you**: one you cannot write at
+all, or one you could write only from a title further on. While running (a)–(h), look for each of these in the
+rest of the deck and record the page where it first appears, or that it appears nowhere.
+
+**Also flag, as deck-level findings:**
+
+- a number in the opening pages that answers no question the reader has at that point;
+- a first result that does not serve the deck's question, such as a ranking or a detail shown before the
+  answer;
+- a title built on a score or an index that no earlier slide explains: what it combines, its scale, and what
+  a high value means;
+- a slide count more than 25% over the brief's target, which is more than 25 slides against a target of 20.
+  Without a target in the brief, this item does not apply.
+
+**Fix deck-level findings by moving slides or adding one**, in `presentation.md`: the question, the method and
+how to read each score go before the first result, and the conclusions go inside the first quarter. An added
+slide changes the page count that (e) checks.
+
+Write the four answers into the revision file's `## The story` section before reading the rest of the deck,
+and leave them as written: they record what the opening tells a reader.
 
 ### (a) The takeaway
 
@@ -163,10 +216,21 @@ Write `presentation-revision.md` in CWD:
 Run by: <fresh sub-agent | the drafting agent, no isolation available>
 Audience vocabulary: <from the brief | assumed, stated here>
 
+## The story
+
+From the titles and pages 1–<N> only, in the reviewer's words, as written before the line checks:
+
+1. Question or decision: <answer> (p. <n>) | cannot be written
+2. How the content was produced, and why: <answer> (p. <n>) | cannot be written | not applicable
+3. How to read the numbers in the titles: <one line per number: what it measures, unit or scale, which
+   direction is better> (p. <n>) | cannot be written for <number>
+4. Conclusions: <3–5 sentences> (p. <n>) | cannot be written
+
 ## Findings
 
 | Slide | Check | Line or label | What is wrong | Fix applied |
 |---|---|---|---|---|
+| deck | i | "Supplier index 72/100" (title, slide 3) | the index is first explained on slide 31 | slide explaining the index moved before slide 3 |
 | 4 | d | "Rietveld refinement" | names a method the audience does not use | defined inline |
 | 7 | c | `Outage?` | value cannot be read from the label | renamed to "Does the line go out of service?" |
 
