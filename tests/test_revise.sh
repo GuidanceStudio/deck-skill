@@ -38,6 +38,21 @@ assert_no_grep() {
     fi
 }
 
+# Order checks: the first line matching $first must come before the first line
+# matching $second. A missing match is a FAIL, never a set -e abort.
+assert_before() {
+    local file="$1" first="$2" second="$3" label="$4" a b
+    a=$( { grep -nE "$first" "$file" || true; } | head -1 | cut -d: -f1)
+    b=$( { grep -nE "$second" "$file" || true; } | head -1 | cut -d: -f1)
+    if [ -n "$a" ] && [ -n "$b" ] && [ "$a" -lt "$b" ]; then
+        echo "  PASS: $(basename "$file") — $label"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: $(basename "$file") — $label — '$first' (line ${a:-none}) not before '$second' (line ${b:-none})"
+        FAIL=$((FAIL + 1))
+    fi
+}
+
 assert_nonempty() {
     local file="$1"
     if [ -s "$file" ]; then
@@ -151,7 +166,6 @@ assert_grep "$REVISE/prompt.md" 'homework assignment'                 "questions
 assert_grep "$REVISE/prompt.md" 'own trade'                           "not explaining the audience their trade"
 assert_grep "$REVISE/prompt.md" 'narrates our own process'            "not narrating our process"
 assert_grep "$REVISE/prompt.md" '\(h\) The cover'                     "check (h) — the cover"
-assert_grep "$REVISE/prompt.md" 'eight checks'                        "count updated to eight"
 
 echo ""
 echo "=== M34: the cover check describes the cover md2 prints ==="
@@ -168,6 +182,61 @@ assert_no_grep "$REVISE/prompt.md" 'prints? +both' \
     "no claim that the template prints both title and H1"
 assert_no_grep "$REVISE/prompt.md" 'must not repeat +the +front ?matter' \
     "repeating title in the H1 is no longer a defect"
+
+echo ""
+echo "=== M35: check (i) reads the deck as a sequence, before the line checks ==="
+
+assert_grep "$REVISE/prompt.md" '^### \(i\) The story'                 "check (i) — the story"
+assert_grep "$REVISE/prompt.md" 'nine checks'                          "count updated to nine"
+assert_no_grep "$REVISE/prompt.md" 'eight checks|Run all eight'        "no stale count of eight"
+assert_grep "$REVISE/prompt.md" 'Run \(i\) first'                      "check (i) runs first"
+assert_before "$REVISE/prompt.md" '^### \(i\) The story' '^### \(a\) The takeaway' \
+    "check (i) is written before check (a)"
+assert_grep "$REVISE/prompt.md" 'Read only the slide titles'           "reads the titles first"
+assert_grep "$REVISE/prompt.md" 'first quarter of the deck'            "then the first quarter"
+assert_grep "$REVISE/prompt.md" 'in your own words'                    "answers in the reviewer's words"
+
+echo ""
+echo "=== M35: the four answers ==="
+
+assert_grep "$REVISE/prompt.md" 'Which question the deck answers, or which decision' \
+    "(1) the question or decision"
+assert_grep "$REVISE/prompt.md" 'How the content was produced and why' "(2) how the content was produced, and why"
+assert_grep "$REVISE/prompt.md" 'when the deck reports on work or an analysis' \
+    "(2) applies only to a deck that reports on work or an analysis"
+assert_grep "$REVISE/prompt.md" 'every number that appears in a slide title' \
+    "(3) how to read every number in a title"
+assert_grep "$REVISE/prompt.md" 'The 3–5 things the reader should know' "(4) the 3–5 conclusions"
+
+echo ""
+echo "=== M35: deck-level findings and their fix ==="
+
+assert_grep "$REVISE/prompt.md" 'deck-level finding is any of the four that the first quarter does not give you' \
+    "a missing or late answer is a deck-level finding"
+assert_grep "$REVISE/prompt.md" 'answers no question the reader has' "an opening number with no question"
+assert_grep "$REVISE/prompt.md" 'first result that does not serve the deck.s question' \
+    "a first result off the deck's question"
+assert_grep "$REVISE/prompt.md" 'score or an index that no earlier slide explains' \
+    "a title built on an unexplained score"
+assert_grep "$REVISE/prompt.md" 'more than 25% over the brief.s target' "slide count over target by 25%"
+assert_grep "$REVISE/prompt.md" 'slide count target under .## Length.' \
+    "the slide count target is an allowed input"
+assert_grep "$REVISE/prompt.md" 'moving slides or adding one'          "fixed by reordering or adding a slide"
+
+echo ""
+echo "=== M35: the revision file carries the story ==="
+
+assert_grep "$REVISE/prompt.md" '^## The story'                        "story section in the output format"
+assert_before "$REVISE/prompt.md" '^## The story' '^## Findings' \
+    "the story comes before the findings table"
+assert_grep "$REVISE/prompt.md" '^1\. Question or decision:'           "answer 1 in the template"
+assert_grep "$REVISE/prompt.md" '^2\. How the content was produced, and why:' "answer 2 in the template"
+assert_grep "$REVISE/prompt.md" '^3\. How to read the numbers in the titles:' "answer 3 in the template"
+assert_grep "$REVISE/prompt.md" '^4\. Conclusions:'                    "answer 4 in the template"
+assert_grep "$REVISE/prompt.md" 'leave them as written'                "answers are not corrected afterwards"
+assert_grep "$REVISE/prompt.md" '^\| deck \| i \|'                      "deck-level finding row in the table"
+assert_grep "$DECK/SKILL.md" '## Audience. block and slide count target' \
+    "SKILL.md lists the slide count target as a revise input"
 
 echo ""
 echo "=== M28: copy-rules carries the new procedures and rules ==="
