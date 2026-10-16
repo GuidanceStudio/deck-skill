@@ -53,6 +53,20 @@ assert_before() {
     fi
 }
 
+# Section checks read only the lines from the first match of $start up to, not
+# including, the next line matching $end.
+assert_section_no_grep() {
+    local file="$1" start="$2" end="$3" pattern="$4" label="$5"
+    if awk -v s="$start" -v e="$end" '$0 ~ s {on=1; print; next} on && $0 ~ e {exit} on' "$file" \
+        | grep -qiE -e "$pattern"; then
+        echo "  FAIL: $(basename "$file") — $label — pattern present in section: $pattern"
+        FAIL=$((FAIL + 1))
+    else
+        echo "  PASS: $(basename "$file") — $label"
+        PASS=$((PASS + 1))
+    fi
+}
+
 assert_nonempty() {
     local file="$1"
     if [ -s "$file" ]; then
@@ -197,22 +211,19 @@ assert_grep "$REVISE/prompt.md" 'first quarter of the deck'            "then the
 assert_grep "$REVISE/prompt.md" 'in your own words'                    "answers in the reviewer's words"
 
 echo ""
-echo "=== M35: the four answers ==="
+echo "=== M35: the answers that M36 kept ==="
 
 assert_grep "$REVISE/prompt.md" 'Which question the deck answers, or which decision' \
-    "(1) the question or decision"
-assert_grep "$REVISE/prompt.md" 'How the content was produced and why' "(2) how the content was produced, and why"
+    "the question or decision, for a deck that reports no work"
 assert_grep "$REVISE/prompt.md" 'when the deck reports on work or an analysis' \
-    "(2) applies only to a deck that reports on work or an analysis"
+    "the method answers apply only to a deck that reports on work or an analysis"
 assert_grep "$REVISE/prompt.md" 'every number that appears in a slide title' \
-    "(3) how to read every number in a title"
-assert_grep "$REVISE/prompt.md" 'The 3–5 things the reader should know' "(4) the 3–5 conclusions"
+    "how to read every number in a title"
+assert_grep "$REVISE/prompt.md" 'The 3–5 things the reader should know' "the 3–5 conclusions"
 
 echo ""
 echo "=== M35: deck-level findings and their fix ==="
 
-assert_grep "$REVISE/prompt.md" 'deck-level finding is any of the four that the first quarter does not give you' \
-    "a missing or late answer is a deck-level finding"
 assert_grep "$REVISE/prompt.md" 'answers no question the reader has' "an opening number with no question"
 assert_grep "$REVISE/prompt.md" 'first result that does not serve the deck.s question' \
     "a first result off the deck's question"
@@ -229,14 +240,62 @@ echo "=== M35: the revision file carries the story ==="
 assert_grep "$REVISE/prompt.md" '^## The story'                        "story section in the output format"
 assert_before "$REVISE/prompt.md" '^## The story' '^## Findings' \
     "the story comes before the findings table"
-assert_grep "$REVISE/prompt.md" '^1\. Question or decision:'           "answer 1 in the template"
-assert_grep "$REVISE/prompt.md" '^2\. How the content was produced, and why:' "answer 2 in the template"
-assert_grep "$REVISE/prompt.md" '^3\. How to read the numbers in the titles:' "answer 3 in the template"
-assert_grep "$REVISE/prompt.md" '^4\. Conclusions:'                    "answer 4 in the template"
 assert_grep "$REVISE/prompt.md" 'leave them as written'                "answers are not corrected afterwards"
 assert_grep "$REVISE/prompt.md" '^\| deck \| i \|'                      "deck-level finding row in the table"
 assert_grep "$DECK/SKILL.md" '## Audience. block and slide count target' \
     "SKILL.md lists the slide count target as a revise input"
+
+echo ""
+echo "=== M36: check (i) asks five answers, method before results ==="
+
+assert_grep "$REVISE/prompt.md" 'Write five answers in your own words' "five answers"
+assert_no_grep "$REVISE/prompt.md" 'four answers|any of the four|all four' "no stale count of four"
+assert_grep "$REVISE/prompt.md" '\*\*What was done, and to what end\.\*\*' \
+    "(1) what was done and to what end"
+assert_grep "$REVISE/prompt.md" '\*\*Where the inputs come from and how they were organi[sz]ed\.\*\*' \
+    "(2) where the inputs come from and how they were organised"
+assert_grep "$REVISE/prompt.md" '\*\*What was asked or measured\.\*\*' "(3) what was asked or measured"
+assert_grep "$REVISE/prompt.md" 'only after the first result' \
+    "(3) shown only after the first result is a finding"
+assert_grep "$REVISE/prompt.md" '\*\*The numbers\.\*\*' "(4) how to read the numbers"
+assert_grep "$REVISE/prompt.md" '\*\*The conclusions\.\*\*' "(5) the conclusions"
+assert_before "$REVISE/prompt.md" '\*\*What was done, and to what end' '\*\*Where the inputs come from' \
+    "answer 1 before answer 2"
+assert_before "$REVISE/prompt.md" '\*\*Where the inputs come from' '\*\*What was asked or measured' \
+    "answer 2 before answer 3"
+assert_before "$REVISE/prompt.md" '\*\*What was asked or measured' '\*\*The numbers' \
+    "answer 3 before answer 4"
+assert_before "$REVISE/prompt.md" '\*\*The numbers' '\*\*The conclusions' \
+    "answer 4 before answer 5"
+assert_grep "$REVISE/prompt.md" 'deck-level finding is any of the five that the first quarter does not give you' \
+    "a missing or late answer is a deck-level finding"
+
+echo ""
+echo "=== M36: the opening does not frame the work from one side ==="
+
+assert_grep "$REVISE/prompt.md" 'presents the subject from one side only' "a one-sided opening is flagged"
+assert_grep "$REVISE/prompt.md" 'only its risks or only its benefits' "one side means only risks or only benefits"
+assert_grep "$REVISE/prompt.md" 'when the content covers both' "flagged only when the content covers both"
+assert_grep "$REVISE/prompt.md" 'slide on what is at stake placed before the slide that says what was done' \
+    "a stakes slide before the what-was-done slide is flagged"
+assert_grep "$REVISE/prompt.md" 'goes after the slide that says what was done' \
+    "the fix puts the stakes slide after what was done"
+assert_grep "$REVISE/prompt.md" 'one-sided opening is rewritten' "the fix rewrites a one-sided opening"
+assert_section_no_grep "$REVISE/prompt.md" '^### \(i\) The story' '^### \(a\) ' '\b(he|him|his)\b' \
+    "check (i) refers to the reader as they"
+
+echo ""
+echo "=== M36: the revision file carries the five answers ==="
+
+assert_grep "$REVISE/prompt.md" '^1\. What was done, and to what end'  "answer 1 in the template"
+assert_grep "$REVISE/prompt.md" '^2\. Where the inputs come from and how they were organi[sz]ed:' \
+    "answer 2 in the template"
+assert_grep "$REVISE/prompt.md" '^3\. What was asked or measured:'     "answer 3 in the template"
+assert_grep "$REVISE/prompt.md" '^4\. How to read the numbers in the titles:' "answer 4 in the template"
+assert_grep "$REVISE/prompt.md" '^5\. Conclusions:'                    "answer 5 in the template"
+assert_no_grep "$REVISE/prompt.md" '1\. Question or decision:'        "no stale template line for answer 1"
+assert_grep "$REVISE/prompt.md" 'Write the five answers into the revision file' \
+    "the five answers go into the revision file"
 
 echo ""
 echo "=== M28: copy-rules carries the new procedures and rules ==="
