@@ -789,3 +789,23 @@ la copia installata coincide con il dev tree.
 - Per un deck che non riferisce un lavoro, la risposta 1 resta la domanda o la decisione e le risposte 2-3 sono «not applicable», come la risposta di metodo di M35; la riga 1 del template lo dice.
 - Il paragrafo «Measured» del controllo (i) riporta anche la misura del 2026-10-16 sull'apertura da un solo lato, in termini generici.
 - `tests/test_revise.sh`: le asserzioni M35 sulle quattro risposte e sulle righe 1-4 del template sono sostituite da quelle M36; nuovo helper `assert_section_no_grep` per il pronome nel solo controllo (i).
+
+## M37 — Il README descrive i nove controlli di `/deck revise` ✅
+
+**Why:** dall'M35 `deck/revise/prompt.md` esegue nove controlli, (a)–(i); `README.md` dice ancora «five checks» alla
+riga della sottocomando e nell'albero dei file, ed elenca solo i primi cinque. Trovato durante l'esecuzione di M36.
+Approvato dall'operatore il 2026-10-16.
+
+**Approccio:** la riga di `/deck revise` nel README elenca i nove controlli con il racconto (i) per primo, come li
+esegue il prompt; l'albero dei file dice «the nine checks». Un test in `tests/test_install.sh` conta i controlli
+`### (` del prompt e verifica che ogni «N checks» del README riporti quel numero, così il README non resta indietro
+alla prossima aggiunta.
+
+**Tasks:**
+- [x] Test: il numero di controlli nel README coincide con quello del prompt
+- [x] `README.md`: riga di `/deck revise` e albero dei file
+- [x] `bash tests/test_all.sh` verde; `./install.sh --target claude --force`
+- [x] Commit & push
+
+**Done when:** il README elenca i nove controlli; il test fallisce se il prompt ne aggiunge uno senza aggiornare il
+README; la copia installata coincide con il dev tree.

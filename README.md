@@ -113,7 +113,7 @@ loop closes with a second render: `brief` → `draft` → `render` → `revise` 
 - **`/deck draft`** — reads the brief, walks you through content gathering (key data, claims, sources), proposes a narrative arc (Pyramid / SCQA / 3-act), maps each beat to a slide pattern, then writes the full md2 markdown applying copywriting and print-stamp constraints.
 - **`/deck render`** — runs `md2` for HTML, then headless Chrome / Firefox for PDF. Honors orientation and paper-size choices captured in the brief (default landscape A4); CLI flags `--landscape` / `--portrait` / `--paper A4|letter` override on a one-off basis. Pass `--no-pdf` to produce HTML only. Two extension points let another skill reuse this renderer instead of forking it: **`--page-css FILE`** replaces the built-in `@page` block (`${PAPER}` / `${ORIENTATION}` expanded; a missing file is a hard error), and **`--post-html CMD`** runs `CMD <html> <input.md>` between the HTML and the PDF, **aborting without a PDF if it exits non-zero**.
 
-- **`/deck revise`** — reads the *rendered* deck and runs five checks on it: the takeaway each slide establishes, the delete test on every non-fact line, the label test on column headers and first-column row labels, the decode test (every method, standard, material or acronym defined the first time it appears, judged against the audience's vocabulary and not the writer's), and the page budget. Prefers a **fresh sub-agent** handed the deck and *not* the reasoning behind it: an author re-reading their own draft supplies the missing meaning from memory, which is why this is a separate stage and not a checklist item in `draft`.
+- **`/deck revise`** — reads the *rendered* deck and runs nine checks on it. The story check comes first: from the slide titles and the first quarter of the deck, the reviewer writes what was done and to what end, where the inputs come from, what was asked or measured, how to read the numbers in the titles, and the conclusions, and flags whatever the opening leaves out or presents from one side only. Then, slide by slide: the takeaway each slide establishes, the delete test on every non-fact line, the label test on column headers and first-column row labels, the decode test (every method, standard, material or acronym defined the first time it appears, judged against the audience's vocabulary and not the writer's), the page budget, the provenance of every number and conclusion, the actor behind every open question and imperative, and the cover title. Prefers a **fresh sub-agent** handed the deck and *not* the reasoning behind it: an author re-reading their own draft supplies the missing meaning from memory, which is why this is a separate stage and not a checklist item in `draft`.
 
 ### Language
 
@@ -137,7 +137,7 @@ deck/                           # the flat skill payload (copied verbatim by ins
 │   ├── prompt.md               # how to invoke render.sh + handle errors
 │   └── render.sh               # md → html → pdf pipeline
 └── revise/
-    └── prompt.md               # the five checks, read as the audience
+    └── prompt.md               # the nine checks, read as the audience
 
 install.sh                      # local + remote installer
 tests/                          # bash test suite

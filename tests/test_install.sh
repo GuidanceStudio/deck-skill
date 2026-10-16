@@ -121,6 +121,14 @@ assert_grep_i "$README" 'WSL2|Git Bash'    "Windows: names the bash route"
 assert_grep_i "$README" 'md2-presenter'    "Requirements gives the PyPI package name"
 assert_grep_i "$README" 'msedge'           "Requirements names Edge as an accepted browser"
 assert_grep   "$RENDER" 'msedge'           "render.sh actually probes for Edge"
+# M37: the README said "five checks" for two milestones after the prompt grew to nine. Every
+# "<number> checks" in the README must match the number of checks the revise prompt runs.
+REVISE_PROMPT="$REPO_ROOT/deck/revise/prompt.md"
+N_CHECKS=$(grep -c '^### (' "$REVISE_PROMPT")
+WORDS=(zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen)
+STALE=$(grep -oiwE '(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen) checks' "$README" | grep -viwx "${WORDS[$N_CHECKS]} checks" || true)
+if [ -z "$STALE" ]; then echo "  PASS: README check counts match the revise prompt ($N_CHECKS)"; PASS=$((PASS+1)); else echo "  FAIL: README check counts disagree with the revise prompt ($N_CHECKS): $STALE"; FAIL=$((FAIL+1)); fi
+assert_grep_i "$README" "${WORDS[$N_CHECKS]} checks" "README states the number of revise checks"
 assert_grep "$README" '/deck brief'  "documents /deck brief"
 assert_grep "$README" '/deck draft'  "documents /deck draft"
 assert_grep "$README" '/deck render' "documents /deck render"
