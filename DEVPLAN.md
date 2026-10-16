@@ -749,3 +749,38 @@ risposte come le ha scritte il revisore, prima della tabella dei punti.
 - Il controllo del 25% richiede l'obiettivo di slide del brief: il revisore riceve ora anche la riga sotto `## Length`. Aggiornati la tabella degli input e la regola di isolamento del prompt, e la riga di `/deck revise` nella tabella di `deck/SKILL.md`.
 - Ogni risposta della sezione indica la pagina da cui viene, così la regola del primo quarto si verifica; un punto a livello di deck usa `deck` nella colonna Slide della tabella.
 - `tests/test_revise.sh`: l'asserzione M28 su «eight checks» è sostituita da «nine checks»; nuovo `assert_before` per l'ordine ((i) prima di (a), `## The story` prima di `## Findings`).
+
+## M36 — `/deck revise` controlla che il metodo venga prima dei risultati e che l'apertura non orienti il lavoro
+
+**Why:** il 2026-10-16 il controllo (i) ha passato un deck che alla slide 2 presentava un monitoraggio come se
+misurasse solo le domande in negativo su una categoria. L'operatore: "se tu parti dicendo che misuri che succede quando
+la gente cerca in negativo... stai dicendo che la ricerca intera è biased" · "dobbiamo partire spiegando il lavoro
+che abbiamo fatto. cosa stiamo facendo? a che scopo? come l'abbiamo impostato il lavoro?". Il revisore aveva
+ricostruito la domanda così come il deck la poneva; nessuna delle quattro risposte chiede se quella cornice
+rappresenta il lavoro.
+
+Approvato dall'operatore il 2026-10-16, insieme a llm-rep M36.
+
+**Approccio:** il controllo (i) cambia le risposte richieste quando il deck riferisce un lavoro o un'analisi. Diventano
+cinque:
+1. che cosa è stato fatto e a che scopo;
+2. da dove vengono gli input e come sono stati organizzati;
+3. che cosa è stato chiesto o misurato, mostrato prima dei risultati;
+4. come si leggono i numeri nei titoli;
+5. le conclusioni.
+
+Segnala come punto a livello di deck:
+- un'apertura che presenta l'oggetto da un solo lato (solo rischi o solo benefici) quando il contenuto li copre entrambi;
+- una slide sulla posta in gioco che viene prima di quella che dice che cosa è stato fatto.
+
+Resta generico: nessun riferimento a un tipo di studio o a un cliente. Nel testo del controllo il lettore passa da
+«him» a «they».
+
+**Tasks:**
+- [ ] `deck/revise/prompt.md`: controllo (i) con le cinque risposte, i due segnali nuovi, il pronome
+- [ ] Test: `tests/test_revise.sh`, asserzioni sulle cinque risposte e sui due segnali
+- [ ] `bash tests/test_all.sh` verde; deploy `./install.sh --target claude --force`
+- [ ] Commit & push
+
+**Done when:** il prompt chiede le cinque risposte e segnala l'apertura da un solo lato; `tests/test_all.sh` è verde;
+la copia installata coincide con il dev tree.
