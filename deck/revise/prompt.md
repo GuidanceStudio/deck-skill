@@ -58,9 +58,11 @@ printed order.
 
 Checks (a)–(h) read one line or one slide at a time, so a deck of correct slides in an order the reader cannot
 follow passes all of them. Measured 2026-10-16: on a 54-page deck the line checks reported 33 findings and
-passed pages 2–8. The reader then said the deck opened on numbers of little use to him, never stated the
+passed pages 2–8. The reader then said the deck opened on numbers of little use to them, never stated the
 research question or how the analysis was structured and why, and gave the most weight to a score whose
-construction it never explained.
+construction it never explained. Later the same day, this check passed a deck whose second slide described the
+work as measuring one side of its subject only: the reviewer restated the question as the deck framed it, and
+no answer asked whether that framing described the work that was done.
 
 1. **Read only the slide titles**, in printed order:
 
@@ -70,25 +72,33 @@ construction it never explained.
 
 2. **Then read the first quarter of the deck**: PDF pages 1 to ⌈pages ÷ 4⌉, which is pages 1–14 of a
    54-page deck. Stop there.
-3. **Write four answers in your own words**, from what you have read and from nothing else:
-   1. **The question.** Which question the deck answers, or which decision it asks the reader to take.
-   2. **The method.** How the content was produced and why it was produced that way: for an analysis, what
-      was measured or asked, of whom or of what, how many, and why that design; for a report on work, what
-      was done and why that way. Write it when the deck reports on work or an analysis; for any other deck,
-      mark it as not applicable.
-   3. **The numbers.** For every number that appears in a slide title: what it counts or measures, its unit
+3. **Write five answers in your own words**, from what you have read and from nothing else. Answers 1–3 below
+   apply when the deck reports on work or an analysis. For any other deck, mark 2 and 3 as not applicable and
+   write as answer 1 which question the deck answers, or which decision it asks the reader to take.
+   1. **What was done, and to what end.** The work or the analysis the deck reports, and the question or
+      decision it was done for.
+   2. **Where the inputs come from and how they were organised.** The sources, data, people or material the
+      work drew on, how many, how they were chosen and grouped, and why that way.
+   3. **What was asked or measured.** The questions put, the quantities measured or the criteria applied, and
+      the page where they first appear. They come before the first result: shown only after the first result,
+      they are a deck-level finding even inside the first quarter.
+   4. **The numbers.** For every number that appears in a slide title: what it counts or measures, its unit
       or scale, and which direction is better.
-   4. **The conclusions.** The 3–5 things the reader should know at the end, one sentence each.
+   5. **The conclusions.** The 3–5 things the reader should know at the end, one sentence each.
 
-   Name the page each answer comes from. If you drafted the deck yourself, you already know all four: write
+   Name the page each answer comes from. If you drafted the deck yourself, you already know all five: write
    only what the titles and the first quarter state.
 
-**A deck-level finding is any of the four that the first quarter does not give you**: one you cannot write at
+**A deck-level finding is any of the five that the first quarter does not give you**: one you cannot write at
 all, or one you could write only from a title further on. While running (a)–(h), look for each of these in the
 rest of the deck and record the page where it first appears, or that it appears nowhere.
 
 **Also flag, as deck-level findings:**
 
+- an opening that presents the subject from one side only, such as only its risks or only its benefits,
+  when the content covers both. The reader takes the opening as the scope of the work and reads the whole
+  deck as one-sided;
+- a slide on what is at stake placed before the slide that says what was done;
 - a number in the opening pages that answers no question the reader has at that point;
 - a first result that does not serve the deck's question, such as a ranking or a detail shown before the
   answer;
@@ -97,11 +107,13 @@ rest of the deck and record the page where it first appears, or that it appears 
 - a slide count more than 25% over the brief's target, which is more than 25 slides against a target of 20.
   Without a target in the brief, this item does not apply.
 
-**Fix deck-level findings by moving slides or adding one**, in `presentation.md`: the question, the method and
-how to read each score go before the first result, and the conclusions go inside the first quarter. An added
-slide changes the page count that (e) checks.
+**Fix deck-level findings by moving slides or adding one**, in `presentation.md`. What was done and to what
+end, where the inputs come from, what was asked or measured, and how to read each score go before the first
+result. A slide on what is at stake goes after the slide that says what was done. The conclusions go inside
+the first quarter. A one-sided opening is rewritten to state the scope the content covers. An added slide
+changes the page count that (e) checks.
 
-Write the four answers into the revision file's `## The story` section before reading the rest of the deck,
+Write the five answers into the revision file's `## The story` section before reading the rest of the deck,
 and leave them as written: they record what the opening tells a reader.
 
 ### (a) The takeaway
@@ -220,11 +232,13 @@ Audience vocabulary: <from the brief | assumed, stated here>
 
 From the titles and pages 1–<N> only, in the reviewer's words, as written before the line checks:
 
-1. Question or decision: <answer> (p. <n>) | cannot be written
-2. How the content was produced, and why: <answer> (p. <n>) | cannot be written | not applicable
-3. How to read the numbers in the titles: <one line per number: what it measures, unit or scale, which
+1. What was done, and to what end (for a deck that reports no work: the question or decision): <answer>
+   (p. <n>) | cannot be written
+2. Where the inputs come from and how they were organised: <answer> (p. <n>) | cannot be written | not applicable
+3. What was asked or measured: <answer> (p. <n>; first result on p. <m>) | cannot be written | not applicable
+4. How to read the numbers in the titles: <one line per number: what it measures, unit or scale, which
    direction is better> (p. <n>) | cannot be written for <number>
-4. Conclusions: <3–5 sentences> (p. <n>) | cannot be written
+5. Conclusions: <3–5 sentences> (p. <n>) | cannot be written
 
 ## Findings
 

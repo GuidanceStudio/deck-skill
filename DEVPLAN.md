@@ -750,7 +750,7 @@ risposte come le ha scritte il revisore, prima della tabella dei punti.
 - Ogni risposta della sezione indica la pagina da cui viene, così la regola del primo quarto si verifica; un punto a livello di deck usa `deck` nella colonna Slide della tabella.
 - `tests/test_revise.sh`: l'asserzione M28 su «eight checks» è sostituita da «nine checks»; nuovo `assert_before` per l'ordine ((i) prima di (a), `## The story` prima di `## Findings`).
 
-## M36 — `/deck revise` controlla che il metodo venga prima dei risultati e che l'apertura non orienti il lavoro
+## M36 — `/deck revise` controlla che il metodo venga prima dei risultati e che l'apertura non orienti il lavoro ✅
 
 **Why:** il 2026-10-16 il controllo (i) ha passato un deck che alla slide 2 presentava un monitoraggio come se
 misurasse solo le domande in negativo su una categoria. L'operatore: "se tu parti dicendo che misuri che succede quando
@@ -777,10 +777,15 @@ Resta generico: nessun riferimento a un tipo di studio o a un cliente. Nel testo
 «him» a «they».
 
 **Tasks:**
-- [ ] `deck/revise/prompt.md`: controllo (i) con le cinque risposte, i due segnali nuovi, il pronome
-- [ ] Test: `tests/test_revise.sh`, asserzioni sulle cinque risposte e sui due segnali
-- [ ] `bash tests/test_all.sh` verde; deploy `./install.sh --target claude --force`
-- [ ] Commit & push
+- [x] `deck/revise/prompt.md`: controllo (i) con le cinque risposte, i due segnali nuovi, il pronome
+- [x] Test: `tests/test_revise.sh`, asserzioni sulle cinque risposte e sui due segnali
+- [x] `bash tests/test_all.sh` verde; deploy `./install.sh --target claude --force`
+- [x] Commit & push
 
 **Done when:** il prompt chiede le cinque risposte e segnala l'apertura da un solo lato; `tests/test_all.sh` è verde;
 la copia installata coincide con il dev tree.
+
+**Deviations:**
+- Per un deck che non riferisce un lavoro, la risposta 1 resta la domanda o la decisione e le risposte 2-3 sono «not applicable», come la risposta di metodo di M35; la riga 1 del template lo dice.
+- Il paragrafo «Measured» del controllo (i) riporta anche la misura del 2026-10-16 sull'apertura da un solo lato, in termini generici.
+- `tests/test_revise.sh`: le asserzioni M35 sulle quattro risposte e sulle righe 1-4 del template sono sostituite da quelle M36; nuovo helper `assert_section_no_grep` per il pronome nel solo controllo (i).
