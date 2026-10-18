@@ -809,3 +809,29 @@ alla prossima aggiunta.
 
 **Done when:** il README elenca i nove controlli; il test fallisce se il prompt ne aggiunge uno senza aggiornare il
 README; la copia installata coincide con il dev tree.
+
+## M38 — Il grafico radar di md2 nella skill ✅
+
+**Why:** md2 M121 aggiunge `:::chart radar`; finché la skill non lo documenta, `/deck draft` non lo usa e
+non sa quando evitarlo. Richiesto dall'operatore il 2026-10-18.
+
+**Approccio:** `draft/md2-cheatsheet.md` aggiunge `radar` alla tabella dei tipi (profilo su 3–12 assi della
+stessa scala, 1–4 serie) e la sua altezza ai default di dimensione; `draft/slide-patterns.md` dice quando
+usarlo — confrontare il profilo di 3–8 dimensioni sulla stessa scala, con 2–3 serie — e quando no: per
+leggere quanto si è mosso un valore servono barre affiancate, e un radar che confronta due periodi va
+accanto a quelle; `draft/print-constraints.md` dà il limite di stampa misurato sul PDF di
+`guidance-modern`; `/deck revise` controlla che un radar non sia l'unico posto dove si legge una
+variazione.
+
+**Tasks:**
+- [x] `draft/md2-cheatsheet.md`: tipo `radar` e dimensione
+- [x] `draft/slide-patterns.md`: quando usare il radar e quando le barre affiancate
+- [x] `draft/print-constraints.md`: limite del radar in A4 orizzontale, misurato
+- [x] `revise/prompt.md`: una variazione letta solo su un radar va affiancata dai valori
+- [x] `bash tests/test_all.sh` verde; `./install.sh --target claude --force`
+- [x] Commit & push
+
+**Deviations:** nessun nuovo controllo in `revise`: la regola sta nel controllo (a), quindi il conteggio nel README resta nove. Il limite di stampa è la regola 3b di `print-constraints.md`, per non rinumerare le regole citate altrove. Test aggiunti in `tests/test_draft.sh` e `tests/test_revise.sh`.
+
+**Done when:** `/deck draft` su un brief che confronta due periodi su sei dimensioni produce un radar
+affiancato dalle barre con i valori, e il PDF tiene una slide per pagina.

@@ -128,6 +128,7 @@ The separator row may carry alignment (`---:`, `:---:`, `:---`) as in any table;
 | `pie`          | Proportions, single series only        |
 | `stacked-bar`  | Horizontal bars, series stacked into one bar per row |
 | `stacked-column` | Vertical bars, series stacked into one column per row |
+| `radar`        | Profile across 3 to 12 axes on one scale, 1 to 4 series; one axis per row, one polygon per data column |
 
 ### Options
 
@@ -136,8 +137,9 @@ because md2 decides them from the chart type and the data:
 
 - the first-column labels are always shown;
 - a legend appears when there is more than one data column, and a pie always has one with the slice names;
-- bars and columns carry their values; line and area charts show a scale instead, and a pie writes the
-  value inside large slices and in the legend for slices under 6%.
+- bars and columns carry their values; line and area charts show a scale instead (starting at 0 whenever the
+  data contain a 0), a pie writes the value inside large slices and in the legend for slices under 6%, and a
+  radar writes its scale on five rings.
 
 Stacking comes from the `stacked-bar` and `stacked-column` types. Any other word starting with `--` is ignored.
 
@@ -160,6 +162,14 @@ Stacking comes from the `stacked-bar` and `stacked-column` types. Any other word
 | `bar`                      | grows with rows                   | 100%       |
 | `column`, `line`, `area`   | `min(300px, 40vh)`                | 100%       |
 | `pie`                      | `min(50vh, 50vw)` centered       | matches H  |
+| `radar`                    | `min(260px, 36vh)`                | 100%; centred, left-aligned in `guidance-modern` |
+
+Chart values use a **decimal point** (`3.8`, not `3,8`) and no thousands separator. A cell that is not a number
+(`3,8`, `n/a`, `**4**`) counts as 0 and md2 warns on the terminal.
+
+A radar takes its axes from the first column (3 to 12 rows; fewer than 3 is drawn as a bar chart with a
+warning) and its scale from the data: five rings on round steps starting at 0, so scores from 1 to 5 get rings
+at 1, 2, 3, 4, 5. Axis names wrap by themselves; a `<br>` in a name forces the break.
 
 Pie is the largest — see `print-constraints.md` for why this affects what you can put alongside it.
 

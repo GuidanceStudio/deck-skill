@@ -36,6 +36,32 @@ When in doubt, follow them. They prefer page-correctness over information densit
 
 ---
 
+## 3b. Radar charts: a column's worth, never the whole slide
+
+**Rule**: a slide containing a `:::chart radar` carries the H2 and at most one short line, plus a second block
+beside the radar in a `:::columns` (a bar chart with its values, or a table). A radar alone on a slide leaves
+the lower half of the page empty (rule 6).
+
+**Measured** (`guidance-modern`, A4 landscape, 595 pt page height, rendered with `render.sh`; chart title,
+rings, axis names and legend all counted):
+
+| Radar | Height | Width |
+|---|---|---|
+| `:::chart radar`, 6 axes, 2 series, in a `:::col` beside a bar chart | 243 pt | 279 pt |
+| `:::chart radar`, 8 axes, 3 series, full width | 243 pt | 267 pt |
+| `:::chart radar`, 12 axes, 4 series, in a `:::col` beside a bar chart | 243 pt | 232 pt |
+
+The height does not change with the number of axes or series, and a full-width radar is no larger than one
+in a column: it stays left-aligned at the same size, about 41% of the page height, and the rest of the
+slide is blank. A radar in a `:::col` beside a six-row bar chart held one slide per PDF page, with both
+charts clear of the page edge and the axis names wrapped to at most four lines of about 55 pt. Twelve axes
+and four series were still legible; past that md2 keeps the first twelve axes and four series with a warning.
+
+**Fix when violated**: put the radar in a `:::col` and the values it summarises (bars or a table) in the
+other.
+
+---
+
 ## 4. Bar/column charts: avoid value ratios > 10x
 
 **Rule**: in a single bar or column chart, the largest value should be at most ~10x the smallest. Above that, the smaller bars become unreadable and their data labels get clipped or rendered vertically as individual digits ("3 5 0" stacked).

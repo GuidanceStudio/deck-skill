@@ -311,5 +311,10 @@ assert_grep "$DECK/draft/copy-rules.md" 'Which suppliers appear at all'     "§1
 assert_grep "$DECK/draft/copy-rules.md" 'does not appear'                    "defunct/unfit suppliers are not listed"
 
 echo ""
+echo "=== M38: a change read only on a radar needs its values ==="
+assert_grep "$REVISE/prompt.md" 'radar' "revise: names the radar"
+assert_grep "$REVISE/prompt.md" 'radar.*(values|bars|table)' "revise: a radar change is also given as values"
+
+echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]

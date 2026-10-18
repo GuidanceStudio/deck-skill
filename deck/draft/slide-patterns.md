@@ -219,6 +219,16 @@ Conservative scenario: +25% YoY through 2031, no external funding.
 :::
 ```
 
+**Radar variant**: use `:::chart radar` to compare the profile of 3–8 dimensions that share one scale
+(scores from 1 to 5, shares of 100%), with 2–3 series. It shows which entity is stronger on which
+dimension at a glance.
+
+**When not to use a radar**: to read *how much* a value moved, use side-by-side bars (`:::chart bar`
+with one series per period) — polygon areas and ring distances cannot be read to a number. A radar that
+compares two periods goes beside the bars (`:::columns`, radar in one `:::col`, bars with their values in
+the other); it is never the only place a change is readable. Dimensions on different units or scales do not
+belong on one radar; more than 8 axes or 3 series turns the polygons into noise.
+
 ---
 
 ## 10. Table slide

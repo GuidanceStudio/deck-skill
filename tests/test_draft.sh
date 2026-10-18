@@ -219,6 +219,19 @@ assert_no_grep "print-constraints.md" '^\| *Chapter title.*on one line' "print c
 assert_no_grep "md2-cheatsheet.md" 'not found' "cheatsheet drops the missing-palette workaround"
 assert_grep "md2-cheatsheet.md" 'ships with md2-templates' "cheatsheet: the palette ships with md2-templates"
 
+# --- M38: the radar chart ---
+echo ""
+echo "--- M38: radar ---"
+assert_grep "md2-cheatsheet.md" '^\| *`radar` *\|' "cheatsheet: radar in the chart types table"
+assert_grep "md2-cheatsheet.md" '^\| *`radar` *\|.*\|.*\|' "cheatsheet: radar row in the sizing defaults"
+assert_grep "md2-cheatsheet.md" 'decimal point' "cheatsheet: chart values use a decimal point"
+assert_grep "md2-cheatsheet.md" '3 to 12 axes|3.12 axes' "cheatsheet: radar takes 3 to 12 axes"
+assert_grep "slide-patterns.md" 'radar' "patterns: when to use a radar"
+assert_grep "slide-patterns.md" 'side-by-side bars|bars side by side' "patterns: a change is read on side-by-side bars"
+assert_grep "slide-patterns.md" 'never the only place' "patterns: a radar is never the only place a change is readable"
+assert_grep "print-constraints.md" '`:::chart radar`' "print constraints: radar limit"
+assert_grep "print-constraints.md" 'radar[^|]*\| *[0-9]+ *pt' "print constraints: measured radar height in pt"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]

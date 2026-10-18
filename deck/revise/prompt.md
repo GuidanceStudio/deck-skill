@@ -123,6 +123,9 @@ Per slide, write the one sentence that slide establishes.
 - **Cannot be written** → the slide has no takeaway. Merge it into its neighbour, or cut it.
 - **Can be written but is not on the slide** → put it on the slide.
 - **Written and already there** → done, move on.
+- **The takeaway is a change** (a value rose, fell, overtook another) **and the only chart that shows it is a
+  radar** → add the values the change rests on, as bars beside the radar or as a table. A radar shows the
+  shape of a profile; the size of a move cannot be read from polygon areas.
 
 ### (b) The delete test
 
