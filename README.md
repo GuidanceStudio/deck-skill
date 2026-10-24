@@ -83,8 +83,15 @@ fallback system fonts.
 
 ### Browser for HTML → PDF
 
-The render script auto-detects, in this order: `chromium`, `google-chrome`, `chromium-browser`, `chrome`,
-`brave-browser`, `brave`, `msedge`, `msedge.exe`, `firefox` (102+).
+The render script picks the browser in this order: `$DECK_BROWSER` if set; `chrome-headless-shell` on the
+`PATH`, then the newest one in Playwright's cache (`npx playwright install chromium-headless-shell` puts it
+there); `chromium`, `google-chrome`, `chromium-browser`, `chrome`, `brave-browser`, `brave`, `msedge`,
+`msedge.exe`; `firefox` (102+).
+
+`chrome-headless-shell` comes first because it is the build of Chromium made for printing. A full Chrome in
+`--headless` mode can wait forever in print-to-pdf on a page that loads a remote stylesheet, and the
+`guidance-modern` template loads Google Fonts. The browser runs under a deadline of `DECK_RENDER_TIMEOUT`
+seconds (default 120): past it the browser is killed and the script exits 4 with the HTML already written.
 
 Chromium-family is preferred (higher CSS fidelity in print). Brave and **Edge** are chromium derivatives
 and produce identical output — which is why nothing extra needs installing on Windows. Firefox is a

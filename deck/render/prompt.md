@@ -27,7 +27,7 @@ These rules exist because past runs occasionally drifted — the agent reached f
 **Do not:**
 
 - Do not invoke `md2` directly. The script does it.
-- Do not invoke `chromium`, `google-chrome`, `chrome`, `chromium-browser`, `brave-browser`, `brave`, or `firefox` directly. The script does it.
+- Do not invoke `chrome-headless-shell`, `chromium`, `google-chrome`, `chrome`, `chromium-browser`, `brave-browser`, `brave`, or `firefox` directly. The script does it.
 - Do not install or use `playwright`, `puppeteer`, `weasyprint`, `pandoc`, `wkhtmltopdf`, or any other markdown/HTML-to-PDF tool. None of them are part of this skill.
 - Do not write a custom Python or Node script that wraps the pipeline. The bash script is the pipeline.
 - Do not Read the generated HTML to "double-check" before render.sh has finished — the script's exit code is the source of truth.
@@ -105,7 +105,8 @@ The script exits with distinct codes per failure mode. Surface the error message
 |-----------|------------------------------------------|---------------------------------------------------------------------|
 | 1         | Missing or unreadable input file         | Confirm the filename; suggest running `/deck draft`.                  |
 | 2         | `md2` not on `$PATH`                     | Point them to the README → Requirements → md2 install instructions.   |
-| 3         | No supported browser found               | Point them to install chromium / chrome / brave (preferred) or firefox 102+, or re-run with `--no-pdf`. |
+| 3         | No supported browser found, or `DECK_BROWSER` names one that does not exist | Point them to install chromium / chrome / brave (preferred) or firefox 102+, or to fix `DECK_BROWSER`, or re-run with `--no-pdf`. |
+| 4         | The browser did not finish the PDF within `DECK_RENDER_TIMEOUT` (default 120 s); the HTML is ready | Tell them the HTML exists. A full Chrome in headless mode can wait forever on a page that loads Google Fonts: install `chrome-headless-shell` (`npx playwright install chromium-headless-shell`), which the script finds by itself, or set `DECK_BROWSER`. For a very large deck, raise `DECK_RENDER_TIMEOUT`. |
 
 If the script exits 0, both the HTML and (if requested) the PDF were generated successfully.
 

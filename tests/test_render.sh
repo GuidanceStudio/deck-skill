@@ -480,6 +480,87 @@ else
     rm -rf "$GM_DIR"
 fi
 
+# A browser that never returns must fail the render within the deadline, not hold it forever;
+# the choice order is $DECK_BROWSER, then chrome-headless-shell, then a full Chromium.
+echo "=== M40: browser choice and deadline ==="
+if ! command -v md2 >/dev/null 2>&1; then
+    echo "  SKIP: md2 not on PATH, browser choice and deadline checks skipped"
+else
+    BT="$(mktemp -d)"
+    mkdir -p "$BT/bin"
+    printf '%s\n' '+++' 'title = "Browser Test"' '+++' '' '# Browser Test' '' '---' '' '## A slide' '' 'Body.' > "$BT/d.md"
+    # A browser that prints: records its own name, writes the PDF it was asked for.
+    for b in chrome-headless-shell chromium; do
+        cat > "$BT/bin/$b" <<'STUB'
+#!/usr/bin/env bash
+basename "$0" > "$(dirname "$0")/../used"
+for a in "$@"; do case "$a" in --print-to-pdf=*) printf '%%PDF-1.4\n' > "${a#--print-to-pdf=}" ;; esac; done
+STUB
+        chmod +x "$BT/bin/$b"
+    done
+    # A browser that never returns, under a name pgrep can find.
+    printf '%s\n' '#!/usr/bin/env bash' 'exec -a "$0" sleep 300' > "$BT/bin/hang-browser"
+    chmod +x "$BT/bin/hang-browser"
+
+    t0=$(date +%s)
+    rc=0; DECK_BROWSER="$BT/bin/hang-browser" DECK_RENDER_TIMEOUT=2 "$RENDER_SH" "$BT/d.md" >/dev/null 2>"$BT/err" || rc=$?
+    secs=$(( $(date +%s) - t0 ))
+    if [ "$rc" -eq 4 ] && [ "$secs" -lt 20 ] && grep -q 'did not finish printing' "$BT/err"; then
+        echo "  PASS: a browser that never returns fails the render with exit 4 in ${secs}s"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: a hanging browser gave exit $rc after ${secs}s (want 4, under 20s, and the error)"
+        FAIL=$((FAIL + 1))
+    fi
+    sleep 1
+    if pgrep -f "$BT/bin/hang-browser" >/dev/null 2>&1; then
+        echo "  FAIL: the hanging browser is still alive after the deadline"
+        FAIL=$((FAIL + 1)); pkill -f "$BT/bin/hang-browser" || true
+    else
+        echo "  PASS: the hanging browser is killed at the deadline"
+        PASS=$((PASS + 1))
+    fi
+
+    rm -f "$BT/used"
+    if PATH="$BT/bin:$PATH" "$RENDER_SH" "$BT/d.md" >/dev/null 2>&1 \
+       && [ "$(cat "$BT/used" 2>/dev/null)" = "chrome-headless-shell" ]; then
+        echo "  PASS: chrome-headless-shell on PATH is chosen over chromium"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: chrome-headless-shell on PATH was not chosen (used: $(cat "$BT/used" 2>/dev/null))"
+        FAIL=$((FAIL + 1))
+    fi
+
+    rm -f "$BT/used"
+    if PATH="$BT/bin:$PATH" DECK_BROWSER="$BT/bin/chromium" "$RENDER_SH" "$BT/d.md" >/dev/null 2>&1 \
+       && [ "$(cat "$BT/used" 2>/dev/null)" = "chromium" ]; then
+        echo "  PASS: DECK_BROWSER wins over chrome-headless-shell"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: DECK_BROWSER was not honoured (used: $(cat "$BT/used" 2>/dev/null))"
+        FAIL=$((FAIL + 1))
+    fi
+
+    rc=0; DECK_BROWSER="$BT/bin/no-such-browser" "$RENDER_SH" "$BT/d.md" >/dev/null 2>&1 || rc=$?
+    if [ "$rc" -eq 3 ]; then
+        echo "  PASS: a DECK_BROWSER that does not exist exits 3"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: a DECK_BROWSER that does not exist exited $rc (want 3)"
+        FAIL=$((FAIL + 1))
+    fi
+
+    rc=0; DECK_RENDER_TIMEOUT=abc "$RENDER_SH" "$BT/d.md" >/dev/null 2>&1 || rc=$?
+    if [ "$rc" -eq 1 ]; then
+        echo "  PASS: a DECK_RENDER_TIMEOUT that is not a number exits 1"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: DECK_RENDER_TIMEOUT=abc exited $rc (want 1)"
+        FAIL=$((FAIL + 1))
+    fi
+    rm -rf "$BT"
+fi
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]

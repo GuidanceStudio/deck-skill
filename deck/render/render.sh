@@ -6,15 +6,12 @@
 #
 # Dependencies (must be on $PATH):
 #   - md2                  (markdown → HTML)
-#   - chromium / google-chrome / chromium-browser / chrome /
-#     brave-browser / brave / msedge / msedge.exe / firefox
-#                          (HTML → PDF via headless print-to-pdf;
-#                           Chromium-family is preferred for higher fidelity
-#                           — chromium and chrome detected first, brave as a
-#                           chromium-derivative fallback. Firefox is the
-#                           last-resort fallback and may hang on Linux snap
-#                           installs; install a chromium-family browser to
-#                           avoid that path.)
+#   - a browser for HTML → PDF via headless print-to-pdf, chosen in this order:
+#     $DECK_BROWSER; chrome-headless-shell on $PATH, then the newest in Playwright's
+#     cache; chromium / google-chrome / chromium-browser / chrome / brave-browser /
+#     brave / msedge / msedge.exe; firefox as the last resort (it may hang on Linux
+#     snap installs). The browser runs under a deadline of $DECK_RENDER_TIMEOUT
+#     seconds (default 120); past it the run fails with exit 4.
 #
 # Flags:
 #   --no-pdf            Generate the HTML only, skip the PDF step.
@@ -295,15 +292,60 @@ if $NO_PDF; then
     exit 0
 fi
 
+# The PDF step runs under a deadline, in seconds.
+RENDER_TIMEOUT="${DECK_RENDER_TIMEOUT:-120}"
+case "$RENDER_TIMEOUT" in
+    ''|*[!0-9]*|0)
+        echo "Error: DECK_RENDER_TIMEOUT must be a whole number of seconds above 0 (got '$RENDER_TIMEOUT')." >&2
+        exit 1 ;;
+esac
+
+# Browser choice, first match wins:
+#   1. $DECK_BROWSER, a command or a path.
+#   2. chrome-headless-shell on $PATH, then the newest one in Playwright's cache. It is the
+#      build of Chromium made for printing: a full Chrome in --headless mode can wait forever
+#      in --print-to-pdf on a page that loads a remote stylesheet (Google Fonts), and the
+#      headless shell prints the same page in seconds.
+#   3. A full Chromium-family browser, then firefox.
 BROWSER=""
 BROWSER_FAMILY=""
-for cmd in chromium google-chrome chromium-browser chrome brave-browser brave msedge msedge.exe; do
-    if command -v "$cmd" >/dev/null 2>&1; then
-        BROWSER="$cmd"
-        BROWSER_FAMILY="chromium"
-        break
+if [ -n "${DECK_BROWSER:-}" ]; then
+    if command -v "$DECK_BROWSER" >/dev/null 2>&1; then
+        BROWSER="$DECK_BROWSER"
+        case "$(basename "$DECK_BROWSER")" in
+            firefox*) BROWSER_FAMILY="firefox" ;;
+            *)        BROWSER_FAMILY="chromium" ;;
+        esac
+    else
+        echo "Error: DECK_BROWSER='$DECK_BROWSER' is not an executable command or path." >&2
+        exit 3
     fi
-done
+fi
+if [ -z "$BROWSER" ] && command -v chrome-headless-shell >/dev/null 2>&1; then
+    BROWSER="chrome-headless-shell"
+    BROWSER_FAMILY="chromium"
+fi
+if [ -z "$BROWSER" ]; then
+    for cache in "${PLAYWRIGHT_BROWSERS_PATH:-}" "$HOME/.cache/ms-playwright" "$HOME/Library/Caches/ms-playwright"; do
+        [ -n "$cache" ] && [ -d "$cache" ] || continue
+        cand="$(ls -d "$cache"/chromium_headless_shell-*/chrome-headless-shell-*/chrome-headless-shell 2>/dev/null \
+                | sort -V | tail -n 1 || true)"
+        if [ -n "$cand" ] && [ -x "$cand" ]; then
+            BROWSER="$cand"
+            BROWSER_FAMILY="chromium"
+            break
+        fi
+    done
+fi
+if [ -z "$BROWSER" ]; then
+    for cmd in chromium google-chrome chromium-browser chrome brave-browser brave msedge msedge.exe; do
+        if command -v "$cmd" >/dev/null 2>&1; then
+            BROWSER="$cmd"
+            BROWSER_FAMILY="chromium"
+            break
+        fi
+    done
+fi
 
 if [ -z "$BROWSER" ] && command -v firefox >/dev/null 2>&1; then
     BROWSER="firefox"
@@ -330,25 +372,56 @@ fi
 
 echo "  Using: $BROWSER ($BROWSER_FAMILY)"
 
-# Headless print-to-pdf. Flags differ per browser family.
+# Run the browser under the deadline. A browser that never returns would hold the caller,
+# and any test suite above it, forever; past the deadline it is killed and this returns 124.
+run_with_deadline() {
+    "$@" </dev/null >/dev/null 2>&1 &
+    local pid=$! ticks=0 limit=$((RENDER_TIMEOUT * 5))
+    while kill -0 "$pid" 2>/dev/null; do
+        if [ "$ticks" -ge "$limit" ]; then
+            kill -TERM "$pid" 2>/dev/null || true
+            sleep 1
+            kill -KILL "$pid" 2>/dev/null || true
+            wait "$pid" 2>/dev/null || true
+            return 124
+        fi
+        sleep 0.2
+        ticks=$((ticks + 1))
+    done
+    wait "$pid"
+}
+
+# Headless print-to-pdf. Flags differ per browser family. The browser's own exit status is
+# not trusted; the PDF check below is.
+BROWSER_RC=0
 if [ "$BROWSER_FAMILY" = "chromium" ]; then
     # --no-sandbox is required on some Linux setups (Docker, restricted users);
     # on others it's a no-op.
-    "$BROWSER" \
+    run_with_deadline "$BROWSER" \
         --headless \
         --disable-gpu \
         --no-sandbox \
         --no-pdf-header-footer \
         --print-to-pdf="$PDF" \
-        "file://$HTML" \
-        >/dev/null 2>&1
+        "file://$HTML" || BROWSER_RC=$?
 else
     # Firefox 102+ headless print-to-pdf
-    "$BROWSER" \
+    run_with_deadline "$BROWSER" \
         --headless \
         --print-to-pdf="$PDF" \
-        "file://$HTML" \
-        >/dev/null 2>&1
+        "file://$HTML" || BROWSER_RC=$?
+fi
+
+if [ "$BROWSER_RC" -eq 124 ]; then
+    cat >&2 <<EOF
+Error: $BROWSER did not finish printing the PDF within ${RENDER_TIMEOUT}s${TEMPLATE:+ (template $TEMPLATE)}.
+The HTML is ready at $HTML.
+A full Chrome in --headless mode can wait forever on a page that loads a remote stylesheet such as
+Google Fonts. Install chrome-headless-shell (npx playwright install chromium-headless-shell), which this
+script finds by itself, or point DECK_BROWSER at a browser that prints. For a very large deck, raise
+DECK_RENDER_TIMEOUT. Or re-run with --no-pdf.
+EOF
+    exit 4
 fi
 
 if [ ! -f "$PDF" ]; then

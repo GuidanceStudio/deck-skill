@@ -851,16 +851,33 @@ applicata in `fv-scout` (M323).
 
 **Done when:** `grep -rnE '\bM[0-9]{1,3}\b' deck --include='*.md'` non trova nulla. ✅ Verificato.
 
-## M40 — `test_render.sh` resta appeso: Chrome headless non ritorna sul render di `guidance-modern` — aperto
+## M40 — `test_render.sh` resta appeso: Chrome headless non ritorna sul render di `guidance-modern` ✅
 
 **Why:** `tests/test_all.sh` non termina (osservato 15 minuti), quindi nessuna verifica completa della skill
 arriva in fondo. Riprodotto il 2026-10-24 due volte, anche su `7506016` senza modifiche: il test si ferma nella
 sezione `guidance-modern` dopo «prompt warns the new constructs are unstyled», con `render/render.sh` → `chrome`
 vivo e senza output. `render.sh` non mette alcun timeout sul browser.
 
-**Tasks:**
-- [ ] Trovare cosa aspetta Chrome su quel template (font remoti, rete, versione del browser)
-- [ ] `render/render.sh`: timeout sul browser, con un errore che nomina il template e il passo
-- [ ] Un test che un browser appeso fallisca entro il timeout invece di bloccare la suite
+**Causa (misurata il 2026-10-24):** non è il template. Il Chrome for Testing 155 che Playwright installa
+(`~/.local/bin/chromium` punta lì), lanciato con `--headless --print-to-pdf`, non ritorna su **qualsiasi** pagina
+che carica un foglio di stile remoto: una pagina di una riga con il solo link a Google Fonts resta appesa come
+`guidance-modern`; tolto il link, lo stesso HTML stampa in 3 s; `curl` raggiunge Google Fonts in 0,1 s; un
+profilo pulito o `--disable-quic` non cambiano nulla. `chrome-headless-shell`, la build di Chromium fatta per
+stampare, già installata da Playwright accanto, stampa `guidance-modern` in 3 s con Domine, Inter e Ubuntu Mono
+incorporati.
 
-**Done when:** `bash tests/test_all.sh` termina, verde, su questa macchina.
+**Approccio:** `render.sh` sceglie il browser in quest'ordine: `$DECK_BROWSER`, `chrome-headless-shell` sul PATH,
+il più recente nella cache di Playwright, poi la lista di oggi. Il browser gira con una scadenza
+(`DECK_RENDER_TIMEOUT`, 120 s di default): allo scadere viene ucciso e lo script esce con **4**, un codice nuovo,
+con un errore che nomina browser, template e rimedio. Un `DECK_BROWSER` che non esiste esce con 3.
+
+**Tasks:**
+- [x] Trovare cosa aspetta Chrome su quel template (sopra)
+- [x] `render/render.sh`: ordine di scelta del browser e scadenza, exit 4
+- [x] `tests/test_render.sh`: un browser appeso fallisce entro la scadenza con exit 4 e non resta vivo;
+  `DECK_BROWSER` vince; `chrome-headless-shell` sul PATH vince su `chromium`; valori non validi escono 3 e 1
+- [x] `render/prompt.md` (tabella degli errori), `README.md` (sezione browser), intestazione di `render.sh`
+- [x] `bash tests/test_all.sh` verde; `./install.sh --target claude --force`; commit & push
+
+**Done when:** `bash tests/test_all.sh` termina, verde, su questa macchina. ✅ Verificato: 8 suite su 8, 460 test, 15 s;
+`guidance-modern` stampa in circa 1 s con `chrome-headless-shell`, con Domine, Inter e Ubuntu Mono incorporati.
