@@ -835,3 +835,32 @@ variazione.
 
 **Done when:** `/deck draft` su un brief che confronta due periodi su sei dimensioni produce un radar
 affiancato dalle barre con i valori, e il PDF tiene una slide per pagina.
+
+## M39 — I prompt della skill non citano milestone ✅
+
+**Why:** i file sotto `deck/` sono letti dal modello a ogni route; un tag come `(M25)` in un titolo costa
+token a ogni chiamata e non dice nulla a chi esegue. La storia sta qui e nei commit. Stessa regola già
+applicata in `fv-scout` (M323).
+
+**Tasks:**
+- [x] `render/prompt.md`: i titoli di `--page-css`/`--post-html` e `--embed-images` perdono `(M25)` e `(M32)`
+- [x] Sette suite verdi (`test_skill`, `test_structure`, `test_brief`, `test_draft`, `test_revise`, `test_install`,
+  `test_render_smoke`: 375 test); `test_render.sh` si blocca su Chrome anche su HEAD senza questa modifica → M40;
+  `./install.sh --target claude --force`
+- [x] Commit & push
+
+**Done when:** `grep -rnE '\bM[0-9]{1,3}\b' deck --include='*.md'` non trova nulla. ✅ Verificato.
+
+## M40 — `test_render.sh` resta appeso: Chrome headless non ritorna sul render di `guidance-modern` — aperto
+
+**Why:** `tests/test_all.sh` non termina (osservato 15 minuti), quindi nessuna verifica completa della skill
+arriva in fondo. Riprodotto il 2026-10-24 due volte, anche su `7506016` senza modifiche: il test si ferma nella
+sezione `guidance-modern` dopo «prompt warns the new constructs are unstyled», con `render/render.sh` → `chrome`
+vivo e senza output. `render.sh` non mette alcun timeout sul browser.
+
+**Tasks:**
+- [ ] Trovare cosa aspetta Chrome su quel template (font remoti, rete, versione del browser)
+- [ ] `render/render.sh`: timeout sul browser, con un errore che nomina il template e il passo
+- [ ] Un test che un browser appeso fallisca entro il timeout invece di bloccare la suite
+
+**Done when:** `bash tests/test_all.sh` termina, verde, su questa macchina.

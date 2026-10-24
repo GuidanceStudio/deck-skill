@@ -124,7 +124,7 @@ Do not tell the user the deck is finished on the strength of a clean render. The
 the files were produced, not that the copy can be read. That is `/deck revise`, and the reason it is a
 separate stage rather than a hint here is in `revise/prompt.md`.
 
-## `--page-css` and `--post-html` (M25)
+## `--page-css` and `--post-html`
 
 Two extension points, so a caller with its own house pipeline does not have to fork this script.
 
@@ -139,7 +139,7 @@ falling back to the default would render a deck in the wrong style and report su
 detail — a hook exists to reject an HTML that is not fit to print, and a hook that could not stop the PDF
 would be decoration.
 
-## `--embed-images` — when the deck leaves this machine (M32)
+## `--embed-images` — when the deck leaves this machine
 
 Off by default. Without it the HTML **references** local images: the ones the author wrote as a relative
 path, and the template's own assets — the `guidance` and `forestvalley` templates point at their logo with
