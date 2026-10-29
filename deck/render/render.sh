@@ -31,6 +31,10 @@
 #                       machine with no server and no missing images. Off by default —
 #                       it makes the file bigger, and a deck that stays put does not
 #                       need it. Requires md2 >= 0.2.2.
+#   --share-name NAME   After the PDF is written, copy it to share/NAME.pdf next to the input
+#                       and print that path. The copy is the file that leaves the machine:
+#                       "<Client> + <Our company> - <what it is> (<period or date>)". The
+#                       render keeps presentation.pdf for the pipeline. NAME has no slash.
 #
 # Orientation/paper/template precedence (highest first):
 #   1. CLI flag
@@ -50,6 +54,7 @@ TEMPLATE_OVERRIDE=""
 PAGE_CSS_FILE=""
 POST_HTML_CMD=""
 EMBED_IMAGES=false
+SHARE_NAME=""
 
 if [ $# -eq 0 ]; then
     echo "Usage: $(basename "$0") <input.md> [--no-pdf] [--landscape|--portrait] [--paper A4|letter] [--template NAME]" >&2
@@ -120,8 +125,23 @@ while [ $# -gt 0 ]; do
             POST_HTML_CMD="$1"
             shift
             ;;
+        --share-name)
+            shift
+            if [ $# -eq 0 ] || [ -z "$1" ]; then
+                echo "Error: --share-name requires a file name" >&2
+                exit 1
+            fi
+            case "$1" in
+                */*|*.pdf)
+                    echo "Error: --share-name is a bare name, without a slash or .pdf (got '$1')" >&2
+                    exit 1
+                    ;;
+            esac
+            SHARE_NAME="$1"
+            shift
+            ;;
         --help|-h)
-            sed -n '2,43p' "$0" | sed 's/^# \{0,1\}//'
+            sed -n '2,47p' "$0" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
         *)
@@ -430,3 +450,10 @@ if [ ! -f "$PDF" ]; then
 fi
 
 echo "Generated: $PDF"
+
+if [ -n "$SHARE_NAME" ]; then
+    SHARE_DIR="$(dirname "$PDF")/share"
+    mkdir -p "$SHARE_DIR"
+    cp "$PDF" "$SHARE_DIR/$SHARE_NAME.pdf"
+    echo "Share copy: $SHARE_DIR/$SHARE_NAME.pdf"
+fi

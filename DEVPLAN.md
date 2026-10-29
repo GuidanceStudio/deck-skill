@@ -881,3 +881,20 @@ con un errore che nomina browser, template e rimedio. Un `DECK_BROWSER` che non 
 
 **Done when:** `bash tests/test_all.sh` termina, verde, su questa macchina. ✅ Verificato: 8 suite su 8, 460 test, 15 s;
 `guidance-modern` stampa in circa 1 s con `chrome-headless-shell`, con Domine, Inter e Ubuntu Mono incorporati.
+
+## M41 — Il file che esce dalla macchina ha un nome descrittivo ✅
+
+**Why:** il 2026-10-29 due PDF sono stati allegati a un'email come `presentation.pdf` e `<data>.pdf`; il destinatario
+vede solo il nome del file. Richiesta dell'operatore: "correggi le skill".
+
+**Approccio:** `render.sh --share-name "<Cliente> + <Nostra azienda> - <cosa è> (<periodo o data>)"` copia il PDF in
+`share/<nome>.pdf` accanto all'input e stampa il percorso; `presentation.pdf` resta il nome interno. `render/prompt.md`
+dice di usarlo dopo l'ultimo render e di scrivere le date in ISO.
+
+**Tasks:**
+- [x] `render/render.sh`: flag `--share-name` (nome senza slash né `.pdf`, altrimenti exit 1)
+- [x] `render/prompt.md`: riga in tabella e regola nel rapporto finale
+- [x] `tests/test_render.sh`: flag documentato, nome con slash rifiutato
+- [x] `bash tests/test_all.sh` verde; commit & push; `./install.sh --force`
+
+**Done when:** `bash tests/test_all.sh` verde e `render.sh --share-name` produce `share/<nome>.pdf`.

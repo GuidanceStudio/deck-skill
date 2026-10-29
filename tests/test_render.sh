@@ -561,6 +561,20 @@ STUB
     rm -rf "$BT"
 fi
 
+echo "=== --share-name ==="
+
+assert_grep "$RENDER_SH" '\-\-share-name' "supports --share-name flag"
+assert_grep_i "$PROMPT" 'share-name' "prompt documents --share-name"
+assert_grep_i "$PROMPT" 'never `presentation.pdf`' "prompt says presentation.pdf does not leave the machine"
+rc=0; bash "$RENDER_SH" /nonexistent.md --share-name "a/b" >/dev/null 2>&1 || rc=$?
+if [ "$rc" -eq 1 ]; then
+    echo "  PASS: a --share-name with a slash exits 1"
+    PASS=$((PASS + 1))
+else
+    echo "  FAIL: --share-name 'a/b' exited $rc (want 1)"
+    FAIL=$((FAIL + 1))
+fi
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]

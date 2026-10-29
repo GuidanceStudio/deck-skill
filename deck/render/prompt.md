@@ -72,6 +72,7 @@ With optional flags:
 | Force paper size                        | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --paper letter`   |
 | Use a custom md2 template               | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --template guidance` |
 | Supply the print CSS yourself           | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --page-css brand-print.css` |
+| Copy for the recipient, named for them  | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --share-name "Acme + Studio - setup and findings report (2026-10-29)"` |
 | Post-process the HTML before the PDF    | `bash ~/.claude/skills/deck/render/render.sh "$(pwd)/presentation.md" --post-html ./fix-images.sh` |
 
 Orientation and paper size are usually picked up automatically from the `<!-- deck-orientation: ... -->` and `<!-- deck-paper: ... -->` comments at the top of `presentation.md` (written by `/deck draft`). The CLI flags are an override, used only when the user explicitly asks for a different orientation than what the deck declared.
@@ -114,6 +115,11 @@ If the script exits 0, both the HTML and (if requested) the PDF were generated s
 
 On success, report to the user:
 - The two file paths produced.
+- **The file that leaves the machine is never `presentation.pdf`.** Once `revise` has run and the last
+  render is done, call `render.sh` with `--share-name "<Client> + <Our company> - <what it is> (<period or date>)"`
+  (ISO dates, for example `2026-09-24 to 2026-10-17`; never `26-09-24`, which a reader in another country
+  reads as another date) and give the user the `share/` path to attach. The name says whose deck it is,
+  what it is and for when; `presentation.pdf` stays the pipeline's internal name.
 - **Whether `/deck revise` has run on this deck yet, and if not, that the deck is not deliverable until it
   has.** This is the first render of the loop `draft` → `render` → `revise` → `render`: the revision pass
   needs the PDF, because page-fit compression and printed reading order are only visible once printed.
