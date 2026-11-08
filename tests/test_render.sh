@@ -379,6 +379,8 @@ assert_grep_i "$RENDER_SH" 'no PDF is produced' "documents that an unresolved im
 assert_grep_i "$PROMPT" 'embed-images' "prompt documents the flag"
 assert_grep_i "$PROMPT" 'leaves this machine|self-contained' "prompt says when the flag is needed"
 assert_grep_i "$PROMPT" 'right-sized asset|downscal' "prompt says md2 does not downscale"
+assert_grep "$RENDER_SH" 'deck-embed-images:' "render reads the deck-embed-images comment"
+assert_grep "$PROMPT" 'deck-embed-images: true' "prompt says to declare embedding in the deck"
 
 # Functional: the flag must actually inline, and must abort on a missing image.
 if command -v md2 >/dev/null 2>&1; then
@@ -395,6 +397,19 @@ PYPNG
 
     bash "$RENDER_SH" "$EMB_DIR/d.md" --no-pdf --embed-images >/dev/null 2>&1 || true
     assert_grep "$EMB_DIR/d.html" 'data:image/png;base64,' "--embed-images inlines the image"
+
+    OUT="$(bash "$RENDER_SH" "$EMB_DIR/d.md" --no-pdf 2>&1 || true)"
+    if printf '%s' "$OUT" | grep -q 'local file(s) by reference'; then
+        echo "  PASS: without embedding the summary counts the local images"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: without embedding the summary should count the local images"
+        FAIL=$((FAIL + 1))
+    fi
+
+    printf '# Titolo\n\n![](pix.png)\n\n<!-- deck-embed-images: true -->\n' > "$EMB_DIR/c.md"
+    bash "$RENDER_SH" "$EMB_DIR/c.md" --no-pdf >/dev/null 2>&1 || true
+    assert_grep "$EMB_DIR/c.html" 'data:image/png;base64,' "the deck-embed-images comment inlines without the flag"
 
     printf '# Titolo\n\n![](assente.png)\n' > "$EMB_DIR/miss.md"
     if bash "$RENDER_SH" "$EMB_DIR/miss.md" --embed-images >/dev/null 2>&1; then

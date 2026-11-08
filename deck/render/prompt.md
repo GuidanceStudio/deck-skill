@@ -157,9 +157,19 @@ an empty box where the logo should be, and nothing in the page says an image is 
 `--embed-images` passes the flag through to md2, which inlines every local image as a base64 data URI. The
 result is a single self-contained file that opens anywhere with no server.
 
-**Pass it when the HTML is the deliverable** — emailed, opened on another device, handed to someone else,
-or published. **Leave it off when the deck stays here**: it multiplies the payload once per occurrence, and
-a logo on every slide adds up.
+**Turn it on when the HTML is the deliverable** — emailed, opened on another device, served to a tablet,
+handed to someone else, or published. **Leave it off when the deck stays here**: it multiplies the payload
+once per occurrence, and a logo on every slide adds up.
+
+**Turn it on in the deck, not on the command line.** Write `<!-- deck-embed-images: true -->` next to the
+other `deck-*` comments at the end of `presentation.md`. `render.sh` reads it with the same precedence as
+orientation, paper and template (the `--embed-images` flag wins, then the comment, then off), so every later
+render keeps it, the one after `revise` included. A flag passed once is lost on the next render, and the HTML
+goes back to `file://` paths without a word.
+
+Without embedding, when the HTML loads images from this machine, the render's summary says so:
+`Images: N local file(s) by reference; they load only on this machine.` Read that line before handing the
+HTML over: if the file is about to leave, add the comment and render again.
 
 Two behaviours worth knowing, both md2's:
 

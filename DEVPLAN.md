@@ -898,3 +898,24 @@ dice di usarlo dopo l'ultimo render e di scrivere le date in ISO.
 - [x] `bash tests/test_all.sh` verde; commit & push; `./install.sh --force`
 
 **Done when:** `bash tests/test_all.sh` verde e `render.sh --share-name` produce `share/<nome>.pdf`.
+
+## M42 — L'HTML che esce dalla macchina porta con sé le immagini a ogni render ✅
+
+**Why:** il 2026-11-09 un deck sul template `guidance`, servito a un tablet, mostrava un riquadro vuoto al posto
+del logo: l'HTML puntava a `file:///home/<user>/.md2/templates/guidance/assets/logo.png`. `--embed-images` esiste,
+ma vive solo sulla riga di comando: il render successivo, quello di `revise` compreso, lo perde, e nulla
+nell'output dice che l'HTML dipende da file locali.
+
+**Approccio:** `render.sh` legge `<!-- deck-embed-images: true -->` dal deck con la stessa precedenza di
+orientamento, carta e template (il flag vince, poi il commento, poi spento). Senza embed, se l'HTML contiene
+immagini locali, il riepilogo del render dice quante sono e quale commento aggiungere. `render/prompt.md` dice
+di scrivere il commento, non il flag, quando l'HTML esce dalla macchina.
+
+**Tasks:**
+- [x] `render/render.sh`: commento `deck-embed-images`, nota sulle immagini locali nel riepilogo
+- [x] `render/prompt.md`: il commento nella sezione `--embed-images` e nella precedenza
+- [x] `tests/test_render.sh`: il commento incorpora senza flag; la nota compare senza embed
+- [x] `bash tests/test_all.sh` verde; commit & push; `./install.sh --force`
+
+**Done when:** `bash tests/test_all.sh` verde e un deck con `<!-- deck-embed-images: true -->` rende un HTML
+senza riferimenti `file://` senza passare il flag.

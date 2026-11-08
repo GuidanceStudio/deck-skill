@@ -30,17 +30,18 @@
 #                       logo) are inlined as base64 data URIs, so the HTML opens on any
 #                       machine with no server and no missing images. Off by default —
 #                       it makes the file bigger, and a deck that stays put does not
-#                       need it. Requires md2 >= 0.2.2.
+#                       need it. Requires md2 >= 0.2.2. A <!-- deck-embed-images: true -->
+#                       comment in input.md turns it on for every render of that deck.
 #   --share-name NAME   After the PDF is written, copy it to share/NAME.pdf next to the input
 #                       and print that path. The copy is the file that leaves the machine:
 #                       "<Client> + <Our company> - <what it is> (<period or date>)". The
 #                       render keeps presentation.pdf for the pipeline. NAME has no slash.
 #
-# Orientation/paper/template precedence (highest first):
+# Orientation/paper/template/embed precedence (highest first):
 #   1. CLI flag
 #   2. <!-- deck-orientation: ... --> / <!-- deck-paper: ... --> /
-#      <!-- deck-template: ... --> comment in input.md
-#   3. defaults: landscape, A4, (no template — md2's default)
+#      <!-- deck-template: ... --> / <!-- deck-embed-images: true --> comment in input.md
+#   3. defaults: landscape, A4, (no template — md2's default), images by reference
 
 set -euo pipefail
 
@@ -202,6 +203,13 @@ if [ -z "$TEMPLATE" ]; then
         | sed -E 's/.*:[[:space:]]*//' || true)"
 fi
 
+# Resolve embedding: CLI --embed-images → <!-- deck-embed-images: true --> comment
+# in source md → off. The comment keeps the choice with the deck, so a later render
+# (revise's included) does not drop it and ship an HTML whose logo is a file:// path.
+if ! $EMBED_IMAGES && grep -qiE 'deck-embed-images:[[:space:]]*(true|yes|on)' "$INPUT_ABS" 2>/dev/null; then
+    EMBED_IMAGES=true
+fi
+
 MD2_ARGS=()
 [ -n "$TEMPLATE" ] && MD2_ARGS+=(--template "$TEMPLATE")
 # --embed-images makes md2 exit non-zero, without writing the HTML, when a local
@@ -304,7 +312,22 @@ fi
 
 echo "Generated: $HTML"
 echo "  Orientation: $ORIENTATION · Paper: $PAPER"
-$EMBED_IMAGES && echo "  Images: embedded as data URIs (self-contained HTML)"
+if $EMBED_IMAGES; then
+    echo "  Images: embedded as data URIs (self-contained HTML)"
+else
+    # Images the HTML loads from this machine: template assets by file:// path and
+    # <img> sources that are neither remote nor inlined. Off this machine they are
+    # empty boxes, and nothing in the page says so.
+    LOCAL_IMAGES="$( {
+        grep -oE "file://[^\"') ]+" "$HTML" || true
+        grep -oE '<img[^>]*src="[^"]+"' "$HTML" | sed -E 's/.*src="([^"]+)"/\1/' \
+            | grep -vE '^(https?:|data:|file:)' || true
+    } | sort -u | wc -l | tr -d ' ')"
+    if [ "$LOCAL_IMAGES" -gt 0 ]; then
+        echo "  Images: $LOCAL_IMAGES local file(s) by reference; they load only on this machine."
+        echo "          If the HTML leaves it, add <!-- deck-embed-images: true --> to the deck."
+    fi
+fi
 
 # --- Step 2: HTML → PDF (optional) ------------------------------------------
 
