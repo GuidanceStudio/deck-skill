@@ -919,3 +919,14 @@ di scrivere il commento, non il flag, quando l'HTML esce dalla macchina.
 
 **Done when:** `bash tests/test_all.sh` verde e un deck con `<!-- deck-embed-images: true -->` rende un HTML
 senza riferimenti `file://` senza passare il flag.
+
+## M43 — Il render si ferma se i font del template non si caricano
+
+Il 2026-11-13 un render di un mazzo `guidance` è uscito con Liberation Serif/Sans al posto di Domine e Ubuntu: Google
+Fonts non ha risposto in tempo e il PDF è stato scritto lo stesso, senza avvisi. Si vede solo aprendo il PDF.
+
+- [ ] T1 Dopo la stampa, `render.sh` legge i font incorporati (`pdffonts`) e li confronta con quelli dichiarati dal
+  template; se ne manca uno, esce con errore e nomina il font
+- [ ] T2 Prima della stampa, attesa di `document.fonts.ready` con un timeout, così un caricamento lento non diventa
+  un ripiego
+- [ ] T3 Test: un render con la rete dei font bloccata fallisce con il messaggio atteso
