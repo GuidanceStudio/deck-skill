@@ -930,3 +930,10 @@ Fonts non ha risposto in tempo e il PDF è stato scritto lo stesso, senza avvisi
 - [ ] T2 Prima della stampa, attesa di `document.fonts.ready` con un timeout, così un caricamento lento non diventa
   un ripiego
 - [ ] T3 Test: un render con la rete dei font bloccata fallisce con il messaggio atteso
+
+## M44 — La skill porta una licenza ✅
+
+Il repo è pubblico e non dichiara licenza; chi lo scarica (anche una CI) non ha un permesso scritto d'uso.
+
+- [x] T1 `LICENSE` MIT, titolare Guidance Studio
+- [x] T2 README: una riga che dichiara la licenza

@@ -161,3 +161,7 @@ CI (GitHub Actions) runs the suite on every push and PR. The structural
 and install suites need no external tools; the render smoke runs for
 real when md2 + a browser install on the runner and skips cleanly
 otherwise, so a missing dependency never reds the build.
+
+## License
+
+MIT, see `LICENSE`.
