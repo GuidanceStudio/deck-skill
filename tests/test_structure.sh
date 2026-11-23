@@ -47,7 +47,6 @@ echo "=== Project layout ==="
 assert_file "README.md"
 assert_file "DEVPLAN.md"
 assert_file ".gitignore"
-assert_file "install.sh"
 
 # Directories
 assert_dir "deck"

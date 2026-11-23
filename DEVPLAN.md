@@ -937,3 +937,21 @@ Il repo è pubblico e non dichiara licenza; chi lo scarica (anche una CI) non ha
 
 - [x] T1 `LICENSE` MIT, titolare Guidance Studio
 - [x] T2 README: una riga che dichiara la licenza
+
+## M45 — La skill si distribuisce come cartella semplice ✅
+
+`install.sh` (259 righe) copiava la cartella `deck/` e aggiungeva wrapper per Gemini e `AGENTS.md`, un one-liner remoto e i
+flag `--target`, `--check` e `--force`. Copiare `deck/` nella cartella delle skill dell'assistente dà lo stesso risultato
+senza uno script da mantenere.
+
+**Approccio:** si rimuovono l'installer e la sua suite; il README descrive la copia a mano per ogni assistente, la via
+`$skill-installer` di Codex fissata a un tag o a un commit, l'aggiornamento e ciò che non c'è più.
+
+- [x] T1 Rimossi `install.sh` e `tests/test_install.sh`
+- [x] T2 `tests/test_all.sh` e `tests/test_structure.sh` non citano più l'installer; il commento della CI è allineato
+- [x] T3 README: sezione Install riscritta (copia, Codex a tag, aggiornamento, funzioni rimosse), albero del repo e
+  requisiti senza riferimenti all'installer
+- [x] T4 `bash tests/test_all.sh` verde
+
+**Done when:** `bash tests/test_all.sh` è verde, `grep -rn 'install.sh'` trova solo la cronologia dei milestone chiusi e
+gli installer di md2 e uv.

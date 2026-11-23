@@ -17,7 +17,6 @@ SUITES=(
     "test_render.sh"
     "test_revise.sh"
     "test_render_smoke.sh"
-    "test_install.sh"
 )
 
 PASSED=()

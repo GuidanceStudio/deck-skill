@@ -13,7 +13,7 @@ jobs:
 
       # Best-effort deps for the render smoke. Both are guarded with `|| true`:
       # if they fail (private repo, network, runner quirk), test_render_smoke.sh
-      # self-gates and SKIPs — the structural/install suites still run.
+      # self-gates and SKIPs — the structural suites still run.
       - name: Install chromium (best-effort)
         run: sudo apt-get update && sudo apt-get install -y chromium-browser || true
 

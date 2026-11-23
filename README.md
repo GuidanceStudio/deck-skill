@@ -11,45 +11,43 @@ The skill bakes in:
 
 ## Install
 
-The installer is multi-assistant. Run it with no target for an
-interactive menu, or pass `--target`:
+`deck/` is the whole skill: one flat folder that follows the common `SKILL.md`
+layout. Put a copy where your assistant reads skills.
 
 ```bash
-git clone https://github.com/GuidanceStudio/deck-skill.git && cd deck-skill
-./install.sh                      # interactive menu
-./install.sh --target claude      # ~/.claude/skills/deck/
-./install.sh --target codex        # ~/.codex/skills/deck/
-./install.sh --target opencode     # ~/.config/opencode/skills/deck/
-./install.sh --target gemini        # ~/.gemini/commands/deck.toml (+ payload)
-./install.sh --target agents        # AGENTS.md pointer for Cursor/Windsurf/Copilot/Aider/Continue
-./install.sh --target all           # claude + codex + opencode
-./install.sh --target manual        # print the folder path; copy it yourself
+git clone https://github.com/GuidanceStudio/deck-skill.git
+cp -r deck-skill/deck ~/.claude/skills/deck            # Claude Code
+cp -r deck-skill/deck ~/.gemini/skills/deck            # Gemini CLI
+cp -r deck-skill/deck ~/.config/opencode/skills/deck   # opencode
 ```
 
-Remote one-liner (no clone; needs `git` + `curl`):
+For Codex, its skill installer takes the GitHub path directly; pin a tag or a commit
+instead of `main`, because a moving branch changes the instructions the assistant follows:
 
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/GuidanceStudio/deck-skill/main/install.sh) --target claude
+```
+$skill-installer install GuidanceStudio/deck-skill/tree/<tag-or-commit>/deck
 ```
 
-`claude`, `codex`, and `opencode` get the `deck/` folder copied verbatim
-— it's the shared [agentskills.io](https://agentskills.io) `SKILL.md`
-standard, so one payload serves all three. `gemini` gets a generated
-TOML command; `agents` writes an [`AGENTS.md`](https://agents.md)
-pointer for the broad tier. Flags: `--force` (overwrite + skip the
-dependency prompt), `--check` (report `OK`/`DRIFT` vs source, per
-`--target`), `--agents-dir DIR`. The installer probes for md2 + a
-browser and warns if missing. Or skip it — `deck/` is self-contained,
-copy it anywhere your tool reads skills.
+A manual Codex copy goes in `~/.agents/skills/deck`. Keep one active copy per
+assistant.
+
+**Update.** Save any local edits, then replace the whole installed folder with the new
+one. `diff -r deck-skill/deck <installed folder>` shows whether a copy has drifted
+from the source.
+
+**Not provided.** There is no installer script, no remote one-liner and no Gemini
+command or `AGENTS.md` wrapper; earlier versions had them. The skill needs md2 and a
+browser (see [Requirements](#requirements)); nothing checks for them at install time,
+and `render.sh` reports a missing one when it runs.
 
 ## Requirements
 
-The skill orchestrates two external tools — a markdown converter and a browser. The installer checks both
-and warns if missing. Everything here is bash, so on Windows that is the first thing to sort out.
+The skill orchestrates two external tools — a markdown converter and a browser. `render.sh` checks both
+and reports a missing one. Everything here is bash, so on Windows that is the first thing to sort out.
 
 | What | Why | Linux | macOS | Windows |
 |---|---|---|---|---|
-| **bash** | `install.sh`, `render.sh` | native | native | **WSL2** (recommended — then follow the Linux column inside it) or **Git Bash** |
+| **bash** | `render.sh` | native | native | **WSL2** (recommended — then follow the Linux column inside it) or **Git Bash** |
 | **uv** | installs md2 | `curl -LsSf https://astral.sh/uv/install.sh \| sh` | same | `powershell -c "irm https://astral.sh/uv/install.ps1 \| iex"` |
 | **md2** | markdown → HTML | `uv tool install md2-presenter` | same | same |
 | **a browser** | HTML → PDF | `sudo apt install chromium-browser` | Chrome or Brave | **Edge is already there**; inside WSL2, `sudo apt install chromium-browser` |
@@ -130,7 +128,7 @@ loop closes with a second render: `brief` → `draft` → `render` → `revise` 
 ## Repo layout
 
 ```
-deck/                           # the flat skill payload (copied verbatim by install.sh)
+deck/                           # the flat skill payload (copied verbatim into the assistant's skills folder)
 ├── SKILL.md                    # router + language rules
 ├── brief/
 │   └── prompt.md               # interview script
@@ -146,7 +144,6 @@ deck/                           # the flat skill payload (copied verbatim by ins
 └── revise/
     └── prompt.md               # the nine checks, read as the audience
 
-install.sh                      # local + remote installer
 tests/                          # bash test suite
 DEVPLAN.md                      # planned work, milestone-by-milestone
 ```
@@ -158,7 +155,7 @@ bash tests/test_all.sh
 ```
 
 CI (GitHub Actions) runs the suite on every push and PR. The structural
-and install suites need no external tools; the render smoke runs for
+suite needs no external tools; the render smoke runs for
 real when md2 + a browser install on the runner and skips cleanly
 otherwise, so a missing dependency never reds the build.
 
